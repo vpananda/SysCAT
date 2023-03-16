@@ -1,0 +1,131 @@
+{% extends 'base.html' %} {% load static%} {% block content %}
+<head>  <style>    body
+  {
+      counter-reset: Serial;           /* Set the Serial counter to 0 */
+  }
+  tr td:first-child:before
+  {
+    counter-increment: Serial;      /* Increment the Serial counter */
+    content: counter(Serial); /* Display the counter */
+  }
+  .sticky-thead {
+    position: sticky;
+    top:-1px;
+    z-index: 1;
+  }
+  .table-content {
+    position: relative;
+    padding-top: 50px; /* or add margin-top: 50px; */
+  }
+  
+</style>
+</head>
+
+<div class="container">
+  <h2 class="my-4">Subject</h2>
+
+  <div class="row mb-3">
+    <div class="col-md-6 me-4">
+      <a href="{% url 'new_subject' %}" class="btn btn-primary">Add New Subject</a>
+    </div>
+    <div class="col-md-5">
+      <form method="GET" class="d-flex flex-row justify-content-end">
+        <select class="form-select w-50" id="filter_by" name="filter_by" onchange="this.form.submit()">
+          <option value="2" {% if request.GET.filter_by == '2' %}selected{% endif %}>All</option>
+          <option value="1" {% if request.GET.filter_by == '1' %}selected{% endif %}>Active</option>
+          <option value="0" {% if request.GET.filter_by == '0' %}selected{% endif %}>Inactive</option>
+        </select>
+      </form>
+    </div>
+  </div>
+
+  <div style="height: 60vh; overflow-y: auto; margin:20px;" >
+    <table class="table table-bordered text-center">
+      <thead class="sticky-thead">
+        <tr>
+          <th>S.No</th>
+          <th>Subject</th>
+          <th>Active</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for subject in subjects %}
+        <tr>
+          <td> </td>
+          <td>{{subject.1}}</td>
+          <td>{{subject.2}}</td>
+          {% if subject.2 %}
+            <td>
+              <a href="#editSubjectModal{{ subject.0 }}" data-bs-toggle="modal" class="btn btn-primary">Edit</a>
+              <a href="#confirm-delete-modal{{ subject.0 }}" data-bs-toggle="modal" class="btn btn-danger">Delete</a>
+            <!-- Model -->
+            <div class="modal fade pt-5" id="editSubjectModal{{ subject.0 }}" tabindex="-1" aria-labelledby="editSubjectModal" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content mt-5">
+                  <div class="modal-header">
+                    <div
+                      class="d-flex justify-content-between align-items-center w-100"
+                    >
+                      <h5 class="modal-title mb-0">Edit Subject</h5>
+                    </div>
+                    <div class="">
+                      <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close"
+                      ></button>
+                    </div>
+                  </div>
+                  <div class="modal-body">
+                    <form method="POST" action="{% url 'edit_subject' id=subject.0 %}">
+                      {% csrf_token %}
+                      <div class="mb-3">
+                        <label for="subject" class="form-label">subject</label>
+                        <input type="text" class="form-control" id="subject" name="subject" value="{{subject.1}}">
+                      </div>
+                      <button type="submit" class="btn btn-primary">Save changes</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Delete Confirmation Modal -->
+<div class="modal fade" id="confirm-delete-modal{{ subject.0 }}" tabindex="-1" aria-labelledby="confirm-delete-modal-label" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+    <form method="POST" action="{% url 'delete_subject' id=subject.0 %}">
+      {% csrf_token %}
+      <div class="modal-header">
+        <div class="d-flex justify-content-between align-items-center w-100">
+        <h5 class="modal-title" id="confirm-delete-modal-label">Confirm Delete</h5>
+      </div>
+      <div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to delete <span class="fw-bold">{{subject.1}}</span>?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+        <button type="submit" class="btn btn-danger" id="confirm-delete-btn">Yes</button>
+      </div>
+    </form>
+    </div>
+  </div>
+</div>
+
+          </td>
+        </tr>
+        {% else %}
+          <td><a href="{% url 'activatePosition' id=subject.0 %}" class="btn btn-success">Activate</a>
+          </td>
+          {% endif %}
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,215 @@
+{% extends 'base.html' %} {% load static %} {% block content %}
+
+<head>
+  <style type="text/css">
+    a:link {
+      text-decoration: none;
+    }
+
+    .order-card {
+      color: rgb(255, 255, 255);
+    }
+
+    .bg-c-blue {
+      background: #04868f;
+    }
+
+    .bg-c-green {
+      background: #4c51bf;
+    }
+
+    .bg-c-yellow {
+      background: #f56565;
+    }
+
+    .bg-c-gtx {
+      background: #57717d;
+    }
+
+    .card {
+      -webkit-box-shadow: 0 1px 2.94px 0.06px rgba(4, 26, 55, 0.16);
+      box-shadow: 0 1px 2.94px 0.06px rgba(4, 26, 55, 0.16);
+      margin-bottom: 30px;
+      -webkit-transition: all 0.3s ease-in-out;
+      transition: all 0.3s ease-in-out;
+    }
+
+    .card .card-block {
+      padding: 25px;
+    }
+
+    .order-card i {
+      font-size: 26px;
+    }
+
+    .f-left {
+      float: left;
+    }
+
+    .f-right {
+      float: right;
+    }
+    header {
+      left: 0px;
+      right: 0px;
+    }
+    body
+    {
+        counter-reset: Serial;           /* Set the Serial counter to 0 */
+    }
+    tr td:first-child:before
+    {
+      counter-increment: Serial;      /* Increment the Serial counter */
+      content: counter(Serial); /* Display the counter */
+    }
+    .sticky-thead {
+      position: sticky;
+      top:-1px;
+      z-index: 1;
+    }
+    .table-content {
+      position: relative;
+      padding-top: 50px; /* or add margin-top: 50px; */
+    }
+  </style>
+</head>
+
+
+<div class="container" style="border-radius: 20px;">
+  <div class="row">
+    {% for dash in dash_data %}
+    <div class="col-12 mt-2 mb-2">
+        <h4>Dashboard</h4>
+    </div>
+    
+    <div class="col-md-3 col-xl-3">
+      <div class="card bg-c-gtx order-card">
+        <div class="card-block">
+          <h6 class="m-b-20">Exam</h6>
+          <h2 class="text-right">
+            <i class="fas fa-user-graduate f-left"></i><span>{{dash.1}}</span>
+          </h2>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3 col-xl-3">
+      <div class="card bg-c-yellow order-card">
+        <div class="card-block">
+          <h6 class="m-b-20">Subscriptions</h6>
+          <h2 class="text-right">
+            <i class="fas fa-book f-left"></i><span>4</span>
+          </h2>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3 col-xl-3">
+      <div class="card bg-c-blue order-card">
+        <div class="card-block">
+          <h6 class="m-b-20">Total Registrations</h6>
+          <h2 class="text-right">
+            <i class="fas fa-question-circle f-left"></i
+            ><span>{{dash.0}}</span>
+          </h2>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3 col-xl-3">
+      <div class="card bg-c-blue order-card">
+        <div class="card-block">
+          <h6 class="m-b-20">Total Questions</h6>
+          <h2 class="text-right">
+            <i class="fas fa-question-circle f-left"></i
+            ><span>{{dash.2}}</span>
+          </h2>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 mb-3 ml-1">
+        <h4>Today Attendees</h4>
+    </div>
+
+    <div class="col-md-3 col-xl-3">
+        <div>
+            <h6>Start Date</h6>
+        </div>
+        <div>
+            <input type="date">
+        </div>
+    </div>
+    
+    <div class="col-md-3 col-xl-3">
+        <div>
+            <h6>End Date</h6>
+        </div>
+        <div>
+            <input type="date">
+        </div>
+    </div>
+
+    
+    <div class="col-md-3 col-xl-3 text-center">
+        <button class="m-4">Skip level 1</button>
+    </div>
+
+    <div class="col-md-3 col-xl-3 text-center">
+        <button class="m-4">Unlock User</button>
+    </div>
+    
+
+    <div class="table-responsive"  style="height: 40vh; overflow-y: auto; overflow-x: auto;">
+      <div class="d-flex flex-row justify-content-end">
+        <form method="get">
+          
+          <input type="text" id="search-bar" placeholder="Search...">
+          <button type="submit">Search</button>
+        </form>
+      </div>
+        <table class="table table-bordered text-center">
+            <thead class="sticky-thead">
+              <tr style="background-color: lightblue;">
+                <th>S.No</th>
+                <th>Candidate Name</th>
+                <th>User id</th>
+                <th>Password</th>
+                <th>Applied for</th>
+                <th>Start time</th>
+                <th>End time</th>
+                <th>Remaning time</th>
+                <th>unlock</th>
+                <th>skip level 1</th>
+              </tr>
+            </thead>
+            
+            <tr>
+              {% for candidate in candidate_data%}
+              <td> </td>
+             
+              <td>{{candidate.1}} {{candidate.2}}</td>
+              <td>{{candidate.24}}</td>
+              <td>{{candidate.25}}</td>
+              <td>{{candidate.31}}</td>
+              <td>{{candidate.22}}</td>
+              <td>{{candidate.20}}</td>
+              <td>{{candidate.30}}</td>
+              <td><input type="checkbox"></td>
+              <td><input type="checkbox"></td>
+             
+            </tr>
+            {% endfor %}
+          </table>
+
+        </div>
+    
+</div>    
+{% endfor %}
+
+    </div>
+
+  </div>
+</div>
+
+{% endblock content %}

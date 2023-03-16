@@ -1,0 +1,186 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<head>  <style>    body
+  {
+      counter-reset: Serial;           /* Set the Serial counter to 0 */
+  }
+  tr td:first-child:before
+  {
+    counter-increment: Serial;      /* Increment the Serial counter */
+    content: counter(Serial); /* Display the counter */
+  }
+  .sticky-thead {
+    position: sticky;
+    top:-1px;
+    z-index: 1;
+  }
+  .table-content {
+    position: relative;
+    padding-top: 50px; /* or add margin-top: 50px; */
+  }
+</style>
+</head>
+<div class="container">
+  <h2 class="mb-4">Skill Configuration</h2>
+  <a href="{% url 'create_Skill' %}" class="btn btn-primary mb-4">Add Skill</a>
+  <form method="GET">
+    <div class="form-group row mb-3">
+      <label for="applied_for" class="col-sm-1 col-form-label" >Applied For:</label>
+      <div class="col-sm-5">
+          <select class="form-control w-50" id="applied_for" name="applied_for" onchange="this.form.submit()">
+            <option value='All|0' {% if request.GET.applied_for == '0' %}selected{% endif %}>All</option>
+            {% for search in search_filter %}
+          <option value="{{search.0}}|{{search.1}}" {% if search.0 == job_name %}selected{% endif %}>{{ search.0 }}</option>
+          {% endfor %}
+          </select>
+      </div>
+      <div class="col-sm-5">
+        
+        <select class="form-control w-50" id="filter_by" name="filter_by" onchange="this.form.submit()">
+          <option value="2" {% if request.GET.filter_by == '2' %}selected{% endif %} >All</option>
+          <option value="1" {% if request.GET.filter_by == '1' %}selected{% endif %}>Active</option>
+          <option value="0" {% if request.GET.filter_by == '0' %}selected{% endif %}>Inactive</option>
+        </select>
+      </div>
+    </div>
+  </form>
+
+  <div class="table-responsive"  style="height: 50vh; overflow-y: auto; overflow-x: auto;">
+    <table class="table table-bordered text-center" >
+      <thead class="sticky-thead">
+        <tr>
+          <th>S.No</th>
+          <th>Job Position</th>
+          <th>Subject</th>
+          <th>Level</th>
+          <th>No. of Questions</th>
+          <th>Cutoff Marks</th>
+          <th>Duration(in min)</th>
+          <th>Active</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody >
+        {% for skill in skills %}
+        
+                <tr >
+                  <td> </td>
+                   <td >{{ skill.1 }}</td>
+                  <td>{{ skill.2 }}</td>
+                  <td>{{ skill.3 }}</td>
+                  <td>{{ skill.4 }}</td>
+                  <td>{{ skill.5 }}</td>
+                  <td>{{ skill.6 }}</td>
+                  <td>{{ skill.9 }}</td>
+                  {% if skill.9 %}
+                  <td>
+                    <a href="#editskillconfig{{ skill.0 }}" data-bs-toggle="modal" class="btn btn-primary">Edit</a>
+                    <a href="{% url 'delete_skill' id=skill.0 %}" class="btn btn-danger">Delete</a>
+                    <!-- Modal -->
+                    <div class="modal fade pt-5" id="editskillconfig{{ skill.0 }}" tabindex="-1" aria-labelledby="editskillconfig" aria-hidden="true">
+                      <div class="modal-dialog">
+                        <div class="modal-content mt-5">
+                          <div class="modal-header">
+                            <div
+                              class="d-flex justify-content-between align-items-center w-100"
+                            >
+                              <h5 class="modal-title mb-0">Edit Skills</h5>
+                            </div>
+                            <div class="">
+                              <button
+                                type="button"
+                                class="btn-close"
+                                data-bs-dismiss="modal"
+                                aria-label="Close"
+                              ></button>
+                            </div>
+                          </div>
+        
+                          <div class="modal-body">
+                            <form
+                              method="POST"
+                              action="{% url 'edit_skill' id=skill.0 %}"
+                            >
+        
+                          
+                          <div class="modal-body">
+                            <form method="POST" action="{% url 'edit_skill' id=skill.0 %}">
+                              {% csrf_token %}
+                              <!-- <div class="mb-3">
+                                <label for="job_Position" class="form-label">Job Position</label>
+                                <input type="text" class="form-control" id="job_Position" name="job_Position" value="{{skill.1}}">
+                              </div> -->
+                               <div class="mb-3">       
+                                <label for="job_Position" class="form-label">Job Position</label> 
+                                      <select class="form-select" id="job_Position" name="job_Position"> 
+                                               <option value="{{skill.7}}" selected>{{skill.1}}</option> 
+                                                      {% for job in jobs %}
+                                                      <option value="{{job.0}}">{{job.1}}</option>
+                                                          {% endfor %}      
+                                                         </select>      
+                                                        </div>
+                                  <div class="mb-3">       
+                                      <label for="subjects" class="form-label">Job Position</label> 
+                                  <select class="form-select" id="subjects" name="subjects"> 
+                                            <option value="{{skill.8}}" selected >{{skill.2}}</option> 
+                                                  {% for subject in subjects %}        
+                                                  <option value="{{subject.0}}">{{subject.1}}</option>    
+                                                      {% endfor %}      
+                                                      </select>
+                                                    </div>
+                          <div class="mb-3">
+                                <label for="level" class="form-label">level</label>
+                                <input type="text" class="form-control" id="level" name="level" value="{{skill.3}}">
+                              </div>
+                              <div class="mb-3">
+                                <label for="noofquestions" class="form-label">No.Of Questions</label>
+                                <input type="text" class="form-control" id="noofquestions" name="noofquestions" value="{{skill.4}}">
+                              </div>
+                              <div class="mb-3">
+                                <label for="cutoffmarks" class="form-label">cut off Marks</label>
+                                <input type="text" class="form-control" id="cutoffmarks" name="cutoffmarks" value="{{skill.5}}">
+                              </div>
+                              <div class="mb-3">
+                                <label for="duration" class="form-label">Duration (in min)</label>
+                                <input type="text" class="form-control" id="duration" name="duration" value="{{skill.6}}">
+                              </div>
+                              <button type="submit" class="btn btn-primary">Save changes</button>
+                            </form>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+                 {% else %}
+                 <td>
+                  <a href="{% url 'activate_skill' id=skill.0 %}" class="btn btn-success">Activate</a>
+                 </td>
+                 {% endif %}
+                {% endfor %}  
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>  
+  // Get the value of the "applied_for" parameter from the URL query string  
+  const urlParams = new URLSearchParams(window.location.search);
+  const appliedFor = urlParams.get('applied_for');
+  // Set the selected option in the dropdown menu based on the "applied_for" parameter value 
+   const appliedForDropdown = document.getElementById('applied_for');
+  if (appliedFor) {
+    appliedForDropdown.value = appliedFor;
+  }
+  const filter_by = urlParams.get('filter_by');
+  // Set the selected option in the dropdown menu based on the "applied_for" parameter value 
+   const filter_byDropdown = document.getElementById('filter_by');
+  if (filter_by) {
+    filter_byDropdown.value = filter_by;
+  }
+</script>{% endblock scripts%}

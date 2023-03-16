@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<head>
+  <style>
+    .card {
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    .form-check-inline {
+      display: inline-block;
+      margin-right: 1rem;
+    }
+  </style>
+</head>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <h2 class="mb-4">New Job Position</h2>
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title mb-4">Create a New Job Position</h5>
+          <form method="POST">
+            {% csrf_token %}
+            <div class="mb-3">
+              <label for="job-title" class="form-label">Job Position</label>
+              <input
+                type="text"
+                class="form-control w-50"
+                id="job-title"
+                name="job_title"
+                placeholder="Enter job position"
+              />
+            </div>
+            <div class="mb-3">
+              <label for="is-non-cs" class="form-label">Is Non-CS</label>
+              <div>
+                <div class="form-check form-check-inline">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="is_non_cs"
+                    id="is-non-cs-yes"
+                    value="1"
+                  />
+                  <label class="form-check-label" for="is-non-cs-yes">
+                    Yes
+                  </label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="is_non_cs"
+                    id="is-non-cs-no"
+                    value="0"
+                    checked
+                  />
+                  <label class="form-check-label" for="is-non-cs-no">
+                    No
+                  </label>
+                </div>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="is-bond-required" class="form-label">Is Bond Required</label>
+              <div>
+                <div class="form-check form-check-inline">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="is_bond_required"
+                    id="is-bond-required-yes"
+                    value="1"
+                  />
+                  <label class="form-check-label" for="is-bond-required-yes">
+                    Yes
+                  </label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="is_bond_required"
+                    id="is-bond-required-no"
+                    value="0"
+                    checked
+                  />
+                  <label class="form-check-label" for="is-bond-required-no">
+                    No
+                  </label>
+                </div>
+              </div>
+            </div>
+            <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+              <button
+                type="submit"
+                name="create_job_position"
+                class="btn btn-primary"
+              >
+                Create Job Position
+              </button>
+              <button type="button" class="btn btn-secondary me-5" onclick="history.back()">
+                Maybe Later
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}

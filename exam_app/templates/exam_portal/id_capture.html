@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+	<style>
+	#camera-view {
+    width: 640px;
+    height: 480px;
+    overflow: hidden;
+    position: relative;
+}
+
+#camera-view video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+
+	</style>
+    <title>ID Card Image Capture</title>
+</head>
+<body>
+    <h1>ID Card Image Capture</h1>
+    <div id="camera-view"></div>
+    <button id="capture-btn" name= "capture-btn">Capture Image</button>
+    <script src="{% static 'js/camera.js' %}"></script>
+</body>
+<script>
+// create video element for camera view
+const video = document.createElement('video');
+video.autoplay = true;
+
+// add video element to page
+const cameraView = document.querySelector('#camera-view');
+cameraView.appendChild(video);
+
+// request camera access and display camera view
+navigator.mediaDevices.getUserMedia({ video: true })
+    .then(stream => {
+        video.srcObject = stream;
+    });
+
+// add event listener to capture button
+const captureBtn = document.querySelector('#capture-btn');
+captureBtn.addEventListener('click', () => {
+    // pause video stream
+    video.pause();
+
+    // capture image and display preview
+    const canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+    const imageData = canvas.toDataURL('image/jpeg');
+    const imagePreview = document.createElement('img');
+    imagePreview.src = imageData;
+    cameraView.innerHTML = '';
+    cameraView.appendChild(imagePreview);
+
+    // send image to server
+    fetch('/capture-image/', {
+        method: 'POST',
+        body: imageData
+    })
+    .then(response => {
+        // resume video stream
+        video.play();
+    });
+});
+
+
+</script>
+</html>

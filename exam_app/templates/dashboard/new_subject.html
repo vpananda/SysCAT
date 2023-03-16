@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+  <h2 class="mb-4">New Subject</h2>
+  <div class="card">
+    <div class="card-body">
+      <h5>Subject</h5>
+      <form method="POST">
+        {% csrf_token %}
+        <input type="text" name="subject" placeholder="Enter the Subject" style="width: 50%;" required><br>
+
+        <div class="d-flex flex-row justify-content-between box-container mt-5" style="width: 50%;">
+          <button type="submit" class="btn btn-primary">Create Subject</button>
+          <button type="button" class="btn btn-secondary" onclick="history.back()">
+            Maybe Later
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock content %}

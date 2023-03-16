@@ -1,0 +1,139 @@
+{% extends 'base.html' %} {% load static%} {% block content %}
+<head>  <style>    body
+  {
+      counter-reset: Serial;           /* Set the Serial counter to 0 */
+  }
+  tr td:first-child:before
+  {
+    counter-increment: Serial;      /* Increment the Serial counter */
+    content: counter(Serial); /* Display the counter */
+  }
+  .sticky-thead {
+    position: sticky;
+    top:-1px;
+    z-index: 1;
+  }
+  .table-content {
+    position: relative;
+    padding-top: 50px; /* or add margin-top: 50px; */
+  }
+  
+</style>
+</head>
+
+<div class="container">
+  <h2 class="my-4">Job Positions</h2>
+
+  <div class="row mb-3">
+    <div class="col-md-6 me-4">
+      <a href="{% url 'add_new_job_positions' %}" class="btn btn-primary">Add New Job Position</a>
+    </div>
+    <div class="col-md-5">
+      <form method="GET" class="d-flex flex-row justify-content-end">
+        <select class="form-select w-50" id="filter_by" name="filter_by" onchange="this.form.submit()">
+          <option value="2" {% if request.GET.filter_by == '2' %}selected{% endif %}>All</option>
+          <option value="1" {% if request.GET.filter_by == '1' %}selected{% endif %}>Active</option>
+          <option value="0" {% if request.GET.filter_by == '0' %}selected{% endif %}>Inactive</option>
+        </select>
+      </form>
+    </div>
+  </div>
+
+  <div style="height: 60vh; overflow-y: auto; margin:20px;" >
+    <table class="table table-bordered text-center">
+      <thead class="sticky-thead">
+        <tr>
+          <th>S.No</th>
+          <th>Job Position</th>
+          <th>Active</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for job in jobs %}
+        <tr>
+          <td> </td>
+          <td>{{job.1}}</td>
+          <td>{{job.4 }}</td>
+          {% if job.4 %}
+            <td>
+              <a href="#editjobModal{{ job.0 }}" data-bs-toggle="modal" class="btn btn-primary">Edit</a>
+              <a href="#confirm-delete-modal{{ job.0 }}" data-bs-toggle="modal" class="btn btn-danger">Delete</a>
+            <!-- Model -->
+            <div class="modal fade pt-5" id="editjobModal{{ job.0 }}" tabindex="-1" aria-labelledby="editjobModalLabel" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content mt-5">
+                  <div class="modal-header">
+                    <div
+                      class="d-flex justify-content-between align-items-center w-100"
+                    >
+                      <h5 class="modal-title mb-0">Edit job</h5>
+                    </div>
+                    <div class="">
+                      <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close"
+                      ></button>
+                    </div>
+                  </div>
+                  <div class="modal-body">
+                    <form method="POST" action="{% url 'edit_job_pos' id=job.0 %}">
+                      {% csrf_token %}`
+                      <div class="mb-3">
+                        <label for="job_position" class="form-label">job Position</label>
+                        <input type="text" class="form-control" id="jobpos" name="job_position" value="{{job.1}}">
+                      </div>
+                      <div class="mb-3">
+                        <label for="is_option_req" class="form-label">Is Non CS</label>
+                        <input type="text" class="form-control" id="is_non_cs" name="is_option_req" value="{{job.2}}">
+                      </div>
+                      <div class="mb-3">
+                        <label for="is_bond_req" class="form-label">Is Bond Required</label>
+                        <input type="text" class="form-control" id="is_bond_req" name="is_bond_req" value="{{job.3}}">
+                      </div>
+                      <button type="submit" class="btn btn-primary">Save changes</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+    <!-- Delete Confirmation Modal -->
+<div class="modal fade" id="confirm-delete-modal{{ job.0 }}" tabindex="-1" aria-labelledby="confirm-delete-modal-label" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+    <form method="POST" action="{% url 'delete_job_pos' id=job.0 %}">
+      {% csrf_token %}
+      <div class="modal-header">
+        <div class="d-flex justify-content-between align-items-center w-100">
+        <h5 class="modal-title" id="confirm-delete-modal-label">Confirm Delete</h5>
+      </div>
+      <div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to delete <span class="fw-bold">{{job.1}}</span>?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+        <button type="submit" class="btn btn-danger" id="confirm-delete-btn">Yes</button>
+      </div>
+    </form>
+    </div>
+  </div>
+</div>
+
+          </td>
+        </tr>
+        {% else %}
+          <td><a href="{% url 'activatePosition' id=job.0 %}" class="btn btn-success">Activate</a>
+          </td>
+          {% endif %}
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,126 @@
+{% extends 'base.html' %} {% load static %} {% block content %}
+
+<head>
+  <style>
+    .card {
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<div class="container">
+  <div class="row">
+    <div class="col-12">
+      <h2 class="mb-4">New Subject Configuration</h2>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title mb-4">Create a New Subject</h5>
+          <form method="POST">
+            {% csrf_token %}
+            <div class="mb-3">
+              <label for="applied-for" class="form-label">Applied For</label>
+              <select
+                class="form-select w-50"
+                id="applied-for"
+                name="applied_for"
+              >
+                <option selected disabled>Select an option</option>
+                {% for job in jobs %}
+                <option value="{{job.0}}">{{job.1}}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="subjects" class="form-label">Subjects</label>
+              <select class="form-select w-50" id="subjects" name="subject">
+                <option selected disabled>Select a subject</option>
+                {% for subject in subjects %}
+                <option value="{{subject.0}}">{{subject.1}}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="level" class="form-label">Level</label>
+              <select class="form-select w-50" id="level" name="level">
+                <option selected disabled>Select a level</option>
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="no-of-questions" class="form-label"
+                >No. of Questions</label
+              >
+              <input
+                type="number"
+                class="form-control w-50"
+                id="no-of-questions"
+                name="num_of_questions"
+                placeholder="Enter no. of questions"
+              />
+            </div>
+            <div class="mb-3">
+              <label for="cutoff-marks" class="form-label">Cutoff Marks</label>
+              <input
+                type="number"
+                class="form-control w-50"
+                id="cutoff-marks"
+                name="cutoff_marks"
+                placeholder="Enter cutoff marks"
+              />
+            </div>
+            <div class="mb-3">
+              <label for="duration" class="form-label">Duration</label>
+              <input
+                type="number"
+                class="form-control w-50"
+                id="duration"
+                name="duration"
+                placeholder="Enter duration in minutes"
+              />
+            </div>
+            <div class="mb-3">
+              <label for="subject_type" class="form-label">Subject Type</label>
+              <div class="form-check form-check-inline">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  name="subject_type"
+                  id="mandatory"
+                  value="1"
+                />
+                
+                <label class="form-check-label" for="mandatory"
+                  >Mandatory</label
+                >
+              </div>
+              <div class="form-check form-check-inline">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  name="subject_type"
+                  id="optional"
+                  value="0"
+                />
+                <label class="form-check-label" for="optional">Optional</label>
+              </div>
+            </div>
+            <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+              <button type="submit" class="btn btn-primary">Create</button>
+              <button type="button" class="btn btn-secondary me-5" onclick="history.back()">
+                Maybe Later
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endblock content %}
+</div>

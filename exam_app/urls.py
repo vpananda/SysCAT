@@ -1,0 +1,40 @@
+
+from django.urls import path,re_path
+from . import views
+
+urlpatterns = [
+    # path('',views.sidebar,name='base'),
+    path('dashboard/', views.dashboard, name='dashboard'),
+    path('jobposition/', views.job_positions, name='jobposition'),
+    path('jobposition/add_new_job_positions/', views.add_new_job_positions, name='add_new_job_positions'),
+    path('delete_job_pos/<int:id>', views.delete_job_pos, name='delete_job_pos'),
+    path('edit_job_pos/<int:id>', views.edit_job_pos, name='edit_job_pos'),
+    path('activatePosition/<int:id>', views.activatePosition, name='activatePosition'),
+    path('subject/', views.subject, name='subject'),
+    path('delete_subject/<int:id>', views.delete_subject, name='delete_subject'),
+    path('edit_subject/<int:id>/', views.edit_subject, name='edit_subject'),
+    path('activateSubject/<int:id>', views.activateSubject, name='activateSubject'),
+    path('subject/new_subject/', views.new_subject, name='new_subject'),
+    path('skill_set_config/', views.skill_set_config, name='skill_set_config'),
+    path('edit_skill/<int:id>', views.edit_skill, name='edit_skill'),
+    path('delete_skill/<int:id>', views.delete_skill, name='delete_skill'),
+    path('activate_skill/<int:id>', views.activate_skill, name='activate_skill'),
+    path('skill_set_config/create_Skill/', views.create_Skill, name='create_Skill'),
+    path('quest_bank/', views.quest_bank, name='quest_bank'),
+    path('quest_bank/add_quest/', views.add_quest, name='add_quest'),
+    path('edit_ques/<int:id>', views.edit_ques, name='edit_ques'),
+    path('delete_ques/<int:id>', views.delete_ques, name='delete_ques'),
+    path('activate_quest/<int:id>', views.activate_quest, name='activate_quest'),
+    path('result/', views.result, name='result'),
+    path('registration/', views.registration, name='registration'),
+    re_path(r'^/(?P<stream_path>(.*?))/$',views.dynamic_stream,name="videostream"),  
+    path('exam_portal',views.exam_portal,name="index"),
+    path('', views.login, name='login'),
+    path('logout/', views.logout, name='logout'),
+    path('submission/', views.submission, name='submission'),
+    path('face_id/', views.face_id, name='face_id'),
+    path('capture_image/', views.capture_image, name='capture_image'),
+    path('video/', views.video, name='video'),
+    path('save_image/', views.save_image, name='save_image'),
+    
+]

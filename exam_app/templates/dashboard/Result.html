@@ -1,0 +1,58 @@
+{% extends 'base.html' %} 
+{% load static %}{% block content %}
+<head>
+<style>
+  .timer {
+    font-family: monospace;
+    font-size: 16px;
+    color: #999;
+}
+
+</style>
+
+</head>
+
+<div class="container">
+  <h2>Execute SQL Query</h2>
+  <span id="timer" class="timer"></span>
+  <form method="POST">
+    {% csrf_token %}
+    <div class="form-group">
+      <label for="query">Enter SQL Query:</label>
+      <textarea class="form-control" id="query" name="query" rows="5" required></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Execute Query</button>
+  </form>
+  {% if query %}
+    <h4>Query: {{ query }}</h4>
+    {% if results %}
+      {% if results|length > 1 %}
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            {% for col in results.0 %}
+            <th>{{ col }}</th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody id="query-results">
+          {% for row in results.1 %}
+          <tr>
+            {% for val in row %}
+            <td>{{ val }}</td>
+            {% endfor %}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p>{{ results.0.0 }}</p>
+      {% endif %}
+    {% else %}
+    <p>No results</p>
+    {% endif %}
+  {% endif %}
+</div>
+
+
+{% endblock %}

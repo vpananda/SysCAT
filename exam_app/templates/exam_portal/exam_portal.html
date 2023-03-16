@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block body %}
+
+{% block content %}
+
+<div class="row" id="r1">
+<div class="col-md-9">
+<div class="container" id="b1">
+
+<div class="tab">
+    {% for key,value in questions.items %}
+    <button class="tablinks" onclick="openCity(event, '{{key}}')" {% if forloop.first %}id="defaultOpen"{% endif %}>{{key}}</button>
+    {% endfor %}
+    <button id="demo"></button>
+</div>
+
+
+  
+  {% for key,value in questions.items %}
+  <div id="{{key}}" class="tabcontent">
+    <h3>{{key}}</h3>
+    <div class="card" id = "ques_card">
+      {% for i in value %}
+      <div class="card-body">
+          
+        <p>{{i.0}}</p>
+        <input type="radio" id="option1" name="{{i.0}}" value="{{i.1}}">
+        <label for="option1">{{i.1}}</label><br>
+        <input type="radio" id="option2" name="{{i.0}}" value="{{i.2}}">
+        <label for="option2">{{i.2}}</label><br>
+        <input type="radio" id="option3" name="{{i.0}}" value="{{i.3}}">
+        <label for="option3">{{i.3}}</label><br>
+        <input type="radio" id="option4" name="{{i.0}}" value="{{i.4}}">
+        <label for="option4">{{i.4}}</label>
+
+      </div>
+      {% endfor %}
+  </div>
+  </div>
+  {% endfor %}
+
+  
+</div>
+</div>
+<div class="col-md-3">
+    <div class="row" id="r2">
+      <img src="{% url 'videostream' stream_path='video' %}" class="center">
+    </div>
+    <div class="row" id="r3">
+      <h6>Welcome {{ request.session.username }}</h6>
+      <h3>Instructions</h3>
+        <ul>
+          <li>You must use a functioning webcam and microphone</li>
+          <li>No cell phones or other secondary devices in the room or test area</li>
+          <li>No one else can be in the room with you</li>
+          <li>No talking </li>
+          <li>The testing room must be well-lit and you must be clearly visible</li>
+          <li>No dual screens/monitors</li>
+          <li>Do not leave the camera </li>
+          <li>No use of additional applications or internet</li>
+        </ul>
+    </div>
+    <div class="row" id="r4">
+        <a href="{% url 'submission' %}" style="color:black;"><button class="btn-primary">Get Result</button></a>
+    </div>
+</div>
+</div>
+
+{% endblock content %}
+
+{% block scripts %}
+<script type="text/javascript" src="{% static 'js/app.js' %}"></script>
+{% endblock scripts %}
+
+
+{% endblock body %}
