@@ -67,6 +67,21 @@
         justify-content: space-between;
         align-items: start;
       }
+
+      .button {
+        display: inline-block;
+        padding: 8px 16px;
+        background-color: #4CAF50;
+        color: white;
+        text-decoration: none;
+        border-radius: 4px;
+        transition: background-color 0.3s ease;
+      }
+      
+      .button:hover {
+        background-color: #3e8e41;
+      }
+      
     </style>  
   </head>  
   <body> 
@@ -87,9 +102,9 @@
         <hr style="width:100% ">
         <div>Job Details:</div>
         
-        <div style="height:60px;background:LightGray;padding-left:15px; border-radius: 5px;border-top-style: solid;border-top-color:DodgerBlue;margin-bottom:5px ;margin-top:5px"  >  
-          
-          <label style="margin-right: 15px;" for="Applyingfor">   
+        <div  style="height:300px;background:LightGray;padding-left:15px; border-radius: 5px;border-top-style: solid;border-top-color:DodgerBlue;margin-bottom:5px ;margin-top:5px"  >  
+          <div class="head">
+          <label style="margin-right: 15px; align:center;" for="Applyingfor">   
             Applying for
           </label>  
           <select style="width: 200px; height: 40px;" id="Applyingfor" name="Applyingfor" >  
@@ -109,9 +124,19 @@
             <option value="React js developer" >React js developer
             </option>  
           </select> 
-          <a href="{% url 'face_id' %}">face</a>
-        <a>id proof</a> 
+          {% comment %} <a href="{% url 'capture' %}" class="button">face</a> {% endcomment %}
+
+          {% comment %} <a href="{% url 'capture_card' %}" class="button">id proof</a>
+          <img id="myImage" src="#" alt="Preview Image" style="width:100px; height:100px; margin-top:15px;"> {% endcomment %}
+        </div>
+        <div class='heading'>
+          <a href="{% url 'capture_card' %}" class="button">id proof</a>
+          <img id="cardImage" src="#" alt="Preview Image" style="width:100px; height:100px; margin-top:15px;">
         </div>  
+        <div class='heading'>
+          <a href="{% url 'capture' %}" class="button">face</a>
+          <img id="faceImage" src="#" alt="Preview Image" style="width:100px; height:100px; margin-top:15px;">
+        </div>
         <div>Personal Details:</div>
         <div style="height:350px;background:LightGray;padding-left:15px; border-radius: 5px;border-top-style: solid;border-top-color:DodgerBlue; margin-bottom:5px ;margin-top:5px">
           <div class="head flex-direction:column">
@@ -397,7 +422,24 @@
         
       
 
-</form></body></html>
+</form></body>
+<script>
+  // Get the data from sessionStorage
+var CardimageData = sessionStorage.getItem('CardimageData');
+
+// Set the image source to the retrieved data
+document.getElementById('cardImage').src = CardimageData;
+
+// Get the data from sessionStorage
+var FaceimageData = sessionStorage.getItem('FaceimageData');
+
+// Set the image source to the retrieved data
+document.getElementById('faceImage').src = FaceimageData;
+
+</script>
+
+
+</html>
 
 
   

@@ -1,6 +1,11 @@
 {% extends 'base.html' %} {% load static %} {% block content %}
-
 <head>
+  <link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css"
+/>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
   <style type="text/css">
     a:link {
       text-decoration: none;
@@ -32,14 +37,15 @@
       margin-bottom: 30px;
       -webkit-transition: all 0.3s ease-in-out;
       transition: all 0.3s ease-in-out;
+      height: 100px;
     }
 
     .card .card-block {
-      padding: 25px;
+      padding: 15px;
     }
 
     .order-card i {
-      font-size: 26px;
+      font-size: 20px;
     }
 
     .f-left {
@@ -72,6 +78,7 @@
       padding-top: 50px; /* or add margin-top: 50px; */
     }
   </style>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 
 
@@ -82,54 +89,69 @@
         <h4>Dashboard</h4>
     </div>
     
-    <div class="col-md-3 col-xl-3">
-      <div class="card bg-c-gtx order-card">
-        <div class="card-block">
+    <div class="col-md-3 col-xl-3 ">
+      <a href="{% url 'skill_set_config' %}">
+      <div class="card bg-c-gtx order-card d-flex flex-row justify-content-end">
+        <div class="card-block col-md-7">
           <h6 class="m-b-20">Exam</h6>
-          <h2 class="text-right">
-            <i class="fas fa-user-graduate f-left"></i><span>{{dash.1}}</span>
+          <h2 class="text-right m-2">
+            <i class="fas fa-user-graduate f-left"></i>
           </h2>
         </div>
+        <div class="card-block col-md-5">
+        <h2 class="text-center mt-3">{{dash.1}}</h2>
       </div>
+      </div>
+    </a>
     </div>
-
-    <div class="col-md-3 col-xl-3">
-      <div class="card bg-c-yellow order-card">
-        <div class="card-block">
+    <div class="col-md-3 col-xl-3 ">
+      <a href="#">
+        <div class="card bg-c-yellow order-card d-flex flex-row justify-content-end">
+        <div class="card-block col-md-7">
           <h6 class="m-b-20">Subscriptions</h6>
-          <h2 class="text-right">
-            <i class="fas fa-book f-left"></i><span>4</span>
+          <h2 class="text-right m-2">
+            <i class="fas fa-book f-left"></i>
           </h2>
         </div>
+        <div class="card-block col-md-5">
+        <h2 class="text-center mt-3">4</h2>
       </div>
+      </div>
+    </a>
     </div>
-
     <div class="col-md-3 col-xl-3">
-      <div class="card bg-c-blue order-card">
-        <div class="card-block">
-          <h6 class="m-b-20">Total Registrations</h6>
-          <h2 class="text-right">
-            <i class="fas fa-question-circle f-left"></i
-            ><span>{{dash.0}}</span>
+      <a href="{% url 'registercandidate' %}">
+      <div class="card bg-c-blue order-card d-flex flex-row justify-content-end">
+        <div class="card-block col-md-7">
+          <h6 class="m-b-20">Registrations</h6>
+          <h2 class="text-right m-2">
+            <i class="fas fa-question-circle f-left"></i>
           </h2>
         </div>
+        <div class="card-block col-md-5">
+        <h2 class="text-center mt-3">{{dash.0}}</h2>
       </div>
+      </div>
+    </a> 
     </div>
-
-    <div class="col-md-3 col-xl-3">
-      <div class="card bg-c-blue order-card">
-        <div class="card-block">
-          <h6 class="m-b-20">Total Questions</h6>
-          <h2 class="text-right">
-            <i class="fas fa-question-circle f-left"></i
-            ><span>{{dash.2}}</span>
+    <div class="col-md-3 col-xl-3 ">
+      <a href="{% url 'quest_bank' %}">
+      <div class="card bg-c-blue order-card d-flex flex-row justify-content-end">
+        <div class="card-block col-md-7 col-sm-6">
+          <h6 class="m-b-20">Questions</h6>
+          <h2 class="text-right m-2">
+            <i class="fas fa-question-circle f-left"></i>
           </h2>
         </div>
+        <div class="card-block col-md-5 col-sm-6">
+        <h2 class="text-center mt-3">{{dash.2}}</h2>
       </div>
+      </div>
+    </a>
     </div>
 
     <div class="col-12 mb-3 ml-1">
-        <h4>Today Attendees</h4>
+        <h5>Today Attendees</h5>
     </div>
 
     <div class="col-md-3 col-xl-3">
@@ -161,13 +183,32 @@
     
 
     <div class="table-responsive"  style="height: 40vh; overflow-y: auto; overflow-x: auto;">
-      <div class="d-flex flex-row justify-content-end">
-        <form method="get">
-          
-          <input type="text" id="search-bar" placeholder="Search...">
-          <button type="submit">Search</button>
+      <div class="container">
+        <form method="get" class="form-inline">
+            <div class="row justify-content-between align-items-center">
+                <div class="col-md-4 d-flex justify-content-start align-items-center">
+                    <label for="applied_for" class="mr-2">Applied For:</label>
+                    <select class="form-select" id="applied_for" name="applied_for" onchange="this.form.submit()">
+                        <option value='All' {% if request.GET.applied_for == 'All' %}selected{% endif %}>All</option>
+                        {% for search in search_filter %}
+                            <option value="{{search.0}}" {% if search.0 == request.GET.applied_for %}selected{% endif %}>{{ search.0 }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-8 d-flex justify-content-end align-items-center">
+                    <div class="d-flex align-items-center">
+                        <a href="{% url 'generate_excel' %}" class="btn btn-primary mr-2">Export to Excel</a>
+                        <input type="text" id="search-bar" name="search-bar" placeholder="Search..." class="mr-2">
+                        <button type="submit" class="btn btn-primary">Search</button>
+                    </div>
+                </div>
+            </div>
         </form>
-      </div>
+    </div>
+    
+    
+      <form id="checkbox-form" method="post">
+        {% csrf_token %}
         <table class="table table-bordered text-center">
             <thead class="sticky-thead">
               <tr style="background-color: lightblue;">
@@ -179,37 +220,74 @@
                 <th>Start time</th>
                 <th>End time</th>
                 <th>Remaning time</th>
-                <th>unlock</th>
-                <th>skip level 1</th>
+                <th>unlock <input type="checkbox" id="select-all-unlock"></th>
+                <th>skip level 1 <input type="checkbox" id="select-all-skip-level-1"></th>
               </tr>
             </thead>
             
             <tr>
               {% for candidate in candidate_data%}
               <td> </td>
-             
-              <td>{{candidate.1}} {{candidate.2}}</td>
-              <td>{{candidate.24}}</td>
-              <td>{{candidate.25}}</td>
-              <td>{{candidate.31}}</td>
-              <td>{{candidate.22}}</td>
-              <td>{{candidate.20}}</td>
-              <td>{{candidate.30}}</td>
-              <td><input type="checkbox"></td>
-              <td><input type="checkbox"></td>
-             
+              <td><a href="{% url 'show_candidate_data' id=candidate.0 %}">{{candidate.1}} {{candidate.2}}</a></td>
+              <td>{{candidate.3}}</td>
+              <td>{{candidate.4}}</td>
+              <td>{{candidate.5}}</td>
+              <td>{{candidate.6}}</td>
+              <td>{{candidate.7}}</td>
+              <td>{{candidate.8}}</td>
+              <td><input type="checkbox" class="row-checkbox" name="unlock" value="{{candidate.0}}"></td>
+              <td><input type="checkbox" class="row-checkbox" name="skip_level_1" value="{{candidate.0}}"></td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="10">No candidates found.</td>
             </tr>
             {% endfor %}
+
           </table>
-
         </div>
-    
+        <div class="col-md-12 col-xl-12 d-flex flex-col justify-content-end">
+        <button type="submit" id="submit-btn">Submit</button>
+      </div>
+    </form>
 </div>    
+
 {% endfor %}
-
     </div>
-
   </div>
 </div>
 
+<script>
+  $(document).ready(function() {
+  
+    // Select all checkboxes when select-all-unlock checkbox is clicked
+    $('#select-all-unlock').click(function() {
+      $('input[name="unlock"]').prop('checked', this.checked);
+    });
+  
+    // Select all checkboxes when select-all-skip-level-1 checkbox is clicked
+    $('#select-all-skip-level-1').click(function() {
+      $('input[name="skip_level_1"]').prop('checked', this.checked);
+    });
+  
+    // Handle form submission
+    $('form#checkbox-form').submit(function(event) {
+      //event.preventDefault();
+      var form_data = $(this).serialize();
+      $.ajax({
+        type: 'POST',
+        url: '{% url "dashboard" %}',
+        data: form_data,
+        success: function(response) {
+          // Handle success response
+        },
+        error: function(response) {
+          // Handle error response
+        }
+      });
+    });
+  
+  });
+  </script>
+  
 {% endblock content %}

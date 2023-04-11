@@ -69,6 +69,128 @@ from django.db import models
 #         db_table = 'RESULT_HISTORY'
 
 
+# class AuthGroup(models.Model):
+#     name = models.CharField(unique=True, max_length=150)
+
+#     class Meta:
+#         managed = False
+#         db_table = 'auth_group'
+
+
+# class AuthGroupPermissions(models.Model):
+#     id = models.BigAutoField(primary_key=True)
+#     group = models.ForeignKey(AuthGroup, models.DO_NOTHING)
+#     permission = models.ForeignKey('AuthPermission', models.DO_NOTHING)
+
+#     class Meta:
+#         managed = False
+#         db_table = 'auth_group_permissions'
+#         unique_together = (('group', 'permission'),)
+
+
+# class AuthPermission(models.Model):
+#     name = models.CharField(max_length=255)
+#     content_type = models.ForeignKey('DjangoContentType', models.DO_NOTHING)
+#     codename = models.CharField(max_length=100)
+
+#     class Meta:
+#         managed = False
+#         db_table = 'auth_permission'
+#         unique_together = (('content_type', 'codename'),)
+
+
+# class AuthUser(models.Model):
+#     password = models.CharField(max_length=128)
+#     last_login = models.DateTimeField(blank=True, null=True)
+#     is_superuser = models.BooleanField()
+#     username = models.CharField(unique=True, max_length=150)
+#     first_name = models.CharField(max_length=150)
+#     last_name = models.CharField(max_length=150)
+#     email = models.CharField(max_length=254)
+#     is_staff = models.BooleanField()
+#     is_active = models.BooleanField()
+#     date_joined = models.DateTimeField()
+
+#     class Meta:
+#         managed = False
+#         db_table = 'auth_user'
+
+
+# class AuthUserGroups(models.Model):
+#     id = models.BigAutoField(primary_key=True)
+#     user = models.ForeignKey(AuthUser, models.DO_NOTHING)
+#     group = models.ForeignKey(AuthGroup, models.DO_NOTHING)
+
+#     class Meta:
+#         managed = False
+#         db_table = 'auth_user_groups'
+#         unique_together = (('user', 'group'),)
+
+
+# class AuthUserUserPermissions(models.Model):
+#     id = models.BigAutoField(primary_key=True)
+#     user = models.ForeignKey(AuthUser, models.DO_NOTHING)
+#     permission = models.ForeignKey(AuthPermission, models.DO_NOTHING)
+
+#     class Meta:
+#         managed = False
+#         db_table = 'auth_user_user_permissions'
+#         unique_together = (('user', 'permission'),)
+
+
+# class DjangoAdminLog(models.Model):
+#     action_time = models.DateTimeField()
+#     object_id = models.TextField(blank=True, null=True)
+#     object_repr = models.CharField(max_length=200)
+#     action_flag = models.SmallIntegerField()
+#     change_message = models.TextField()
+#     content_type = models.ForeignKey('DjangoContentType', models.DO_NOTHING, blank=True, null=True)
+#     user = models.ForeignKey(AuthUser, models.DO_NOTHING)
+
+#     class Meta:
+#         managed = False
+#         db_table = 'django_admin_log'
+
+
+# class DjangoContentType(models.Model):
+#     app_label = models.CharField(max_length=100)
+#     model = models.CharField(max_length=100)
+
+#     class Meta:
+#         managed = False
+#         db_table = 'django_content_type'
+#         unique_together = (('app_label', 'model'),)
+
+
+# class DjangoMigrations(models.Model):
+#     id = models.BigAutoField(primary_key=True)
+#     app = models.CharField(max_length=255)
+#     name = models.CharField(max_length=255)
+#     applied = models.DateTimeField()
+
+#     class Meta:
+#         managed = False
+#         db_table = 'django_migrations'
+
+
+# class DjangoSession(models.Model):
+#     session_key = models.CharField(primary_key=True, max_length=40)
+#     session_data = models.TextField()
+#     expire_date = models.DateTimeField()
+
+#     class Meta:
+#         managed = False
+#         db_table = 'django_session'
+
+
+class Images(models.Model):
+    data = models.BinaryField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'images'
+
+
 # class QuestionsLoad(models.Model):
 #     keyid = models.AutoField(db_column='KeyID', primary_key=True)  # Field name made lowercase.
 #     subject_id = models.IntegerField(db_column='Subject_ID', blank=True, null=True)  # Field name made lowercase.
@@ -83,6 +205,19 @@ from django.db import models
 #     class Meta:
 #         managed = False
 #         db_table = 'questions_load'
+
+
+# class Sysdiagrams(models.Model):
+#     name = models.CharField(max_length=128)
+#     principal_id = models.IntegerField()
+#     diagram_id = models.AutoField(primary_key=True)
+#     version = models.IntegerField(blank=True, null=True)
+#     definition = models.BinaryField(blank=True, null=True)
+
+#     class Meta:
+#         managed = False
+#         db_table = 'sysdiagrams'
+#         unique_together = (('principal_id', 'name'),)
 
 
 # class TbCandidate(models.Model):
@@ -118,7 +253,7 @@ from django.db import models
 #     isautologgedout = models.IntegerField(db_column='IsAutologgedout', blank=True, null=True)  # Field name made lowercase.
 #     lastsavedtime = models.DateTimeField(db_column='LastSavedTime', blank=True, null=True)  # Field name made lowercase.
 #     applied_for = models.CharField(db_column='Applied_For', max_length=50, blank=True, null=True)  # Field name made lowercase.
-#     status = models.IntegerField(db_column='Status', blank=True, null=True)  # Field name made lowercase.
+#     flag = models.IntegerField(db_column='Flag', blank=True, null=True)  # Field name made lowercase.
 #     diploma_degree = models.CharField(db_column='DIPLOMA_Degree', max_length=50, blank=True, null=True)  # Field name made lowercase.
 #     diploma_college = models.CharField(db_column='DIPLOMA_College', max_length=500, blank=True, null=True)  # Field name made lowercase.
 #     diploma_yearofpassing = models.IntegerField(db_column='DIPLOMA_Yearofpassing', blank=True, null=True)  # Field name made lowercase.
@@ -134,21 +269,37 @@ from django.db import models
 #     pg_descipline = models.CharField(db_column='PG_DESCIPLINE', max_length=50, blank=True, null=True)  # Field name made lowercase.
 #     mail_status = models.IntegerField(db_column='Mail_status', blank=True, null=True)  # Field name made lowercase.
 #     islogged = models.IntegerField(db_column='Islogged', blank=True, null=True)  # Field name made lowercase.
+#     isadmin = models.BooleanField(db_column='isAdmin', blank=True, null=True)  # Field name made lowercase.
+#     country_code = models.CharField(db_column='Country_code', max_length=10, blank=True, null=True)  # Field name made lowercase.
+#     id_proof = models.CharField(db_column='Id_proof', max_length=50, blank=True, null=True)  # Field name made lowercase.
+#     id_no = models.CharField(db_column='ID_NO', max_length=50, blank=True, null=True)  # Field name made lowercase.
+#     id_image = models.TextField(db_column='ID_Image', blank=True, null=True)  # Field name made lowercase.
+#     profile_image = models.TextField(db_column='Profile_Image', blank=True, null=True)  # Field name made lowercase.
 
 #     class Meta:
 #         managed = False
 #         db_table = 'tb_Candidate'
 
 
-class TbJobposition(models.Model):
-    key_id = models.AutoField(db_column='Key_ID', primary_key=True)  # Field name made lowercase.
-    job_position = models.CharField(db_column='Job_Position', max_length=100, blank=True, null=True)  # Field name made lowercase.
-    isoptionrequired = models.IntegerField(db_column='IsoptionRequired', blank=True, null=True)  # Field name made lowercase.
-    isbondrequired = models.IntegerField(db_column='IsBondRequired', blank=True, null=True)  # Field name made lowercase.
+# class TbJobposition(models.Model):
+#     key_id = models.AutoField(db_column='Key_ID', primary_key=True)  # Field name made lowercase.
+#     job_position = models.CharField(db_column='Job_Position', max_length=100, blank=True, null=True)  # Field name made lowercase.
+#     isoptionrequired = models.BooleanField(db_column='IsoptionRequired', blank=True, null=True)  # Field name made lowercase.
+#     isbondrequired = models.BooleanField(db_column='IsBondRequired', blank=True, null=True)  # Field name made lowercase.
+#     flag = models.BooleanField(db_column='FLAG', blank=True, null=True)  # Field name made lowercase.
 
-    class Meta:
-        managed = False
-        db_table = 'tb_JobPosition'
+#     class Meta:
+#         managed = False
+#         db_table = 'tb_JobPosition'
+
+
+# class TbLevel(models.Model):
+#     keyid = models.AutoField(db_column='KeyID')  # Field name made lowercase.
+#     level_name = models.CharField(db_column='Level_Name', max_length=100, blank=True, null=True)  # Field name made lowercase.
+
+#     class Meta:
+#         managed = False
+#         db_table = 'tb_Level'
 
 
 # class TbQuestion(models.Model):
@@ -162,6 +313,7 @@ class TbJobposition(models.Model):
 #     option4 = models.CharField(db_column='Option4', max_length=500, blank=True, null=True)  # Field name made lowercase.
 #     answer = models.CharField(db_column='Answer', max_length=500, blank=True, null=True)  # Field name made lowercase.
 #     typeflag = models.CharField(max_length=2, blank=True, null=True)
+#     flag = models.BooleanField(db_column='FLAG', blank=True, null=True)  # Field name made lowercase.
 
 #     class Meta:
 #         managed = False
@@ -203,29 +355,31 @@ class TbJobposition(models.Model):
 #         db_table = 'tb_Result_View'
 
 
-class TbSubject(models.Model):
-    keyid = models.AutoField(db_column='KeyID', primary_key=True)  # Field name made lowercase.
-    subject = models.CharField(db_column='Subject', max_length=100, blank=True, null=True)  # Field name made lowercase.
-    status = models.IntegerField(db_column='status', blank=True, null=True)
-    class Meta:
-        managed = False
-        db_table = 'tb_Subject'
+# class TbSubject(models.Model):
+#     keyid = models.AutoField(db_column='KeyID')  # Field name made lowercase.
+#     subject = models.CharField(db_column='Subject', max_length=20, blank=True, null=True)  # Field name made lowercase.
+#     flag = models.BooleanField(db_column='Flag', blank=True, null=True)  # Field name made lowercase.
+
+#     class Meta:
+#         managed = False
+#         db_table = 'tb_Subject'
 
 
-class TbSubjectlevel(models.Model):
-    keyid = models.AutoField(db_column='KeyID', primary_key=True)  # Field name made lowercase.
-    appliedfor = models.CharField(db_column='AppliedFor', max_length=20, blank=True, null=True)  # Field name made lowercase.
-    subject_id = models.IntegerField(db_column='Subject_ID', blank=True, null=True)  # Field name made lowercase.
-    level = models.IntegerField(db_column='Level', blank=True, null=True)  # Field name made lowercase.
-    no_of_question = models.IntegerField(db_column='No_of_Question', blank=True, null=True)  # Field name made lowercase.
-    cutoffmarks = models.IntegerField(db_column='CutOffMarks', blank=True, null=True)  # Field name made lowercase.
-    duration = models.IntegerField(db_column='Duration', blank=True, null=True)  # Field name made lowercase.
-    ismandatory = models.IntegerField(db_column='IsMandatory', blank=True, null=True)  # Field name made lowercase.
-    optionalgroupname = models.CharField(db_column='OptionalGroupName', max_length=50, blank=True, null=True)  # Field name made lowercase.
+# class TbSubjectlevel(models.Model):
+#     keyid = models.AutoField(db_column='KeyID', primary_key=True)  # Field name made lowercase.
+#     appliedfor = models.CharField(db_column='AppliedFor', max_length=20, blank=True, null=True)  # Field name made lowercase.
+#     subject_id = models.IntegerField(db_column='Subject_ID', blank=True, null=True)  # Field name made lowercase.
+#     level = models.IntegerField(db_column='Level', blank=True, null=True)  # Field name made lowercase.
+#     no_of_question = models.IntegerField(db_column='No_of_Question', blank=True, null=True)  # Field name made lowercase.
+#     cutoffmarks = models.IntegerField(db_column='CutOffMarks', blank=True, null=True)  # Field name made lowercase.
+#     duration = models.IntegerField(db_column='Duration', blank=True, null=True)  # Field name made lowercase.
+#     ismandatory = models.IntegerField(db_column='IsMandatory', blank=True, null=True)  # Field name made lowercase.
+#     optionalgroupname = models.CharField(db_column='OptionalGroupName', max_length=50, blank=True, null=True)  # Field name made lowercase.
+#     flag = models.BooleanField(db_column='FLAG', blank=True, null=True)  # Field name made lowercase.
 
-    class Meta:
-        managed = False
-        db_table = 'tb_SubjectLevel'
+#     class Meta:
+#         managed = False
+#         db_table = 'tb_SubjectLevel'
 
 
 # class TbSubjectResult(models.Model):
@@ -405,6 +559,15 @@ class TbSubjectlevel(models.Model):
 #         db_table = 'tb_candidate_bkp'
 
 
+# class TbDiscipline(models.Model):
+#     key_id = models.AutoField(db_column='Key_ID', primary_key=True)  # Field name made lowercase.
+#     branch = models.CharField(max_length=100, blank=True, null=True)
+
+#     class Meta:
+#         managed = False
+#         db_table = 'tb_discipline'
+
+
 # class TbEmailResult(models.Model):
 #     keyid = models.AutoField(db_column='KeyID', primary_key=True)  # Field name made lowercase.
 #     result = models.CharField(db_column='Result', max_length=40, blank=True, null=True)  # Field name made lowercase.
@@ -412,6 +575,15 @@ class TbSubjectlevel(models.Model):
 #     class Meta:
 #         managed = False
 #         db_table = 'tb_email_result'
+
+
+# class TbGraduation(models.Model):
+#     key_id = models.AutoField(db_column='Key_ID', primary_key=True)  # Field name made lowercase.
+#     degree = models.CharField(max_length=100, blank=True, null=True)
+
+#     class Meta:
+#         managed = False
+#         db_table = 'tb_graduation'
 
 
 # class TbQuestionBk29062021(models.Model):
@@ -520,5 +692,3 @@ class TbSubjectlevel(models.Model):
 #     class Meta:
 #         managed = False
 #         db_table = 'tempQuest'
-
-

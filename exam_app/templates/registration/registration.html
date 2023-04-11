@@ -13,7 +13,8 @@
         background-color: white;
       }
       .container {
-        padding: 10px;
+        padding-left: 50px;
+        padding-right: 50px;
         background-color: white;
       }
       input[type=text], input[type=password], textarea {
@@ -21,13 +22,14 @@
         padding: 15px;
         margin: 5px 0 22px 0;
         display: inline-block;
+        border:2px solid gray;
         
       }
       input[type=text]:focus, input[type=password]:focus {
         outline: none;
       }
-      div {
-        padding: 5px 0;
+      input::placeholder {
+        font-size: 15px; 
       }
       hr {
         border: 1px solid #f1f1f1;
@@ -67,14 +69,45 @@
         justify-content: space-between;
         align-items: start;
       }
-    </style>  
+    button[type="submit"] {
+        background-color: blue;
+        color: white;
+        width: 100px;
+        height: 40px;
+        border-radius: 20px;
+        font-size: 16px;
+        font-weight: bold;
+        border: none;
+        outline: none;
+        cursor: pointer;
+    }
+
+    button[type="submit"]:hover {
+        background-color: darkblue;
+    }
+
+    .button {
+      display: inline-block;
+      padding: 8px 16px;
+      background-color: #4CAF50;
+      color: white;
+      text-decoration: none;
+      border-radius: 4px;
+      transition: background-color 0.3s ease;
+    }
+    
+    .button:hover {
+      background-color: #3e8e41;
+    }
+
+  </style>  
   </head>  
   <body> 
     <form method="POST" action="" onsubmit="return validatePhoneNumber()">  
       {% csrf_token %}
       <div class="container">  
         <div class="head">
-          <div class="padding-left:20px">
+          <div style="padding:10px;border: 2px solid #ADD8E6;border-bottom-right-radius: 20px;border-top-left-radius:20px ;">
             <img src="{% static 'images/systech-logo.png' %}" alt="Systech" width="100" height="100">
         </div>
         <div>
@@ -85,49 +118,37 @@
       </div>
       </div>
         <hr style="width:100% ">
-        <div>Job Details:</div>
+        <div>Job Details</div>
         
-        <div style="height:60px;background:LightGray;padding-left:15px; border-radius: 5px;border-top-style: solid;border-top-color:DodgerBlue;margin-bottom:5px ;margin-top:5px"  >  
+        <div style="height:60px;background:LightGray;padding-left:15px; border-radius: 5px;border-top-style: solid;border-top-color:DodgerBlue;margin-bottom:10px ;margin-top:5px;padding-top: 7px;"  >  
           
           <label style="margin-right: 15px;" for="Applyingfor">   
             Applying for
           </label>  
-          <select style="width: 200px; height: 40px;" id="Applyingfor" name="Applyingfor" required>  
+          <select style="width: 200px; height: 40px;border-radius: 6px;border:2px solid gray;" id="Applyingfor" name="Applyingfor" required>  
             <option value="" disabled selected hidden>Select option</option>
-            <option value="Data analyst" >Data analyst
-            </option>  
-            <option value="Dot net developer" >Dot net developer
-            </option>  
-            <option value="Python developer" >Python developer
-            </option>  
-            <option value="Informatica" >Informatica
-            </option>  
-            <option value="SSIS" >SSIS
-            </option>  
-            <option value="Tableau" >Tableau
-            </option>  
-            <option value="React js developer" >React js developer
-            </option>  
-          </select> 
-          
+            {% for job in jobs %}             
+             <option value="{{job.1}}">{{ job.1 }}</option>            
+             {% endfor %}
+          </select>  
         </div>  
-        <div>Personal Details:</div>
-        <div style="height:350px;background:LightGray;padding-left:15px; border-radius: 5px;border-top-style: solid;border-top-color:DodgerBlue; margin-bottom:5px ;margin-top:5px">
+        <div >Personal Details</div>
+        <div style="height:300px;background:LightGray;padding-left:15px; padding-top:5px;border-radius: 5px;border-top-style: solid;border-top-color:DodgerBlue; margin-bottom:10px ;margin-top:5px">
           <div class="head flex-direction:column">
             <div style="width: 30%;margin-right:16px; ">
-              <label for="firstname"> First Name 
+              <label for="firstname"> First Name
               </label>   
-              <input type="text" name="firstname"  id="firstname" placeholder="Firstname" size="15" required="">
+              <input type="text" name="firstname"  id="firstname" placeholder="First  Name " size="15" style="border-radius: 6px;" required>
             </div> 
             <div style="width: 30%;;margin-left:16px"> 
-              <label for="lastname"> Last Name: 
+              <label for="lastname"> Last Name 
               </label>    
-              <input type="text" name="lastname" id="lastname" placeholder="Lastname" size="15" required="" >
+              <input type="text" name="lastname" id="lastname" placeholder=" Last  Name" size="15"  style="border-radius: 6px;" required >
             </div>   
             <div class="heading" style="width: 30%;;margin-right:16px;">
-              <label for="email" > Email: 
+              <label for="email" > Email 
               </label>      
-              <input type="email" id="email" name="email" placeholder="Enter email" size="15" required="" style="height:50px;width:350px; padding:15px;margin:5px 0px 22px" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"  >
+              <input type="email" id="email" name="email" placeholder="Enter Email" size="15" required style="height:50px;width:350px;border-radius: 6px; padding:15px;margin:5px 0px 22px;border:2px solid gray;" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"  >
             </div> 
           </div> 
           <div class="head">
@@ -135,9 +156,9 @@
               <label style="margin-right: 15px;" for="gender" >   
                 Gender :  
               </label>
-              <select style="width:350px; height:50px;margin-bottom: 10px;" name="gender"  id="gender" required >  
+              <select style="width:350px; height:50px;margin-bottom: 18px;border-radius: 6px;border:2px solid gray;" name="gender"  id="gender" required >  
                 <option value="" disabled selected hidden>Select option</option>
-                <option alue="Male" >Male
+                <option value="Male" >Male
                 </option>  
                 <option value="Female"  >Female
                 </option>   
@@ -147,17 +168,17 @@
             </div>
             <div style="width: 30%;margin-left:14px;margin-right:12px;">
             
-                <label for="dob">Date Of Birth:
+                <label for="dob">Date Of Birth
                 </label>
               
-                <input type="Date" id="dob" name="dob"  size="15" required="" style="height:50px;width:350px; padding:15px;margin:5px 0px 22px">
+                <input type="Date" id="dob" name="dob"  size="15" required style="height:50px;width:350px; padding:15px;margin:5px 0px 22px;border-radius: 6px;border:2px solid gray;">
               
             </div> 
             <div class="heading" style="width: 30%; margin-left:12px; margin-right:12px; ">
               <label for="MaritalStatus">   
-                Marital Status:
+                Marital Status
               </label>
-                <select style="width:350px; height:50px;margin-bottom: 10px;" name="MaritalStatus" id="MaritalStatus"  required >  
+                <select style="width:350px; height:50px;margin-bottom: 18px;border-radius: 6px;border:2px solid gray;" name="MaritalStatus" id="MaritalStatus" required  >  
                   <option value="" disabled selected hidden>Select option</option>
                   <option value="Yes" >Married
                   </option>  
@@ -170,8 +191,8 @@
           <div class="head" >
             <div class="head2"  style="width: 30%; margin-bottom: 15px;" >
               <div class="heading">
-              <label for="country_code">Country code:</label>
-              <select name="country_code" id="country_code" style="height:50px;width:100px" required>
+              <label for="country_code">Country code</label>
+              <select name="country_code" id="country_code" style="height:50px;width:160px;border-radius: 6px;" required>
                 <option value="" disabled selected hidden>Select option</option>
                   {% for code, name,lable,phone_code in countries %}
                       <option value="+{{phone_code }}">{{name}}</option>
@@ -179,171 +200,167 @@
               </select>
             </div>
             <div class="heading">
-              <label for="phone">Phone number:</label>
-              <input type="tel" id="phone" name="phone" placeholder="Enter phone number" pattern = "[0-9]{10}" required="" title="Please enter a valid phone number with country code" style="height:50px;width:240px">
+              <label for="phone">Phone number</label>
+              <input type="tel" id="phone" name="phone" placeholder="Enter phone number" pattern = "[0-9]{10}" required title="Please enter a valid phone number with country code" style="height:50px;width:180px;border-radius: 6px;border:2px solid gray;">
             </div>
             </div>  
             <div style="width: 30%;margin-right:16px; margin-left: 60px;">
               <label for="CAddress"> Current Address 
               </label>   
-              <input type="text" name="CAddress" id="CAddress" placeholder="Address" size="15" required="" >
+              <input type="text" name="CAddress" id="CAddress" placeholder="Address" style="border-radius: 6px" size="15" required >
             </div>
             <div style="width: 30%;margin-left:16px;margin-right:16px;">
               <label for="PAddress"> Permanent Address 
               </label>   
-              <input type="text" name="PAddress" id="PAddress" placeholder="Address" size="15"   required=""> 
+              <input type="text" name="PAddress" id="PAddress" placeholder="Address" size="15" style="border-radius: 6px"   required> 
             </div>       
           </div> 
       </div>
-        <div>Education Details :</div>
-      <div style="height:750px;background:LightGray;padding-left:10px; padding-right:15px; border-radius: 5px;border-top-style: solid;border-top-color:DodgerBlue;" >  
+        <div >Education Details</div>
+      <div style="height:610px;background:LightGray;padding-left:10px;margin-bottom: 10px;margin-top: 5px; padding-right:10px; border-radius: 5px;border-top-style: solid;border-top-color:DodgerBlue;" >  
             <h1 style="font-size:22px; font-weight: 200;">*10th
             </h1> 
             <div class="head">
               <div style="width: 30%;margin-right:16px;">
                 <label for="Institution10"> Institution 
                 </label>   
-                <input type="text" name="Institution10" id="Institution10" placeholder="Institution" size="15"  required="" >
+                <input type="text" name="Institution10" id="Institution10" placeholder="Institution" size="15" style="border-radius: 6px" required >
               </div>
               <div style="width: 30%;margin-left:16px;margin-right:16px;">
                 <label for="CGPA10"> % (or) CGPA
                 </label>   
-                <input type="text" name="CGPA10" id="CGPA10" placeholder="Enter CGPA" size="15" required="" > 
+                <input type="text" name="CGPA10" id="CGPA10" placeholder="Enter CGPA" size="15" style="border-radius: 6px" required > 
               </div>  
               <div style="width: 30%;;margin-left:16px"> 
                 <label for="YOP10"> Year of passing 
                 </label>    
-                <input type="text" name="YOP10"  id="YOP10" placeholder="Enter YOP" size="15" required=""  >
+                <input type="text" name="YOP10"  id="YOP10" placeholder="Enter YOP" size="15"style="border-radius: 6px" required  >
               </div>   
             </div>   
             <h1 style="font-size:22px; font-weight: 200;">*12th or Diploma
             </h1>
             <div class="head">
-              <div style="width: 30%;margin-right:16px;">
+              <div style="width: 30%;margin-right:0px;">
                 <label for="Institution12"> Institution 
                 </label>   
-                <input type="text" name="Institution12" id="Institution12" placeholder="Institution" size="15" required="" >
+                <input type="text" name="Institution12" id="Institution12" placeholder="Institution" size="15" style="border-radius: 6px" required >
               </div>
-              <div style="width: 30%;margin-left:16px;margin-right:16px;">
+              <div style="width: 30%;margin-left:16px;margin-right:0px;">
                 <label for="CGPA12"> % (or) CGPA
                 </label>   
-                <input type="text" name="CGPA12" id="CGPA12" placeholder="Enter CGPA" size="15" required="" > 
+                <input type="text" name="CGPA12" id="CGPA12" placeholder="Enter CGPA" size="15" style="border-radius: 6px" required > 
               </div>  
               <div style="width: 30%;;margin-left:16px"> 
                 <label for="YOP12"> Year of passing 
                 </label>    
-                <input type="text" name="YOP12" id="YOP12" placeholder="Enter YOD" size="15"  required="" >
+                <input type="text" name="YOP12" id="YOP12" placeholder="Enter YOD" size="15" style="border-radius: 6px"  required >
               </div>
               <div style="width: 30%;;margin-left:16px"> 
                 <label for="Branch12"> Branch
                 </label>    
-                <input type="text" name="Branch12" id="Branch12" placeholder="Enter Branch" size="15"   required="">
+                <input type="text" name="Branch12" id="Branch12" placeholder="Enter Branch" size="15" style="border-radius: 6px" required>
               </div>   
             </div> 
-            <h1 style="font-size:22px; font-weight: 200;"> Under Graduation
+            <h1 style="font-size:22px; font-weight: 200; padding:0px"> Under Graduation
             </h1> 
-            <div class="head">
-              <div style="width: 30%;margin-right:16px;">
+            <div class="head" style="height:90px">
+              <div style="width: 30%;margin-right:16px; padding-bottom: 15px;">
                 <label for="Graduation"> UG Graduation
                 </label>   
-                <select style="width: 220px; height: 50px; size:15px" name="Graduation" id="Graduation" required >  
+                <select style="width: 220px; height: 50px; size:15px;border-radius: 6px;border:2px solid gray;" name="Graduation" id="Graduation" required >  
                   <option value="" disabled selected hidden>Select option</option>
-                  <option value="B.Tech" >B.Tech
-                  </option>  
-                  <option value="Degree" >Degree
-                  </option>    
+                  {% for degree in ug %}
+                  <option value="{{degree.1}}" >{{degree.1}}
+                  </option> 
+                  {% endfor %}   
                 </select>  
                 
               </div>
-              <div style="width: 30%;margin-right:16px;">
+              <div style="width: 30%;padding-bottom: 15px">
                 <label for="UGDiscipline"> UG Discipline
                 </label>   
-                <select style="width: 220px; height: 50px; size:15px" name="UGDiscipline" id="UGDiscipline" required >  
+                <select style="width: 220px; height: 50px; size:15px;border-radius: 6px;border:2px solid gray;" name="UGDiscipline"  id="UGDiscipline"  required>  
                   <option value="" disabled selected hidden>Select option</option>
-                  <option value="ECE" >ECE
-                  </option>  
-                  <option value="CSE" >CSE
-                  </option>  
-                  <option value="Mech" >Mech
-                  </option>  
-                  <option value="IT" >IT
-                  </option>  
-                  <option value="EEE" >EEE
-                  </option>   
+                  {% for i in branch %}
+                  <option value="{{i.1}}" >{{i.1}}
+                  </option> 
+                  {% endfor %}
+                   
                 </select>  
                 
               </div> 
-              <div style="width: 30%;margin-top: 15px;margin-left:16px"> 
+              <div style="width: 30%;margin-top: 15px;margin-left:16px; padding-bottom: 15px"> 
                 <label for="UGCollege"> College
                 </label>    
-                <input type="text" name="UGCollege" id="UGCollege" placeholder="Enter College" size="15"  required="" >
+                <input type="text" name="UGCollege" id="UGCollege" placeholder="Enter College" size="15" style="border-radius: 6px" required >
               </div>
-              <div style="width: 30%;margin-top: 15px;margin-left:16px"> 
+              <div style="width: 30%;margin-top: 15px;margin-left:16px; padding-bottom: 15px" > 
                 <label for="CGPAUG"> % (or) CGPA
                 </label>    
-                <input type="text" name="CGPAUG" id="CGPAUG" placeholder="Enter % (or) CGPA" size="15" required="" >
+                <input type="text" name="CGPAUG" id="CGPAUG" placeholder="Enter % (or) CGPA" size="15" style="border-radius: 6px" required >
               </div> 
-              <div style="width: 30%;margin-top: 15px;margin-left:16px"> 
+              <div style="width: 30%;margin-top: 15px;margin-left:16px; padding-bottom: 15px"> 
                 <label for="YOPUG"> Year of passing 
                 </label>    
-                <input type="text" name="YOPUG" id="YOPUG" placeholder="Enter YOD" size="15" required="" >
+                <input type="text" name="YOPUG" id="YOPUG" placeholder="Enter YOD" size="15" style="border-radius: 6px"  required >
               </div> 
               
             </div> 
-            <h1 style="font-size:22px; font-weight: 200;">Post Graduation
+            <h1 style="font-size:22px; font-weight: 200; padding:0px; ;">Post Graduation
             </h1>
-            <div class="head">
-              <div style="width: 30%;margin-right:16px;">
+            <div class="head" style="height:140px;">
+              <div style="width: 30%;margin-right:16px; padding-bottom: 70px">
                 <label for="PGraduation"> PG Graduation
                 </label>   
-                <select style="width: 220px; height: 50px; size:15px" name="PGraduation" id="PGraduation" required >  
+                <select style="width: 220px; height: 50px; size:15px;border-radius: 6px;border:2px solid gray;" name="PGraduation"   id="PGraduation"  >  
                   <option value="" disabled selected hidden>Select option</option>
-                  <option value="M.TECH" >M.TECH
-                  </option>  
-                  <option value="MCA">MCA
-                  </option>   
+                  {% for degree in pg %}
+                  <option value="{{degree.1}}" >{{degree.1}}
+                  </option> 
+                  {% endfor %}    
                 </select>  
                 
               </div>
-              <div style="width: 30%;margin-right:16px;">
+              <div style="width: 30%;padding-bottom: 70px">
                 <label for="PGDiscipline"> PG Discipline
                 </label>   
-                <select style="width: 220px; height: 50px; size:15px" name="PGDiscipline" id="PGDiscipline" required>  
+                <select style="width: 220px; height: 50px; size:15px;border-radius: 6px;border:2px solid gray;" name="PGDiscipline" id="PGDiscipline"  >  
                   <option value="" disabled selected hidden>Select option</option>
-                  <option value="ECE">ECE
-                  </option>  
-                  <option value="CSE" >CSE
-                  </option>  
+                  {% for i in branch %}
+                  <option value="{{i.1}}" >{{i.1}}
+                  </option> 
+                  {% endfor %}
+                  
                 </select>  
                 
               </div> 
-              <div style="width: 30%;margin-top: 15px;margin-left:16px"> 
+              <div style="width: 30%;margin-top: 15px;margin-left:16px ;padding-bottom: 70px"> 
                 <label for="PGCollege"> College
                 </label>    
-                <input type="text" name="PGCollege" id="PGCollege" placeholder="Enter College" size="15" required="">
+                <input type="text" name="PGCollege" id="PGCollege" placeholder="Enter College" style="border-radius: 6px" size="15" >
               </div>
-              <div style="width: 30%;margin-top: 15px;margin-left:16px"> 
+              <div style="width: 30%;margin-top: 15px;margin-left:16px;padding-bottom: 70px"> 
                 <label for="CGPAPG"> % (or) CGPA
                 </label>    
-                <input type="text" name="CGPAPG" id="CGPAPG" placeholder="Enter % (or) CGPA" size="15" required="" >
+                <input type="text" name="CGPAPG" id="CGPAPG" placeholder="Enter % (or) CGPA" size="15" style="border-radius: 6px" >
               </div> 
-              <div style="width: 30%;margin-top: 15px;margin-left:16px"> 
+              <div style="width: 30%;margin-top: 15px;margin-left:16px;padding-bottom: 70px"> 
                 <label for="YOPPG"> Year of passing 
                 </label>    
-                <input type="text" name="YOPPG" id="YOPPG" placeholder="Enter YOD" size="15" >
+                <input type="text" name="YOPPG" id="YOPPG" placeholder="Enter YOD" style="border-radius: 6px" size="15" >
               </div> 
               
             </div> 
       </div> 
-        <div>Other Details:</div>
-        <div style="height:150px;background:LightGray;padding-left:15px; border-radius: 5px;border-top-style: solid;border-top-color:DodgerBlue;margin-bottom:5px ;margin-top:5px;padding-bottom: 50px;" >  
+        <div>Other Details</div>
+        <div style="height:140px;background:LightGray;padding-left:15px; border-radius: 5px;border-top-style: solid;border-top-color:DodgerBlue;margin-bottom:5px ;margin-top:5px;padding-bottom: 50px;" >  
           <div class="head">
-            <div style="width: 30%;height: 110px; margin-left:16px; padding-top: 15px; ">
+            <div style="width: 30%;height: 110px; margin-left:16px; padding-top: 18px; ">
               <label name='Source' style="margin-right: 15px;">   
                 Source
               </label>
               <div>  
-                <select style="width: 220px; height: 50px; size:15px" name="Source" id="Source" required > 
+                <select style="width: 220px; height: 50px; size:15px;border-radius: 6px;border:2px solid gray;" name="Source" id="Source"   > 
                   <option value="" disabled selected hidden>Select option</option>
                   <option value="Media Platforms">Media Platforms
                   </option>  
@@ -352,16 +369,16 @@
                 </select> 
               </div>    
             </div>     
-            <div style="width: 30%;margin-left:16px;margin-right:16px;margin-top: 16px;">
+            <div class="heading" style="width: 30%;margin-left:16px;margin-right:16px;margin-top: 16px;">
               <label name="Referredthrough"> Referred through
               </label>   
-              <input type="text" name="Referredthrough" id="Referredthrough" placeholder=" " size="15"  style="width: 220px; height: 50px; size:15px" required=""> 
+              <input type="text" name="Referredthrough" id="Referredthrough" placeholder="Name (or) Emp-Id " size="15"  style="width: 220px; height: 50px; size:15px;border-radius: 6px" required> 
             </div>  
             <div style="width: 30%;margin-top: 0px;margin-left:15px"> 
               <label name="Applied"> Applied for systech earlier? 
               </label>    
               <div>  
-                <select style="width: 220px; height: 50px; size:15px" name="Applied" id="Applied" required> 
+                <select style="width: 220px; height: 50px; size:15px ;border-radius: 6px;border:2px solid gray;" name="Applied" id="Applied" required > 
                   <option value="" disabled selected hidden>Select option</option> 
                   <option value="1">Yes
                   </option>  
@@ -370,24 +387,53 @@
                 </select> 
               </div>
             </div>   
-            <div style="width: 30%;margin-left:16px;margin-right:16px;">
+            <div id="date-container" style="display:none; width: 30%; margin-left: 16px; margin-right: 16px;">
+              <label for="Adate">If yes, please mention the date:</label>
+              <input style="width: 220px; height: 50px; size:15px; border-radius: 6px;border:2px solid gray;" type="date" id="Adate" name="Adate" >
+            </div>
+        </div>
+        </div>
+        <div>ID_Proof_Details</div>
+        <div style="height:200px;background:LightGray;padding-left:15px; border-radius: 5px;border-top-style: solid;border-top-color:DodgerBlue;margin-bottom:5px ;margin-top:5px;padding-top: 20px;" > 
+          <div class="head2">
+            <div class="heading" style="width: 30%;margin-right:62px; padding-bottom: 30px;">
+              <label for="Id_proof">Type Of Id_proof</label>
+              <select style="width: 350px; height: 50px; size:15px;border-radius: 6px;"name="Id_proof"  id="Id_proof" required>
+                <option value="" disabled selected hidden>Select option</option>
+                <option value="PAN CARD">PAN CARD</option>
+                <option value="AADHAR">AADHAR</option>
+                <option value="DRIVING LICENSE">DRIVING LICENSE</option>
+                <option value="PASSPORT">PASSPORT</option>
+              </select>
+            </div>
             
-                <label for="Adate">if yes, please mention the date:
-                </label>
-              
-                <input  style="width: 220px; height: 50px; size:15px"type="Date" id="Adate" name="Adate" required="">
-              
-            </div>  
+            <div class="heading" style="width: 30%;margin-right:16px; padding-bottom: 15px;">
+              <label for="ID_NO" id="idNoLabel">ID_NO</label>
+              <input type="text" name="ID_NO" id="ID_NO" size="15" style="border-radius: 6px" placeholder="Enter ID_NO"  pattern="" required />
+            </div>
+            <div class="head2" style="width: 30%;margin-right:16px; padding-bottom: 15px;">
+            <div class='heading'>          
+              <a href="{% url 'capture_card' %}" class="button" >id proof</a>          
+              <img id="cardImage" src="#" name="iddata" value={{CardimageData}} alt="" style="width:100px; height:100px; margin-top:15px;">
+              <input type="hidden" name="card_image_data" id="cardImageDataField">  
+            </div>       
+             <div class='heading'>          
+              <a href="{% url 'capture' %}" class="button">face</a>          
+              <img id="faceImage" src="#" name="facedata" value={{FaceimageData}} alt="" style="width:100px; height:100px; margin-top:15px;">
+              <input type="hidden" name="face_image_data" id="faceImageDataField">              
+            </div>
+          </div>
         </div>
         
         </div>
-        <a href="registration/face.html"><button>face</button></a>
-        <a><button>id proof</button></a>
-          <div class="row" style="text-align: center;">
-            <button type="submit" style="background-color: #4CAF50; width:100px; height:40px; border-radius: 10px;">Submit
+          <div class="row" style="text-align: center; margin-top: 20px">
+              <button type="submit" id="reg_sub" style="background-color: blue; width: 100px; height: 40px; border-radius: 10px; color: white; font-weight: bold; border: none; text-shadow: 1px 1px 1px #333;;">Submit</button>
             </button>
+            
           </div>   
         </div>
+
+        
 
        
         
@@ -396,5 +442,96 @@
 
 </form></body></html>
 
+<script>
+  var submitButton = document.getElementById('reg_sub'); 
+  var appliedDropdown = document.getElementById("Applied");
+  var dateContainer = document.getElementById("date-container");
 
+  appliedDropdown.addEventListener("change", function() {
+    if (appliedDropdown.value == "1") {
+      dateContainer.style.display = "block";
+    } else {
+      dateContainer.style.display = "none";
+    }
+  });
+
+  const idProofDropdown = document.getElementById("Id_proof");
+  const idNoInput = document.getElementById("ID_NO");
+  const idNoLabel = document.getElementById("idNoLabel");
+
+  idProofDropdown.addEventListener("change", () => {
+    const selectedOption = idProofDropdown.value;
+
+    switch (selectedOption) {
+      case "PAN CARD":
+        idNoLabel.textContent = "PAN CARD Number";
+        idNoInput.placeholder = "ABCDE1234A";
+        idNoInput.pattern = "^[A-Z]{5}[0-9]{4}[A-Z]{1}$";
+        break;
+
+      case "AADHAR":
+        idNoLabel.textContent = "AADHAR Number";
+        idNoInput.placeholder = "012345678911";
+        idNoInput.pattern = "^[0-9]{12}$";
+        break;
+
+      case "DRIVING LICENSE":
+        idNoLabel.textContent = "Driving License Number";
+        idNoInput.placeholder = "AP0123456789111";
+        idNoInput.pattern = "^[A-Z]{2}-[0-9]{13}$";
+        break;
+
+      case "PASSPORT":
+        idNoLabel.textContent = "Passport Number";
+        idNoInput.placeholder = "A1234567";
+        idNoInput.pattern = "^[A-Z]{1}[0-9]{7}$";
+        break;
+
+      default:
+        idNoLabel.textContent = "ID_NO";
+        idNoInput.placeholder = "";
+        idNoInput.pattern = "";
+        break;
+    }
+  });
+
+
+// Get the data from sessionStorage
+var CardimageData = sessionStorage.getItem('CardimageData');
+
+// Set the image source to the retrieved data
+if(CardimageData){
+  document.getElementById('cardImage').src = CardimageData;
+}
+else{
+  document.getElementById('cardImage').src = "{% static 'images/default_image.jpg' %}";
+}
+
+
+// Get the data from sessionStorage
+var FaceimageData = sessionStorage.getItem('FaceimageData');
+
+// Set the image source to the retrieved data
+if(FaceimageData){
+  document.getElementById('faceImage').src = FaceimageData;
+}
+else{
+  document.getElementById('faceImage').src = "{% static 'images/default_image.jpg' %}";
+}
+
+
+document.getElementById('cardImageDataField').value = CardimageData;
+document.getElementById('faceImageDataField').value = FaceimageData;
+
+submitButton.addEventListener('click', function() {
+  sessionStorage.clear();
+  console.log("successful")
+ }); 
+
+var formData = new FormData();
+formData.append('card_image', dataURItoBlob(CardimageData));
+formData.append('face_image', dataURItoBlob(FaceimageData));
+
+
+</script>
   

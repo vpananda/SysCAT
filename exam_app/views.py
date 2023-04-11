@@ -6,11 +6,13 @@ from imutils.video import VideoStream
 from .models import *
 from django.core.mail import EmailMessage
 from django.views.decorators import gzip
+from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.cache import never_cache
-from django.http import HttpResponse,StreamingHttpResponse,JsonResponse,HttpResponseServerError
+from django.http import HttpResponse,StreamingHttpResponse,JsonResponse,HttpResponseServerError,HttpResponseBadRequest
 import cv2
 import pycountry
 import phonenumbers
+import asyncio
 import threading
 import argparse
 import datetime
@@ -18,14 +20,75 @@ import pyaudio
 import imutils
 import wave
 import time
-import dlib
+import pyaudio
+import numpy as np
+import math
+import wave
+import datetime
+# import dlib
+import socket
 import os, sys
+import io
+import xlsxwriter
 import base64
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
+from .models import Images
+from django.core.files.base import ContentFile
+import json
+from datetime import datetime as dt,timedelta
+from datetime import date
 
+def image_view(request):
+    image = get_object_or_404(Images, id=1)
+    response = HttpResponse(image.image, content_type='image/jpeg')
+    return response
+    
 
+# Create your views here.
+def generate_excel(request):
+    # Get the data from the HTML table    
+    search_name = request.GET.get('search-bar')
 
+    if search_name == "":
+        return redirect('dashboard')
+    
+    cursor = connection.cursor()
+    cursor.execute('exec get_data_tb_candidate %s', [search_name])
+    candidate_data = cursor.fetchall()
 
+    # Create the table data in the required format    
+    rows = [{
+        'Candidate Name': row[1] + ' ' + row[2],
+        'User id': row[3],
+        'Password': row[4],
+        'Applied for': row[5],
+        'Start time': row[6],
+        'End time': row[7],
+        'Remaning time': row[8]
+    } for row in candidate_data]
+    # Create an in-memory output stream for the Excel file   
+    output = io.BytesIO()
+    # Create a new workbook and add a worksheet    
+    workbook = xlsxwriter.Workbook(output)
+    worksheet = workbook.add_worksheet()
+    # Write the table headers    
+    headers = ['S.No', 'Candidate Name', 'User id', 'Password', 'Applied for', 'Start time', 'End time', 'Remaning time']
+    for col_num, header in enumerate(headers):
+        worksheet.write(0, col_num, header)
+    # Write the table data    
+    for row_num, row in enumerate(rows):
+        worksheet.write(row_num + 1, 0, row_num + 1) # write the S.No        
+        for col_num, cell_value in enumerate(row.values()):
+            worksheet.write(row_num + 1, col_num + 1, cell_value)
+    # Close the workbook    
+    workbook.close()
+    # Create the HttpResponse object with the Excel file    
+    response = HttpResponse(content_type='application/vnd.ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="candidate_data.xlsx"'    
+    response.write(output.getvalue())
 
+    return response
 
 # Create your views here.
 def sidebar(request):
@@ -34,12 +97,61 @@ def sidebar(request):
 @never_cache
 def dashboard(request):
     if request.session.get('user_authenticated'):
+        applied_for = request.GET.get('applied_for')
+        if request.method == 'POST':
+            unlock_ids = request.POST.getlist('unlock')
+            skip_level_1 = request.POST.getlist('skip_level_1')
+            cursor = connection.cursor()
+            if unlock_ids:
+                for lockid in unlock_ids:
+                    cursor.execute('exec unlockCandiadtes %s',[lockid])
+            if skip_level_1:
+                for skip_level in skip_level_1:
+                    cursor.execute('exec skip_level_1_Candiadtes %s',[skip_level])
+        if applied_for == None:
+            applied_for = 'All'        
         cursor = connection.cursor()
         cursor.execute('exec get_data_dashboard')
         dash_data = cursor.fetchall()
-        cursor.execute('exec get_data_tb_candidate')
+        search_name = request.GET.get('search-bar')
+        if search_name == "":
+            search_name = None        
+        cursor.execute('exec get_data_tb_candidate @name=%s,@applied_for=%s',[search_name,applied_for])
         candidate_data = cursor.fetchall()
-        return render(request, 'dashboard/dashboard.html',{'dash_data':dash_data,'candidate_data':candidate_data})
+        cursor.execute('exec get_skill_applied_for_data')
+        search_filter = cursor.fetchall()
+        return render(request, 'dashboard/dashboard.html',{'dash_data':dash_data,'candidate_data':candidate_data,'search_filter':search_filter})
+    return redirect('logout')
+
+def show_candidate_data(request,id):
+    if request.session.get('user_authenticated'):
+        cursor = connection.cursor()
+        cursor.execute('EXEC get_candidate_data_by_id %s', [id])
+        candidate_data = cursor.fetchone()
+
+        context = {
+            'candidate_data': candidate_data        }
+        return render(request, 'dashboard/candidatedata.html', context)
+    return redirect('logout')
+def registercandidate(request):
+    if request.session.get('user_authenticated'):
+        applied_for = request.GET.get('applied_for')
+        if applied_for == None:
+            applied_for = 'All'        
+        cursor = connection.cursor()
+        cursor.execute('exec get_skill_applied_for_data')
+        search_filter = cursor.fetchall()
+        search_name = request.GET.get('search-bar')
+        if search_name == "":
+            search_name = None        
+        cursor.execute('exec get_data_tb_candidate @name=%s,@applied_for=%s',[search_name,applied_for])
+        candidate_data = cursor.fetchall()
+
+        context = {
+            'candidate_data': candidate_data,
+            'search_filter': search_filter        
+            }
+        return render(request, 'dashboard/registerdcandidates.html', context)
     return redirect('logout')
 
 def job_positions(request):
@@ -406,43 +518,79 @@ def activate_quest(request, id):
     finally:
         cursor.close()
 
+
+import threading
+
 def exam_portal(request):
     if request.session.get('user_authenticated'):
         try:
-            cursor = connection.cursor()
-            cursor.execute('exec getExamQuestion %s,%s', [2,2])
-            my_list = cursor.fetchall()
-            print(my_list)
-            questions = {}
-            i=1
-            for tup in my_list:
-                key = tup[0]
-                values = list(tup[1:])
-                values.append(i)
-                i = i+1
-                if key in questions:
-                    questions[key].append(values)
-                else:
-                    questions[key] = [values]
+            level = request.GET.get('level')
+            jobPosition = request.GET.get('jobposition')
+            total_duration = request.GET.get('total_duration')
+            user_id = request.GET.get('user')
+            print('level:',level)
+            print(jobPosition)
 
-            print(questions)
-            return render(request,"exam_portal/exam_portal.html",{'questions':questions})
-        finally:
-            cursor.close()
+            # Start a new thread to run the start_recording function in parallel
+            recording_thread = threading.Thread(target=start_recording, args=(datetime.timedelta(minutes=1),))
+            recording_thread.start()
 
+            cursor = None  # Initialize the cursor variable to None
+            try:
+                cursor = connection.cursor()
+                cursor.execute('exec getExamQuestion %s,%s', [jobPosition,level])
+                my_list = cursor.fetchall()
+                print(my_list)
+                appliedfor = my_list[0][9]
+                for tup in my_list:
+                    quest_id, subject_id =  tup[6], tup[7]
+                    print(quest_id, subject_id,user_id)
+                    cursor.execute('exec insertinto_tb_results %s,%s,%s,%s', [quest_id, subject_id,user_id,level])
+                my_dict = {}
+                for tup in my_list:
+                    key1, key2 = tup[0], tup[1]
+                    values = list(tup[2:])
+
+                    if key1 in my_dict:
+                        my_dict[key1][key2] = values
+                    else:
+                        my_dict[key1] = {key2: values}
+
+                print(my_dict)
+                return render(request,"exam_portal/exam_portal.html",{'questions':my_dict,'total_duration':total_duration,'user_id':user_id,'level':level,'appliedfor':appliedfor})
+            finally:
+                if cursor:
+                    cursor.close()
+
+        except Exception as e:
+            print(e)
+            return HttpResponseBadRequest("Bad Request")
     return redirect('login')
+
     
 
 def registration(request):
+
+    cursor = connection.cursor()
+    cursor.execute('exec getUGDegree')
+    ug = cursor.fetchall()
+    cursor.execute('exec getPGDegree')
+    pg = cursor.fetchall()
+    cursor.execute('exec getBranch')
+    branch = cursor.fetchall()
+    filter_by=1    
+    cursor.execute('exec getPositiondata %s',[filter_by])      
+    jobs = cursor.fetchall()
     if request.method == "POST":  
         Applyingfor = request.POST.get('Applyingfor')
+        print(Applyingfor)
         firstname=request.POST.get('firstname')
         lastname=request.POST.get('lastname')
         gender=request.POST.get('gender')
         dob=request.POST.get('dob')
         MaritalStatus=request.POST.get('MaritalStatus')
         countrycode=request.POST.get('country_code')
-        Phone=request.POST.get('phone')
+        phone=request.POST.get('phone')
         email=request.POST.get('email')
         CAddress=request.POST.get('CAddress')
         PAddress=request.POST.get('PAddress')
@@ -467,6 +615,13 @@ def registration(request):
         Referredthrough=request.POST.get('Referredthrough')
         Applied=request.POST.get('Applied')
         Adate=request.POST.get('Adate')
+        Id_proof=request.POST.get('Id_proof')
+        ID_NO=request.POST.get('ID_NO')
+        iddata=request.POST.get('card_image_data')
+        facedata=request.POST.get('face_image_data')
+        id_image_file = ContentFile(iddata)
+        face_image_file = ContentFile(facedata)
+
         if PGraduation == None:
             PGraduation='null'        
         if PGDiscipline == None:
@@ -476,37 +631,53 @@ def registration(request):
         if CGPAPG == None:
             CGPAPG = 0        
         if YOPPG == None:
-            YOPPG = 0  
-        print(countrycode)
-        print(Phone)      
+            YOPPG = 0   
+
+        print(iddata)
+        print(facedata) 
+        print(id_image_file)
+        print(face_image_file)   
+       
         try:
             cursor = connection.cursor()
-            cursor.execute('exec insertregistrationdata %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s' ,[Applyingfor,firstname,lastname,gender,dob,MaritalStatus,Phone,email,CAddress,PAddress,Institution10,CGPA10,YOP10,Institution12,CGPA12,YOP12,Branch12,Graduation,UGCollege,UGDiscipline,CGPAUG,YOPUG,PGraduation,PGDiscipline,PGCollege,CGPAPG,YOPPG,Source,Referredthrough,Applied,Adate,countrycode])
-            return redirect('/')
+            cursor.execute('exec insertregistrationdata %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s' ,[Applyingfor,firstname,lastname,gender,dob,MaritalStatus,phone,email,CAddress,PAddress,Institution10,CGPA10,YOP10,Institution12,CGPA12,YOP12,Branch12,Graduation,UGCollege,UGDiscipline,CGPAUG,YOPUG,PGraduation,PGDiscipline,PGCollege,CGPAPG,YOPPG,Source,Referredthrough,Applied,Adate,countrycode,Id_proof,ID_NO,iddata,facedata])
+            return render(request, 'registration/registration_K.html')
         finally:
             cursor.close()
-
+            request.session.flush()
     countries = []
     for country in pycountry.countries:
         try:
             phone_code = phonenumbers.country_code_for_region(country.alpha_2)
             phone_label = phonenumbers.region_code_for_country_code(phone_code)
-            countries.append((country.alpha_2, f"+{phone_code} ({country.name})", phone_label,phone_code))
+            countries.append((country.alpha_2, f"{country.name} (+{phone_code})", phone_label,phone_code))
         except:
-            pass    
-    context = {'countries': countries}
+            pass  
+    current_year = dt.now().year
+    years = [year for year in range(1990, current_year+1)]
+    context = {'countries': countries,'ug':ug,'pg':pg,'branch':branch,'jobs':jobs,'years':years}
+    return render(request, 'registration/registration_K.html',context)  
 
-    return render(request, 'registration/dummy_reg.html',context)
-
-def face_id(request):
-    return render(request, 'registration/face.html')
     
 def save_image(request):
     if request.method == 'POST':
-        print("Hi")
-        image_data = request.FILES['image'].read()
-        print("Success")
-    return HttpResponse
+        data_url = request.POST.get('image')
+        if data_url:
+            # Decode the data URL and save the image to a file
+            image_data = base64.b64decode(data_url.split(',')[1])
+            now = datetime.datetime.now()
+            image_path = 'C:/Users/KJayavel/Downloads/Systech_merged_latest/Systech/exam_app/img/image{}.png'.format(str(now).replace(":",''))  # Replace with the desired image path
+            with open(image_path, 'wb') as f:
+                f.write(image_data)
+
+            try:
+                cursor = connection.cursor()
+                cursor.execute('exec saveImage %s', [image_data])
+            finally:
+                cursor.close()
+                return JsonResponse({'status':'success'})
+    
+    return JsonResponse({'status': 'error'})
 
 
 def login(request):
@@ -526,21 +697,25 @@ def login(request):
             print(user)
             if user:
                 # If the user is valid and password is correct                
-                if user[2] == password and user[3] == True:
-                    user_name = user[0]
-                    request.session['username'] = user_name                    
+                if user[3] == password and user[4] == True:
+                    user_name = user[5]
+                    email = user[2]
+                    request.session['username'] = user_name
+                    request.session['email'] = email                  
                     request.session['user_authenticated'] = True                    
                     return redirect('dashboard')
                 
                 # If the user is valid but password is incorrect                
-                elif user[2] == password and user[3] == False:
-                    user_name = user[0]
-                    request.session['username'] = user_name                    
+                elif user[3] == password and user[4] == False:
+                    user_name = user[5]
+                    email = user[2]
+                    request.session['username'] = user_name  
+                    request.session['email'] = email                    
                     request.session['user_authenticated'] = True                    
-                    return redirect('/exam_portal')
+                    return redirect('/exam_main_dashboard')
                 
                 # If the user is valid but not yet activated                
-                elif user[2] != password:
+                elif user[3] != password:
                     return render(request, 'registration/login.html', {'error': 'Invalid login credentials'})
                 
             # If the user is invalid            
@@ -552,85 +727,218 @@ def login(request):
     return render(request, 'registration/login.html')
 
 
+def exam_main_dashboard(request):
+    if request.session.get('user_authenticated'):
+        email = request.session['email']
+        cursor = connection.cursor()
+        cursor.execute('EXEC check_valid_email @email=%s', [email])
+        user = cursor.fetchone()
+        print(user)
+        ip_address = socket.gethostbyname(socket.gethostname())
+        print(ip_address)
+        cursor.execute('EXEC get_candidate_data_by_id %s', [user[0]])
+        candidate_data = cursor.fetchone()
+        print(candidate_data[38])
+        print(candidate_data[31])
+        if candidate_data[57] == 0:
+            level = 1
+        else:
+            level = 2
+            
+        cursor = connection.cursor()
+        cursor.execute('exec [get_candidate_applied_job_details] %s,%s',[level,candidate_data[31]])
+        subjects = cursor.fetchall()
+        if subjects == []:
+            return redirect('logout')
+        print(subjects)
+        jobposition = subjects[0][1]
+        total_duration = subjects[0][10]
+        # print(level,jobposition)
+        return render(request,"exam_portal/exam_portal_dashboard.html",{'user':user,'candidate_data':candidate_data,'subjects':subjects,'level':level,'jobposition':jobposition,'total_duration':total_duration})
+    return redirect('logout')
+
+
+
 def logout(request):
     request.session.flush()
     request.session['user_authenticated'] = False    
     return render(request, 'registration/logout.html')
 
 def submission(request):
-    request.session.flush()
-    request.session['user_authenticated'] = False    
-    return render(request, 'dashboard/exam_submission.html')
+    # request.session.flush()
+    # request.session['user_authenticated'] = False  
+    level = request.GET.get('level')
+    jobPosition = request.GET.get('applied_for')
+    user_id = request.GET.get('user')
+    print(level,jobPosition,user_id)
+    cursor = connection.cursor()
+    cursor.execute('exec [save_And_Get_Result] %s,%s',[user_id,jobPosition])
+    cursor.execute('exec [get_pass_or_fail_candidate] %s,%s,%s',[jobPosition,user_id,level])
+    result = cursor.fetchall()
+    passorfail = ''
+    print(result)
+    for i in result:
+        if i[4] == 'FAIL':
+            passorfail = 'FAIL'
+            break
+        else:
+            passorfail = 'PASS'
+    print(passorfail)
+    return render(request, 'dashboard/exam_submission.html',{'result':result,'level':level,'passorfail':passorfail})
 
 
-def capture_image(request):
-    # open camera    
-    cap = cv2.VideoCapture(0)
-    # capture frame    
-    ret, frame = cap.read()
-    # release camera    
-    cap.release()
-    # convert frame to bytes    
-    _, buffer = cv2.imencode('.jpg', frame)
-    image_bytes = buffer.tobytes()
-    # render image in template    
-    return HttpResponse(image_bytes, content_type='image/jpeg')
+def submit_answers(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        # Access the form data using the keys of the data dictionary
+        print(data)
+        for key, value in data.items():
+            # Do something with the data here
+            # print(value)
+            if value != None:
+                ans = value
+                question_id,subject_id,user_id = key.split('$')
+                print(type(question_id),type(ans),type(subject_id),type(user_id))
+                cursor = connection.cursor()
+                cursor.execute('exec update_ans_candidate %s,%s,%s,%s',[question_id,ans,subject_id,user_id])
+            else:
+                ans = 'Null'
+                question_id,subject_id,user_id = key.split('$')
+                print(question_id,ans,subject_id,user_id)
+                cursor = connection.cursor()
+                cursor.execute('exec update_ans_candidate %s,%s,%s,%s',[question_id,ans,subject_id,user_id])
+            # return redirect('submission')
+        return JsonResponse({'status': 'success'})
+    else:
+        return JsonResponse({'status': 'error'})
+
+# def gen():
+#     """Video streaming generator function."""
+
+#     cap = cv2.VideoCapture(0)
+
+#     # Detect the coordinates
+#     detector = dlib.get_frontal_face_detector()
+#     img_counter = 0
+
+#     # Capture frames continuously
+#     while True:
+
+#         # Capture frame-by-frame
+#         ret, frame = cap.read()
+#         frame = cv2.flip(frame, 1)
+
+#         # RGB to grayscale
+#         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+#         faces = detector(gray)
+
+#         # Iterator to count faces
+#         i = 0
+#         for face in faces:
+
+#             # Get the coordinates of faces
+#             x, y = face.left(), face.top()
+#             x1, y1 = face.right(), face.bottom()
+#             cv2.rectangle(frame, (x, y), (x1, y1), (0, 255, 0), 2)
+
+#             # Increment iterator for each face in faces
+#             i = i+1
+
+#             # Display the box and faces
+#             cv2.putText(frame, ' '+str(i), (x-10, y-10),
+#                         cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)    
+        
+#         if i > 1:
+#             now = datetime.datetime.now()
+#             p = os.path.sep.join(['img', "More than one face detected{}.png".format(str(now).replace(":",''))])
+#             # data.append("More than one face detected.")
+#             cv2.imwrite(p, frame)
+#             img_counter += 1
+
+#         if i == 0:
+#             now = datetime.datetime.now()
+#             p = os.path.sep.join(['img', "No face detected{}.png".format(str(now).replace(":",''))])
+#             # data.append("No face detected.")
+#             cv2.imwrite(p, frame)
+#             img_counter += 1
+
+#         frame = cv2.resize(frame, (0,0), fx=0.5, fy=0.5) 
+#         ret, buffer = cv2.imencode('.jpg', frame)
+#         frame = buffer.tobytes()
+#         yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+                  
+
+# Load the Haar Cascade classifier
+face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+
+import time
 
 def gen():
-    """Video streaming generator function."""
-
+    # Open the camera
     cap = cv2.VideoCapture(0)
 
-    # Detect the coordinates
-    detector = dlib.get_frontal_face_detector()
+    # Initialize image counter
     img_counter = 0
 
-    # Capture frames continuously
-    while True:
+    # Initialize the flag for capturing an image
+    capture_flag = False
 
-        # Capture frame-by-frame
+    while True:
+        # Read a frame from the camera
         ret, frame = cap.read()
         frame = cv2.flip(frame, 1)
 
-        # RGB to grayscale
+        # Convert to grayscale
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        faces = detector(gray)
 
-        # Iterator to count faces
-        i = 0
-        for face in faces:
+        # Detect faces in the frame
+        faces = face_cascade.detectMultiScale(gray, scaleFactor=1.3, minNeighbors=5)
 
-            # Get the coordinates of faces
-            x, y = face.left(), face.top()
-            x1, y1 = face.right(), face.bottom()
-            cv2.rectangle(frame, (x, y), (x1, y1), (0, 255, 0), 2)
+        # Draw a rectangle around each detected face
+        for (x, y, w, h) in faces:
+            cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
 
-            # Increment iterator for each face in faces
-            i = i+1
+        # Display the number of faces detected
+        cv2.putText(frame, ' ' + str(len(faces)), (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
 
-            # Display the box and faces
-            cv2.putText(frame, ' '+str(i), (x-10, y-10),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)    
-        
-        # if i > 1:
-        #     now = datetime.datetime.now()
-        #     p = os.path.sep.join(['img', "More than one face detected{}.png".format(str(now).replace(":",''))])
-        #     # data.append("More than one face detected.")
-        #     cv2.imwrite(p, frame)
-        #     img_counter += 1
+        if len(faces) > 1:
+            now = datetime.datetime.now()
+            p = os.path.sep.join(['img', "More than one face detected{}.png".format(str(now).replace(":",''))])
 
-        # if i == 0:
-        #     now = datetime.datetime.now()
-        #     p = os.path.sep.join(['img', "No face detected{}.png".format(str(now).replace(":",''))])
-        #     # data.append("No face detected.")
-        #     cv2.imwrite(p, frame)
-        #     img_counter += 1
+            # Set the capture flag to True and save the image to the disk
+            capture_flag = True
+            cv2.imwrite(p, frame)
+            img_counter += 1
+            # Add a delay of 2 seconds if the capture flag is set to True
+            if capture_flag:
+                time.sleep(2)
+                capture_flag = False
 
-        frame = cv2.resize(frame, (0,0), fx=0.5, fy=0.5) 
+        if len(faces) == 0:
+            now = datetime.datetime.now()
+            p = os.path.sep.join(['img', "No face detected{}.png".format(str(now).replace(":",''))])
+
+            # Set the capture flag to True and save the image to the disk
+            capture_flag = True
+            cv2.imwrite(p, frame)
+            img_counter += 1
+            # Add a delay of 2 seconds if the capture flag is set to True
+            if capture_flag:
+                time.sleep(2)
+                capture_flag = False
+
+        # Resize and encode the frame
+        frame = cv2.resize(frame, (0, 0), fx=0.5, fy=0.5)
         ret, buffer = cv2.imencode('.jpg', frame)
         frame = buffer.tobytes()
-        yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
-                  
+
+        # Yield the frame to the calling function
+        yield (b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+
+        
+
+
+
 
 @gzip.gzip_page
 def dynamic_stream(request,stream_path="video"):
@@ -638,6 +946,24 @@ def dynamic_stream(request,stream_path="video"):
         return StreamingHttpResponse(gen(),content_type="multipart/x-mixed-replace;boundary=frame")
     except :
         return "error"
+
+
+
+
+@csrf_exempt
+def capture(request):
+    if request.method == 'POST':
+        image = request.POST.get('image')
+        # do something with the image
+    return render(request, 'registration/camera.html')
+
+@csrf_exempt
+def capture_card(request):
+    if request.method == 'POST':
+        image = request.POST.get('image')
+        # do something with the image
+    return render(request, 'registration/camera_card.html')
+
     
 
 
@@ -670,5 +996,106 @@ def video(request):
 
 def result(request):
     return render(request, 'dashboard/Result.html')
+
+
+
+
+############################################AUDIO################################################
+
+# Set chunk size (number of frames per buffer)
+CHUNK = 1024
+
+# Set sample format
+FORMAT = pyaudio.paInt16
+
+# Set channels
+CHANNELS = 1
+
+# Set sample rate
+RATE = 44100
+
+
+
+# Initialize PyAudio object
+p = pyaudio.PyAudio()
+
+# Define a function to start recording
+def start_recording(duration):
+    # Open input stream
+    stream = p.open(format=FORMAT,
+                    channels=CHANNELS,
+                    rate=RATE,
+                    input=True,
+                    frames_per_buffer=CHUNK)
+    
+    # Set output filename
+    FILENAME = "recording_" + datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S") + ".wav"
+
+    print("Listening...")
+
+    # Create empty list to store audio data
+    frames = []
+
+    # Flag to indicate recording
+    recording = False
+
+    # Set start time
+    start_time = datetime.datetime.now()
+
+    try:
+        # Loop through stream and record audio
+        while datetime.datetime.now() - start_time < duration:
+            # Read chunk of audio data
+            data = stream.read(CHUNK)
+
+            # Convert data to numpy array
+            numpydata = np.frombuffer(data, dtype=np.int16)
+
+            # Calculate root mean square (RMS) of audio chunk
+            rms = np.sqrt(np.mean(np.square(numpydata)))
+
+            # Calculate decibel (dB) level
+            db = 20 * math.log10(rms)
+
+            # Check if dB level exceeds threshold and start recording
+            if db > 30 and not recording:
+                print("Sound detected! dB level: ", db)
+                recording = True
+
+            # Record audio data if flag is set
+            if recording:
+                frames.append(data)
+
+            # Stop recording after 5 seconds
+            if len(frames) > 0 and len(frames) * CHUNK / RATE >= 5:
+                print("Sound stopped. dB level: ", db)
+                recording = False
+
+    except KeyboardInterrupt:
+        print("Interrupted.")
+
+    # Close stream
+    stream.stop_stream()
+    stream.close()
+
+    # Save audio data to WAV file if frames are not empty
+    if frames:
+        wf = wave.open(FILENAME, 'wb')
+        wf.setnchannels(CHANNELS)
+        wf.setsampwidth(p.get_sample_size(FORMAT))
+        wf.setframerate(RATE)
+        wf.writeframes(b''.join(frames))
+        wf.close()
+
+        print("Recording saved as", FILENAME)
+    else:
+        print("No recording saved.")
+
+    return FILENAME
+
+
+
+
+
 
 

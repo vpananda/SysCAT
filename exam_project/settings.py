@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'exam_app',
+    # 'webcam',
 ]
 
 MIDDLEWARE = [
@@ -96,6 +97,7 @@ DATABASES = {
 
         # String. Database user password.
         'PASSWORD': 'OltDevProd',
+        
 
          # String. SQL Server instance in "server\instance" format.
         'HOST': '10.100.130.21',
