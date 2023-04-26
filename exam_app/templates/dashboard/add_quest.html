@@ -7,6 +7,95 @@
       max-height: 80vh;
       overflow-y: auto;
     }
+    /* Style for the form container */
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #2c2f33;
+}
+
+/* Style for the form */
+.card {
+  background-color: #fff;
+  border: none;
+  border-radius: 20px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+  width: 100vw;
+  padding: 40px;
+}
+
+/* Style for the form header */
+h2 {
+  color: #fff;
+  font-size: 36px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+/* Style for the form labels */
+label {
+  color: #2c2f33;
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+}
+
+/* Style for the form inputs */
+input[type="text"],
+select,
+textarea {
+  background-color: #f8f9fa;
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  color: #2c2f33;
+  font-size: 16px;
+  padding: 10px;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+/* Style for the form button container */
+.form-group.d-flex {
+  justify-content: space-between;
+}
+
+/* Style for the form buttons */
+.btn {
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 10px 20px;
+  text-transform: uppercase;
+}
+
+.btn-primary {
+  background-color: #2c2f33;
+  border: none;
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background-color: #0c0e10;
+  cursor: pointer;
+}
+
+.btn-secondary {
+  background-color: #fff;
+  border: 2px solid #2c2f33;
+  color: #2c2f33;
+}
+
+.btn-secondary:hover {
+  background-color: #f8f9fa;
+  cursor: pointer;
+}
+
   </style>
 </head>
 <div class="container">
@@ -16,7 +105,6 @@
       <form method="POST">
         {% csrf_token %}
         <div class="form-group row mb-4">
-          
           <div class="col-sm-6">
             <label class="col-sm-6 col-form-label">Subject:</label>
             <select class="form-control" name="subject" required>
@@ -71,9 +159,7 @@
         </div>
         <div class="form-group d-flex justify-content-between m-4">
           <button type="submit" class="btn btn-primary">Add Question</button>
-          <button type="button" class="btn btn-secondary" onclick="history.back()">
-            Maybe Later
-          </button>
+          <a href="{% url 'quest_bank' %}" class="btn btn-secondary">May Be Later</a>
         </div>
       </form>
     </div>

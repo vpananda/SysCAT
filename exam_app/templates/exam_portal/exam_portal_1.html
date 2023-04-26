@@ -9,6 +9,24 @@
     top: 20px;
     margin-bottom: 20px;
 }
+  #q_btn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+  #q_btn:focus {
+    outline: none;
+}
+
+  #q_btn:hover {
+    background-color: #3e8e41;
+}
+
 </style>
 {% block body %}
 {% block content %}
@@ -23,30 +41,39 @@
     </div>
     
     
-       
-    {% for key, value in questions.items %}
-    <div id="{{ key }}" class="tabcontent">
-        <h3>{{ key }}</h3>
-        {% for index, (question, options) in value.items|enumerate %}
-            <div class="card" id="ques_card{{ index }}">
-                <div class="card-body">
-                    <p>Question {{ index+1 }}: {{ question }}</p>
-                    {% for i, option in enumerate(options) %}
-                        <input type="radio" id="option{{ i+1 }}_{{ index }}" name="option{{ index }}" value="{{ option }}" onclick="submitAnswer('{{ option }}')">
-                        <label for="option{{ i+1 }}_{{ index }}">{{ option }}</label><br>
-                    {% endfor %}
-                    <div style="height: 100px;"></div>
-                    <div class="button-container">
-                        <a class="btn btn-primary" href="#ques_card{{ index-1 }}" {% if index==0 %} style="display:none" {% endif %}>Previous</a>
-                        <a class="btn btn-primary" href="#ques_card{{ index+1 }}" {% if index==len(value.items)-1 %} style="display:none" {% endif %}>Next</a>
-                        <button class="btn btn-danger" onclick="clearSelection('option{{ index }}')" style="float:right;">Clear Selection</button>
-                    </div>
+    {% for key,value in questions.items %}
+    <div id="{{key}}" class="tabcontent">
+        <h3>{{key}}</h3>
+        <div class="card" id="ques_card">
+            {% for i,j in value.items %}
+            <div class="card-body" id="card-body-{{ forloop.counter }}">
+                <p>{{i}}</p>
+                <input type="radio" id="option1" name="{{j.4}}${{j.5}}${{user_id}}" value="{{j.0}}" onclick="submitAnswer('{{j.0}}')">
+                <label for="option1">{{j.0}}</label><br>
+                <input type="radio" id="option2" name="{{j.4}}${{j.5}}${{user_id}}" value="{{j.1}}" onclick="submitAnswer('{{j.1}}')">
+                <label for="option2">{{j.1}}</label><br>
+                <input type="radio" id="option3" name="{{j.4}}${{j.5}}${{user_id}}" value="{{j.2}}" onclick="submitAnswer('{{j.2}}')">
+                <label for="option3">{{j.2}}</label><br>
+                <input type="radio" id="option4" name="{{j.4}}${{j.5}}${{user_id}}" value="{{j.3}}" onclick="submitAnswer('{{j.3}}')">
+                <label for="option4">{{j.3}}</label>
+                <div style="height: 100px;"></div>
+                <div class="button-container">
+                {% if forloop.first %}
+                <button class="btn btn-primary" onclick="openTab(event, '{{ key }}', {{ forloop.counter|add:1 }})">Next</button>
+                {% elif forloop.last %}
+                <button class="btn btn-primary" onclick="openTab(event, '{{ key }}', {{ forloop.counter|add:-1 }})">Previous</button>
+                {% else %}
+                <button class="btn btn-primary" onclick="openTab(event, '{{ key }}', {{ forloop.counter|add:-1 }})">Previous</button>
+                <button class="btn btn-primary" onclick="openTab(event, '{{ key }}', {{ forloop.counter|add:1 }})">Next</button>
+                {% endif %}
+                <button class="btn btn-danger"  onclick="clearSelection('{{j.4}}${{j.5}}${{user_id}}')" style="float:right;">Clear Selection</button>
                 </div>
             </div>
-        {% endfor %}
+            {% endfor %}
+        </div>
     </div>
-{% endfor %}
-
+    {% endfor %}
+    
     
     
       
@@ -59,24 +86,19 @@
     <div class="row" id="r3">
       <h6>Welcome {{ request.session.username }}</h6>
       <h3>Instructions</h3>
-      <ul>
-        <li>You must use a functioning webcam and microphone</li>
-        <li>
-          No cell phones or other secondary devices in the room or test area
-        </li>
-        <li>No one else can be in the room with you</li>
-        <li>No talking</li>
-        <li>
-          The testing room must be well-lit and you must be clearly visible
-        </li>
-        <li>No dual screens/monitors</li>
-        <li>Do not leave the camera</li>
-        <li>No use of additional applications or internet</li>
-      </ul>
+      
+      <div class="question-buttons">
+        <div class="button-container">
+          {% for i in value %}
+          <button id="q_btn" class="tablinks" onclick="openTab(event, '{{key}}')" {% if forloop.first %}id="defaultOpen"{% endif %}>Q {{ forloop.counter }}</button>
+          {% endfor %}
+      </div>
     </div>
-    <div id="countdown" data-total-duration="{{ total_duration }}"></div>
+  </div>
+    </div>
+    <div id="countdown" data-total-duration="{{ total_duration }}"><span id="countdown-timer"></span></div>
     <div class="row" id="r4">
-      <button class="btn btn-primary" onclick="submitForm()">Submit</button>
+      <a href="#" class="btn btn-primary" id="submit-button">Submit</a>
     </div>
   </div>
 </div>
@@ -177,13 +199,15 @@ var x = setInterval(function() {
   if (distance < 0) {
     clearInterval(x);
     document.getElementById("demo").innerHTML = "EXPIRED";
+    alert("Your time is up. Please submit your answers.");
+    window.location.href = "{% url 'submission' %}?level={{level}}&applied_for={{appliedfor}}&user={{user_id}}";
   }
 }, 1000);
 </script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   {% csrf_token %}
   <script>
-    window.onbeforeunload = function () {return false;}
+    {% comment %} window.onbeforeunload = function () {return false;} {% endcomment %}
     function submitAnswer(answerValue) {
       var formData = {};
       var radios = document.querySelectorAll("input[type=radio]");
@@ -215,22 +239,30 @@ var x = setInterval(function() {
     
   </script>
   
-  
-  <script>
-    function clearSelection(name) {
-    var radios = document.getElementsByName(name);
-    for (var i = 0; i < radios.length; i++) {
-        radios[i].checked = false;
-          }
-          submitAnswer();
+<script>
+function clearSelection(name) {
+var radios = document.getElementsByName(name);
+for (var i = 0; i < radios.length; i++) {
+    radios[i].checked = false;
       }
-    </script>
-    
-    <script>
-      document.addEventListener('DOMContentLoaded', () => {
-        document.documentElement.requestFullscreen();
-      });
-    </script>
+      submitAnswer();
+  }
+</script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    document.documentElement.requestFullscreen();
+  });
+</script>
+
+<script>
+  document.getElementById("submit-button").addEventListener("click", function() {
+    var confirmed = confirm("Are you sure you want to submit?");
+    if (confirmed) {
+      window.location.href = "{% url 'submission' %}?level={{level}}&applied_for={{appliedfor}}&user={{user_id}}";
+    }
+  });
+</script>
 
 
 {% endblock scripts %} 

@@ -30,6 +30,7 @@ urlpatterns = [
     re_path(r'^/(?P<stream_path>(.*?))/$',views.dynamic_stream,name="videostream"),  
     path('exam_portal',views.exam_portal,name="index"),
     path('exam_main_dashboard',views.exam_main_dashboard,name="exam_main_dashboard"),
+    path('alertpage',views.alertpage,name="alertpage"),
     path('', views.login, name='login'),
     path('logout/', views.logout, name='logout'),
     path('submission/', views.submission, name='submission'),

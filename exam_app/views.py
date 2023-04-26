@@ -58,7 +58,7 @@ def generate_excel(request):
     candidate_data = cursor.fetchall()
 
     # Create the table data in the required format    
-    rows = [{
+    rows = [{ 
         'Candidate Name': row[1] + ' ' + row[2],
         'User id': row[3],
         'Password': row[4],
@@ -98,9 +98,19 @@ def sidebar(request):
 def dashboard(request):
     if request.session.get('user_authenticated'):
         applied_for = request.GET.get('applied_for')
+        start_date = request.GET.get('start_date')
+        end_date = request.GET.get('end_date')
+        if start_date == '':
+            start_date = None
+        if end_date == '':
+            end_date = None
+        print(start_date)
+        print(end_date)
         if request.method == 'POST':
-            unlock_ids = request.POST.getlist('unlock')
-            skip_level_1 = request.POST.getlist('skip_level_1')
+            unlock_ids = request.POST.getlist('unlocked_ids[]')
+            skip_level_1 = request.POST.getlist('skipped_level_1_ids[]')
+            
+            print(skip_level_1,unlock_ids)
             cursor = connection.cursor()
             if unlock_ids:
                 for lockid in unlock_ids:
@@ -109,18 +119,19 @@ def dashboard(request):
                 for skip_level in skip_level_1:
                     cursor.execute('exec skip_level_1_Candiadtes %s',[skip_level])
         if applied_for == None:
-            applied_for = 'All'        
+            applied_for = 'All'   
         cursor = connection.cursor()
         cursor.execute('exec get_data_dashboard')
         dash_data = cursor.fetchall()
         search_name = request.GET.get('search-bar')
         if search_name == "":
-            search_name = None        
-        cursor.execute('exec get_data_tb_candidate @name=%s,@applied_for=%s',[search_name,applied_for])
+            search_name = None 
+        cursor.execute('exec get_data_tb_candidate_karthik @name=%s,@applied_for=%s,@start_date=%s,@end_date=%s',[search_name,applied_for,start_date,end_date])
         candidate_data = cursor.fetchall()
+        print(candidate_data)
         cursor.execute('exec get_skill_applied_for_data')
         search_filter = cursor.fetchall()
-        return render(request, 'dashboard/dashboard.html',{'dash_data':dash_data,'candidate_data':candidate_data,'search_filter':search_filter})
+        return render(request, 'dashboard/dashboard.html',{'dash_data':dash_data,'candidate_data':candidate_data,'search_filter':search_filter,'start_date':start_date,'end_date':end_date})
     return redirect('logout')
 
 def show_candidate_data(request,id):
@@ -128,11 +139,20 @@ def show_candidate_data(request,id):
         cursor = connection.cursor()
         cursor.execute('EXEC get_candidate_data_by_id %s', [id])
         candidate_data = cursor.fetchone()
+        jobPosition = candidate_data[31]
+        user_id = candidate_data[0]
+        cursor.execute('exec [get_pass_or_fail_candidate] %s,%s,%s',[jobPosition,user_id,1])
+        result_1 = cursor.fetchall()
+        cursor.execute('exec [get_pass_or_fail_candidate] %s,%s,%s',[jobPosition,user_id,2])
+        result_2 = cursor.fetchall()
 
         context = {
-            'candidate_data': candidate_data        }
+            'candidate_data': candidate_data , 'result_1':result_1,'result_2':result_2      }
         return render(request, 'dashboard/candidatedata.html', context)
     return redirect('logout')
+
+
+
 def registercandidate(request):
     if request.session.get('user_authenticated'):
         applied_for = request.GET.get('applied_for')
@@ -153,6 +173,17 @@ def registercandidate(request):
             }
         return render(request, 'dashboard/registerdcandidates.html', context)
     return redirect('logout')
+
+def delete_candidate(request,id):
+    if request.session.get('user_authenticated'):
+        try:
+            cursor = connection.cursor()
+            cursor.execute('exec Deletecandidate %s',[id])
+            return redirect('/registercandidate')  
+        finally:
+            cursor.close()
+            pass
+    return redirect('login')
 
 def job_positions(request):
     # try:
@@ -230,6 +261,7 @@ def edit_job_pos(request, id):
 
         return render(request, 'dashboard/job_positions.html', context)
     return redirect('login')
+
 
 def activatePosition(request, id):
     if request.session.get('user_authenticated'):
@@ -389,97 +421,105 @@ def delete_skill(request,id):
     return redirect('login')
 
 def activate_skill(request,id):
-    try:
-        cursor = connection.cursor()
-        cursor.execute('exec Activate_skill_config %s',[id])
-        return redirect('/skill_set_config')  
-    finally:
-        cursor.close()
-        
-def create_Skill(request):
-    cursor = connection.cursor()
-    cursor.execute('exec GetJobposition')
-    jobs = cursor.fetchall()
-    cursor = connection.cursor()
-    cursor.execute('exec get_subjectData')
-    subjects = cursor.fetchall()
-    if request.method == "POST":  
-        AppliedFor = request.POST.get('applied_for')
-        Subject_ID = request.POST.get('subject')
-        Level = request.POST.get('level')
-        No_of_Question = request.POST.get('num_of_questions')
-        CutOffMarks = request.POST.get('cutoff_marks')
-        Duration = request.POST.get('duration')
-        IsMandatory = request.POST.get('subject_type')
-        OptionalGroupName=request.POST.get('subject-type')
-        print(Subject_ID)
+    if request.session.get('user_authenticated'):
         try:
             cursor = connection.cursor()
-            cursor.execute('exec insertSubjectlevel %s,%s,%s,%s,%s,%s,%s,%s',[AppliedFor,Subject_ID,Level,No_of_Question,CutOffMarks,Duration,IsMandatory,OptionalGroupName])
+            cursor.execute('exec Activate_skill_config %s',[id])
             return redirect('/skill_set_config')  
         finally:
             cursor.close()
-    return render(request, 'dashboard/new_subject_config.html',{'jobs':jobs,'subjects':subjects})
+    return redirect('login')
+        
+def create_Skill(request):
+    if request.session.get('user_authenticated'):
+        cursor = connection.cursor()
+        cursor.execute('exec GetJobposition')
+        jobs = cursor.fetchall()
+        cursor = connection.cursor()
+        cursor.execute('exec get_subjectData')
+        subjects = cursor.fetchall()
+        if request.method == "POST":  
+            AppliedFor = request.POST.get('applied_for')
+            Subject_ID = request.POST.get('subject')
+            Level = request.POST.get('level')
+            No_of_Question = request.POST.get('num_of_questions')
+            CutOffMarks = request.POST.get('cutoff_marks')
+            Duration = request.POST.get('duration')
+            IsMandatory = request.POST.get('subject_type')
+            OptionalGroupName=request.POST.get('subject-type')
+            print(Subject_ID)
+            try:
+                cursor = connection.cursor()
+                cursor.execute('exec insertSubjectlevel %s,%s,%s,%s,%s,%s,%s,%s',[AppliedFor,Subject_ID,Level,No_of_Question,CutOffMarks,Duration,IsMandatory,OptionalGroupName])
+                return redirect('/skill_set_config')  
+            finally:
+                cursor.close()
+        return render(request, 'dashboard/new_subject_config.html',{'jobs':jobs,'subjects':subjects})
+    return redirect('login')
           
 
 def quest_bank(request):
-    search_value = request.GET.get('applied_for')
-    if search_value:
-        sub_id, subject_name = search_value.split('|')
-    else:
-        sub_id = 0
-        subject_name = ''
-    active_value = request.GET.get('filter_by')
-    if search_value == None:
-        sub_id = 0
-    if active_value is None:
-        active_value = 1
-    try:
-        cursor = connection.cursor()
-        cursor.execute('exec get_SearchQuestiondata %s, %s', [sub_id, active_value])
-        questions = cursor.fetchall()
-        cursor.execute('exec get_subjectData')
-        subjects = cursor.fetchall()
-        cursor.execute('exec get_appied_for_search_data')
-        search_filter = cursor.fetchall()
-        context = {
-            'questions': questions,
-            'subjects': subjects,
-            'search_filter': search_filter,
-            'subject_name': subject_name,
-            'sub_id': sub_id,
-        }
-        return render(request, 'dashboard/quest_bank.html', context)
-    finally:
-        cursor.close()
+    if request.session.get('user_authenticated'):
+        search_value = request.GET.get('applied_for')
+        if search_value:
+            sub_id, subject_name = search_value.split('|')
+        else:
+            sub_id = 0
+            subject_name = ''
+        active_value = request.GET.get('filter_by')
+        if search_value == None:
+            sub_id = 0
+        if active_value is None:
+            active_value = 1
+        try:
+            cursor = connection.cursor()
+            cursor.execute('exec get_SearchQuestiondata %s, %s', [sub_id, active_value])
+            questions = cursor.fetchall()
+            cursor.execute('exec get_subjectData')
+            subjects = cursor.fetchall()
+            cursor.execute('exec get_appied_for_search_data')
+            search_filter = cursor.fetchall()
+            context = {
+                'questions': questions,
+                'subjects': subjects,
+                'search_filter': search_filter,
+                'subject_name': subject_name,
+                'sub_id': sub_id,
+            }
+            return render(request, 'dashboard/quest_bank.html', context)
+        finally:
+            cursor.close()
+    return redirect('login')
     
 
 def add_quest(request):
-    if request.method == "POST": 
-        subject_id =  request.POST.get('subject')
-        level_id =  request.POST.get('level')
-        question =  request.POST.get('question')
-        option1 =  request.POST.get('option1')
-        option2 =  request.POST.get('option2')
-        option3 =  request.POST.get('option3')
-        option4 =  request.POST.get('option4')
-        answer =  request.POST.get('answer')
-        try:
-            cursor = connection.cursor()
-            cursor.execute('exec insertQuestiondata %s,%s,%s,%s,%s,%s,%s,%s',[subject_id,level_id,question,option1,option2,option3,option4,answer])
-            return redirect('/quest_bank')  
-        finally:
-            cursor.close()
+    if request.session.get('user_authenticated'):
+        if request.method == "POST": 
+            subject_id =  request.POST.get('subject')
+            level_id =  request.POST.get('level')
+            question =  request.POST.get('question')
+            option1 =  request.POST.get('option1')
+            option2 =  request.POST.get('option2')
+            option3 =  request.POST.get('option3')
+            option4 =  request.POST.get('option4')
+            answer =  request.POST.get('answer')
+            try:
+                cursor = connection.cursor()
+                cursor.execute('exec insertQuestiondata %s,%s,%s,%s,%s,%s,%s,%s',[subject_id,level_id,question,option1,option2,option3,option4,answer])
+                return redirect('/quest_bank')  
+            finally:
+                cursor.close()
 
-    else:
+        else:
 
-        try:
-            cursor = connection.cursor()
-            cursor.execute('exec get_subjectData')
-            subjects = cursor.fetchall()
-            return render(request, 'dashboard/add_quest.html',{'subjects':subjects})
-        finally:
-            cursor.close()
+            try:
+                cursor = connection.cursor()
+                cursor.execute('exec get_subjectData')
+                subjects = cursor.fetchall()
+                return render(request, 'dashboard/add_quest.html',{'subjects':subjects})
+            finally:
+                cursor.close()
+    return redirect('login')
 
 def edit_ques(request, id):
     if request.method == 'POST':
@@ -521,51 +561,51 @@ def activate_quest(request, id):
 
 import threading
 
-def exam_portal(request):
-    if request.session.get('user_authenticated'):
-        try:
-            level = request.GET.get('level')
-            jobPosition = request.GET.get('jobposition')
-            total_duration = request.GET.get('total_duration')
-            user_id = request.GET.get('user')
-            print('level:',level)
-            print(jobPosition)
+# def exam_portal(request):
+#     if request.session.get('user_authenticated'):
+#         try:
+#             level = request.GET.get('level')
+#             jobPosition = request.GET.get('jobposition')
+#             total_duration = request.GET.get('total_duration')
+#             user_id = request.GET.get('user')
+#             print('level:',level)
+#             print(jobPosition)
 
-            # Start a new thread to run the start_recording function in parallel
-            recording_thread = threading.Thread(target=start_recording, args=(datetime.timedelta(minutes=1),))
-            recording_thread.start()
+#             # Start a new thread to run the start_recording function in parallel
+#             recording_thread = threading.Thread(target=start_recording, args=(datetime.timedelta(minutes=int(total_duration)),))
+#             recording_thread.start()
 
-            cursor = None  # Initialize the cursor variable to None
-            try:
-                cursor = connection.cursor()
-                cursor.execute('exec getExamQuestion %s,%s', [jobPosition,level])
-                my_list = cursor.fetchall()
-                print(my_list)
-                appliedfor = my_list[0][9]
-                for tup in my_list:
-                    quest_id, subject_id =  tup[6], tup[7]
-                    print(quest_id, subject_id,user_id)
-                    cursor.execute('exec insertinto_tb_results %s,%s,%s,%s', [quest_id, subject_id,user_id,level])
-                my_dict = {}
-                for tup in my_list:
-                    key1, key2 = tup[0], tup[1]
-                    values = list(tup[2:])
+#             cursor = None  # Initialize the cursor variable to None
+#             try:
+#                 cursor = connection.cursor()
+#                 cursor.execute('exec getExamQuestion %s,%s', [jobPosition,level])
+#                 my_list = cursor.fetchall()
+#                 print(my_list)
+#                 appliedfor = my_list[0][9]
+#                 for tup in my_list:
+#                     quest_id, subject_id =  tup[6], tup[7]
+#                     print(quest_id, subject_id,user_id)
+#                     cursor.execute('exec insertinto_tb_results %s,%s,%s,%s', [quest_id, subject_id,user_id,level])
+#                 my_dict = {}
+#                 for tup in my_list:
+#                     key1, key2 = tup[0], tup[1]
+#                     values = list(tup[2:])
 
-                    if key1 in my_dict:
-                        my_dict[key1][key2] = values
-                    else:
-                        my_dict[key1] = {key2: values}
+#                     if key1 in my_dict:
+#                         my_dict[key1][key2] = values
+#                     else:
+#                         my_dict[key1] = {key2: values}
 
-                print(my_dict)
-                return render(request,"exam_portal/exam_portal.html",{'questions':my_dict,'total_duration':total_duration,'user_id':user_id,'level':level,'appliedfor':appliedfor})
-            finally:
-                if cursor:
-                    cursor.close()
+#                 print(my_dict)
+#                 return render(request,"exam_portal/exam_portal.html",{'questions':my_dict,'total_duration':total_duration,'user_id':user_id,'level':level,'appliedfor':appliedfor})
+#             finally:
+#                 if cursor:
+#                     cursor.close()
 
-        except Exception as e:
-            print(e)
-            return HttpResponseBadRequest("Bad Request")
-    return redirect('login')
+#         except Exception as e:
+#             print(e)
+#             return HttpResponseBadRequest("Bad Request")
+#     return redirect('login')
 
     
 
@@ -641,7 +681,7 @@ def registration(request):
         try:
             cursor = connection.cursor()
             cursor.execute('exec insertregistrationdata %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s' ,[Applyingfor,firstname,lastname,gender,dob,MaritalStatus,phone,email,CAddress,PAddress,Institution10,CGPA10,YOP10,Institution12,CGPA12,YOP12,Branch12,Graduation,UGCollege,UGDiscipline,CGPAUG,YOPUG,PGraduation,PGDiscipline,PGCollege,CGPAPG,YOPPG,Source,Referredthrough,Applied,Adate,countrycode,Id_proof,ID_NO,iddata,facedata])
-            return render(request, 'registration/registration_K.html')
+            return render(request, 'registration/login.html')
         finally:
             cursor.close()
             request.session.flush()
@@ -656,7 +696,7 @@ def registration(request):
     current_year = dt.now().year
     years = [year for year in range(1990, current_year+1)]
     context = {'countries': countries,'ug':ug,'pg':pg,'branch':branch,'jobs':jobs,'years':years}
-    return render(request, 'registration/registration_K.html',context)  
+    return render(request, 'registration/registration_2.html',context)  
 
     
 def save_image(request):
@@ -678,6 +718,7 @@ def save_image(request):
                 return JsonResponse({'status':'success'})
     
     return JsonResponse({'status': 'error'})
+
 
 
 def login(request):
@@ -716,16 +757,17 @@ def login(request):
                 
                 # If the user is valid but not yet activated                
                 elif user[3] != password:
-                    return render(request, 'registration/login.html', {'error': 'Invalid login credentials'})
+                    return render(request, 'registration/login.html', {'perror': 'Invalid Password'})
                 
-            # If the user is invalid            
+            # If the user is invalid    
+            elif user == None:
+                return render(request, 'registration/login.html', {'errors': 'Invalid credentials'})        
             else:
-                return render(request, 'registration/login.html', {'error': 'Invalid login credentials'})
+                return render(request, 'registration/login.html', {'error': 'Invalid Email ID'})
         finally:
             cursor.close()
     # Render the login page    
     return render(request, 'registration/login.html')
-
 
 def exam_main_dashboard(request):
     if request.session.get('user_authenticated'):
@@ -738,24 +780,31 @@ def exam_main_dashboard(request):
         print(ip_address)
         cursor.execute('EXEC get_candidate_data_by_id %s', [user[0]])
         candidate_data = cursor.fetchone()
+        
         print(candidate_data[38])
         print(candidate_data[31])
-        if candidate_data[57] == 0:
-            level = 1
-        else:
-            level = 2
-            
-        cursor = connection.cursor()
-        cursor.execute('exec [get_candidate_applied_job_details] %s,%s',[level,candidate_data[31]])
-        subjects = cursor.fetchall()
-        if subjects == []:
-            return redirect('logout')
-        print(subjects)
-        jobposition = subjects[0][1]
-        total_duration = subjects[0][10]
-        # print(level,jobposition)
-        return render(request,"exam_portal/exam_portal_dashboard.html",{'user':user,'candidate_data':candidate_data,'subjects':subjects,'level':level,'jobposition':jobposition,'total_duration':total_duration})
+        if candidate_data[26] == 1:
+            if candidate_data[57] == 0 and candidate_data[38] == 0:
+                level = 1
+            elif (candidate_data[57] == 1 and (candidate_data[38] == 0 or candidate_data[38] == 1) and candidate_data[58] == 'PASS'):
+                level = 2
+            else:
+                return HttpResponse('Completed your exam any quries contact HR')
+            cursor = connection.cursor()
+            cursor.execute('exec [get_candidate_applied_job_details] %s,%s',[level,candidate_data[31]])
+            subjects = cursor.fetchall()
+            if subjects == []:
+                return redirect('logout')
+            print(subjects)
+            jobposition = subjects[0][1]
+            total_duration = subjects[0][10]
+            # print(level,jobposition)
+            return render(request,"exam_portal/exam_portal_dashboard.html",{'user':user,'candidate_data':candidate_data,'subjects':subjects,'level':level,'jobposition':jobposition,'total_duration':total_duration})
+        return redirect('alertpage')
     return redirect('logout')
+
+def alertpage(request):
+    return render(request,"exam_portal/alertpage.html")
 
 
 
@@ -764,27 +813,32 @@ def logout(request):
     request.session['user_authenticated'] = False    
     return render(request, 'registration/logout.html')
 
+
 def submission(request):
+    if request.session.get('user_authenticated'):
     # request.session.flush()
     # request.session['user_authenticated'] = False  
-    level = request.GET.get('level')
-    jobPosition = request.GET.get('applied_for')
-    user_id = request.GET.get('user')
-    print(level,jobPosition,user_id)
-    cursor = connection.cursor()
-    cursor.execute('exec [save_And_Get_Result] %s,%s',[user_id,jobPosition])
-    cursor.execute('exec [get_pass_or_fail_candidate] %s,%s,%s',[jobPosition,user_id,level])
-    result = cursor.fetchall()
-    passorfail = ''
-    print(result)
-    for i in result:
-        if i[4] == 'FAIL':
-            passorfail = 'FAIL'
-            break
-        else:
-            passorfail = 'PASS'
-    print(passorfail)
-    return render(request, 'dashboard/exam_submission.html',{'result':result,'level':level,'passorfail':passorfail})
+        level = request.GET.get('level')
+        jobPosition = request.GET.get('applied_for')
+        user_id = request.GET.get('user')
+        print(level,jobPosition,user_id)
+        cursor = connection.cursor()
+        cursor.execute('exec [save_And_Get_Result] %s,%s,%s',[user_id,jobPosition,level])
+        cursor.execute('exec [get_pass_or_fail_candidate] %s,%s,%s',[jobPosition,user_id,level])
+        result = cursor.fetchall()
+        passorfail = ''
+        print(result)
+        for i in result:
+            if i[4] == 'FAIL':
+                passorfail = 'FAIL'
+                break
+
+            else:
+                passorfail = 'PASS'
+        print(passorfail)
+        cursor.execute('exec update_tb_candidate_status %s,%s',[user_id,passorfail])
+        return render(request, 'dashboard/exam_submission.html',{'result':result,'level':level,'passorfail':passorfail})
+    return redirect('logout')
 
 
 def submit_answers(request):
@@ -798,7 +852,7 @@ def submit_answers(request):
             if value != None:
                 ans = value
                 question_id,subject_id,user_id = key.split('$')
-                print(type(question_id),type(ans),type(subject_id),type(user_id))
+                print(question_id,ans,subject_id,user_id)
                 cursor = connection.cursor()
                 cursor.execute('exec update_ans_candidate %s,%s,%s,%s',[question_id,ans,subject_id,user_id])
             else:
@@ -994,14 +1048,41 @@ def video(request):
 
 
 
+
 def result(request):
-    return render(request, 'dashboard/Result.html')
+    if request.session.get('user_authenticated'):
+        cursor = connection.cursor()
+        cursor.execute('exec get_skill_applied_for_data')
+        search_filter = cursor.fetchall()
+        applied_for = request.GET.get('applied_for')
+        filter = request.GET.get('filter_by')
+        if applied_for:
+            job_name,job_id  = applied_for.split('|')
+        else:
+            job_id = 0
+            job_name = None
+        if job_name == 'ALL':
+            job_name = None
+        if filter == 'ALL':
+            filter = None
+        print(job_name)
+        print(filter)
+        
+
+        cursor.execute('exec [view_results_bycandidate] %s,%s',[job_name,filter])
+        user = cursor.fetchall()
+        print(user)
+        # result_1 = cursor.fetchall()
+        # cursor.execute('exec [get_pass_or_fail_candidate] %s,%s,%s',[jobPosition,user_id,2])
+        # result_2 = cursor.fetchall()
+        return render(request, 'dashboard/Result.html',{'user':user,'search_filter':search_filter,'job_name':job_name})
+    return redirect('logout')
+
 
 
 
 
 ############################################AUDIO################################################
-
 # Set chunk size (number of frames per buffer)
 CHUNK = 1024
 
@@ -1013,6 +1094,11 @@ CHANNELS = 1
 
 # Set sample rate
 RATE = 44100
+
+is_recording = True
+
+# Create empty list to store audio data
+frames = []
 
 
 
@@ -1033,9 +1119,6 @@ def start_recording(duration):
 
     print("Listening...")
 
-    # Create empty list to store audio data
-    frames = []
-
     # Flag to indicate recording
     recording = False
 
@@ -1044,7 +1127,7 @@ def start_recording(duration):
 
     try:
         # Loop through stream and record audio
-        while datetime.datetime.now() - start_time < duration:
+        while datetime.datetime.now() - start_time < duration and is_recording:
             # Read chunk of audio data
             data = stream.read(CHUNK)
 
@@ -1094,8 +1177,82 @@ def start_recording(duration):
     return FILENAME
 
 
+def stop_recording():
+    global is_recording 
+    is_recording= False
+    print("Recording stopped.")
 
 
+def exam_portal(request):
+    global is_recording
+    if request.session.get('user_authenticated'):
+        try:
+            level = request.GET.get('level')
+            jobPosition = request.GET.get('jobposition')
+            total_duration = request.GET.get('total_duration')
+            user_id = request.GET.get('user')
+            print('level:',level)
+            print(jobPosition)
 
+            # Start a new thread to run the start_recording function in parallel
+            is_recording = True
+            recording_thread = threading.Thread(target=start_recording, args=(datetime.timedelta(minutes=int(total_duration)),))
+            recording_thread.start()
 
+            cursor = None  # Initialize the cursor variable to None
+            try:
+                cursor = connection.cursor()
+                cursor.execute('exec getExamQuestion %s,%s', [jobPosition,level])
+                my_list = cursor.fetchall()
+                print(my_list)
+                appliedfor = my_list[0][9]
+                for tup in my_list:
+                    quest_id, subject_id =  tup[6], tup[7]
+                    print(quest_id, subject_id,user_id)
+                    cursor.execute('exec insertinto_tb_results %s,%s,%s,%s', [quest_id, subject_id,user_id,level])
+                my_dict = {}
+                for tup in my_list:
+                    key1, key2 = tup[0], tup[1]
+                    values = list(tup[2:])
 
+                    if key1 in my_dict:
+                        my_dict[key1][key2] = values
+                    else:
+                        my_dict[key1] = {key2: values}
+
+                print(my_dict)
+                return render(request,"exam_portal/exam_portal.html",{'questions':my_dict,'total_duration':total_duration,'user_id':user_id,'level':level,'appliedfor':appliedfor})
+            finally:
+                if cursor:
+                    cursor.close()
+
+        except Exception as e:
+            print(e)
+            return HttpResponseBadRequest("Bad Request")
+    return redirect('login')
+
+def submission(request):
+    global is_recording
+    # request.session.flush()
+    # request.session['user_authenticated'] = False  
+    stop_recording()
+    level = request.GET.get('level')
+    jobPosition = request.GET.get('applied_for')
+    user_id = request.GET.get('user')
+    print(level,jobPosition,user_id)
+    cursor = connection.cursor()
+    cursor.execute('exec [save_And_Get_Result] %s,%s,%s',[user_id,jobPosition,level])
+    cursor.execute('exec [get_pass_or_fail_candidate] %s,%s,%s',[jobPosition,user_id,level])
+    result = cursor.fetchall()
+    passorfail = ''
+    print(result)
+    for i in result:
+        if i[4] == 'FAIL':
+            passorfail = 'FAIL'
+            break
+
+        else:
+            passorfail = 'PASS'
+    print(passorfail)
+    cursor.execute('exec update_tb_candidate_status %s,%s',[user_id,passorfail])
+    return render(request, 'dashboard/exam_submission.html',{'result':result,'level':level,'passorfail':passorfail})

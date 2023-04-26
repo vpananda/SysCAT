@@ -175,6 +175,15 @@
             max-width: 50% !important;
             padding: 10px 5px !important;
             }
+            .error-message {
+
+               color: red;
+                
+               font-size: 12px;
+                
+               margin-top: 4px;
+                
+               }
             }
         </style>
     </head>
@@ -279,6 +288,7 @@
                                         <div class="phone-number-ctr " >
                                             <label class="input-label" for="phone">Phone number<span style="color:red">*</span></label>
                                             <input type="tel" id="phone" name="phone" placeholder="Enter phone number" pattern = "[0-9]{10}"  title="Please enter a valid phone number with country code" required >
+                                            <span class="error-msg"></span>
                                         </div>
                                     </div>
                                     <div class="col-md-4">
@@ -442,7 +452,7 @@
                             <div  class="col-md-row-5"> 
                                 <label class="input-label" for="YOPPG"> Year of passing 
                                 </label>    
-                                <select name="YOPPG"  id="YOPPG" placeholder="Enter YOP" onchange="validateForm_3(event)" required>
+                                <select name="YOPPG"  id="YOPPG" placeholder="Enter YOP" onchange="validateForm_3(event)" >
                                     <option value="" disabled selected hidden>Select option</option>
                                     {% for year in years %}
                                     <option value="{{ year }}">{{ year }}</option>
@@ -507,31 +517,32 @@
                            
                             <div class="head2"  style="margin-left: 10px;">
                                 <div class='heading' >          
-                                    <a href="{% url 'capture_card' %}" class="button" >id proof</a>          
-                                    <img id="cardImage" src="#" name="iddata" value={{CardimageData}} alt="" style="width:100px; height:100px; margin-top:15px;"><span style="color:red">*</span> 
+                                    <a href="{% url 'capture_card' %}" class="button">id proof</a>          
+                                    <img id="cardImage" src="#" name="iddata" value={{CardimageData}} alt="" style="width:100px; height:100px; margin-top:15px;" ><span style="color:red">*</span> 
                                     <input type="hidden" name="card_image_data" id="cardImageDataField" required>  
                                 </div>
                                 <div class='heading'>          
                                     <a href="{% url 'capture' %}" class="button">face</a>          
-                                    <img id="faceImage" src="#" name="facedata" value={{FaceimageData}} alt="" style="width:100px; height:100px; margin-top:15px;"><span style="color:red">*</span> 
+                                    <img id="faceImage" src="#" name="facedata" value={{FaceimageData}} alt="" style="width:100px; height:100px; margin-top:15px;" ><span style="color:red">*</span> 
                                     <input type="hidden" name="face_image_data" id="faceImageDataField" required>              
                                 </div>
 
                             
                             </div>
                             <div class="heading  col-md-4">
-                                <label class="input-label" for="Id_proof">Type Of Id_proof</label>
-                                <select name="Id_proof" id="Id_proof" required>
-                                  <option value="" disabled selected hidden>Select option</option>
-                                  <option value="PAN CARD">PAN CARD</option>
-                                  <option value="AADHAR">AADHAR</option>
-                                  <option value="DRIVING LICENSE">DRIVING LICENSE</option>
-                                  <option value="PASSPORT">PASSPORT</option>
+                                <label class="input-label" for="Id_proof">Type Of Id_proof<span style="color:red">*</span></label>
+                                <select name="Id_proof"  id="Id_proof" required>
+                                    <option value="" disabled selected hidden>Select option</option>
+                                    <option value="PAN CARD">PAN CARD</option> 
+                                    <option value="AADHAR">AADHAR</option>
+                                    <option value="DRIVING LICENSE">DRIVING LICENSE</option>
+                                    <option value="PASSPORT">PASSPORT</option>
                                 </select>
                             </div>
-                            <div class="heading col-md-4"  id="idNoInputContainer" style="display:none" >
-                                <label class="input-label" for="ID_NO" id="idNoLabel">ID Number</label>
-                                <input type="text" name="ID_NO" id="ID_NO" size="15" placeholder="Enter ID Number" pattern="" required />
+                            <div class="heading col-md-4" >
+                                <label class="input-label" for="ID_NO" id="idNoLabel">ID_NO<span style="color:red">*</span></label>
+                                <input type="text" name="ID_NO" id="ID_NO" size="15" placeholder="Enter ID_NO"  pattern=""  required />
+                                <span class="error-message" id="idNoErrorMessage"></span>
                             </div>
                         </div>
                     </div>
@@ -545,6 +556,14 @@
     </body>
 </html>
 <script>
+    const phoneInput = document.getElementById('phone'); 
+    const errorMsg = document.querySelector('.error-msg'); 
+    phoneInput.addEventListener('input', function(event) {
+         if (phoneInput.validity.patternMismatch) { 
+            errorMsg.textContent = 'Please enter a valid phone number with 10 digits eg:1234567890'; 
+        } 
+        else { errorMsg.textContent = ''; }
+     });
     var submitButton = document.getElementById('reg_sub'); 
     var appliedDropdown = document.getElementById("Applied");
     var dateContainer = document.getElementById("date-container");
@@ -561,6 +580,7 @@
     const idNoInputContainer = document.getElementById("idNoInputContainer");
     const idNoInput = document.getElementById("ID_NO");
     const idNoLabel = document.getElementById("idNoLabel");
+    const idNoErrorMessage = document.getElementById("idNoErrorMessage");
 
     idProofDropdown.addEventListener("change", () => {
     const selectedOption = idProofDropdown.value;
@@ -570,30 +590,35 @@
         idNoLabel.textContent = "PAN CARD Number";
         idNoInput.placeholder = "ABCDE1234A";
         idNoInput.pattern = "^[A-Z]{5}[0-9]{4}[A-Z]{1}$";
+        //   idNoErrorMessage.textContent = "Please enter a valid PAN CARD number (e.g. ABCDE1234A)";
         break;
 
         case "AADHAR":
         idNoLabel.textContent = "AADHAR Number";
         idNoInput.placeholder = "012345678911";
         idNoInput.pattern = "^[0-9]{12}$";
+        //   idNoErrorMessage.textContent = "Please enter a valid AADHAR number (e.g. 012345678911)";
         break;
 
         case "DRIVING LICENSE":
         idNoLabel.textContent = "Driving License Number";
         idNoInput.placeholder = "AP0123456789111";
         idNoInput.pattern = "^[A-Z]{2}-[0-9]{13}$";
+        //   idNoErrorMessage.textContent = "Please enter a valid Driving License number (e.g. AP-0123456789111)";
         break;
 
         case "PASSPORT":
         idNoLabel.textContent = "Passport Number";
         idNoInput.placeholder = "A1234567";
         idNoInput.pattern = "^[A-Z]{1}[0-9]{7}$";
+        //   idNoErrorMessage.textContent = "Please enter a valid Passport number (e.g. A1234567)";
         break;
 
         default:
         idNoLabel.textContent = "ID Number";
         idNoInput.placeholder = "";
         idNoInput.pattern = "";
+        idNoErrorMessage.textContent = "";
         break;
     }
 
@@ -605,12 +630,39 @@
     });
 
     idNoInput.addEventListener("input", () => {
-    const value = idNoInput.value;
-    const regex = new RegExp(idNoInput.pattern);
-    const isValid = regex.test(value);
-    idNoInput.setCustomValidity(isValid ? "" : "Enter a valid ID number");
+    const selectedOption = idProofDropdown.value;
+    let errorMessage = "";
+
+    switch (selectedOption) {
+        case "PAN CARD":
+        errorMessage = "Please enter a valid PAN CARD number (e.g. ABCDE1234A)";
+        break;
+
+        case "AADHAR":
+        errorMessage = "Please enter a valid AADHAR number (e.g. 012345678911)";
+        break;
+
+        case "DRIVING LICENSE":
+        errorMessage = "Please enter a valid Driving License number (e.g. AP-0123456789111)";
+        break;
+
+        case "PASSPORT":
+        errorMessage = "Please enter a valid Passport number (e.g. A1234567)";
+        break;
+
+        default:
+        errorMessage = "";
+        break;
+    }
+
+    if (idNoInput.validity.patternMismatch) {
+        idNoErrorMessage.textContent = errorMessage;
+    } else {
+        idNoErrorMessage.textContent = "";
+    }
     });
-    
+
+
     
     // Get the data from sessionStorage
     var CardimageData = sessionStorage.getItem('CardimageData');
@@ -730,5 +782,6 @@
         input.setCustomValidity(isValid ? "" : "Enter a valid number between 0 and 100");
         }
         
+
 
 </script>

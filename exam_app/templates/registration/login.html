@@ -154,15 +154,18 @@
                 <div class="card2 card border-0 px-4 py-5 " style="background:#dbdee0" >
                     <form method="post">
                         {% csrf_token %}
+                        <span style="color:red">{{errors}}</span>
                         <div class="row px-3" style="display:felx;flex-direction:column;margin-bottom:16px;">
                         </div>
                         <div class="row px-3">
                             <label class="mb-1"><h6 class="mb-0 text-sm">Email Address</h6></label>
                             <input class="mb-4" type="text" name="username" placeholder="Enter a valid email address" required>
+                            <span style="color:red">{{error}}</span>
                         </div>
                         <div class="row px-3">
                             <label class="mb-1"><h6 class="mb-0 text-sm">Password</h6></label>
                             <input type="password" name="password" placeholder="Enter password" required>
+                            <span style="color:red">{{perror}}</span>
                         </div>
                         <div class="row px-3 mb-4">
                             <div class="custom-control custom-checkbox custom-control-inline">

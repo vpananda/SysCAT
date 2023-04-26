@@ -1,6 +1,7 @@
 {% extends 'base.html' %} {% load static %}
 {% block content %}
-<head>  <style>    body
+<head>  
+  <style>    body
   {
       counter-reset: Serial;           /* Set the Serial counter to 0 */
   }
@@ -18,31 +19,195 @@
     position: relative;
     padding-top: 50px; /* or add margin-top: 50px; */
   }
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 2rem;
+}
+
+.dashboard-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #000000;
+  text-shadow: 0px 2px 4px rgba(0, 0, 0, 0.25);
+  margin-bottom: 30px;
+}
+
+/* Table hover effect styles */
+.table tbody tr:hover td {
+  background-color: rgba(0, 0, 0, 0.100);
+}
+
+/* Table alternate row color styles */
+.table tbody tr:nth-of-type(even) td {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+/* Table highlight styles */
+.table .highlight td {
+  background-color: #007bff;
+  color: #fff;
+}
+ 
+    .btn-primary {
+      background: linear-gradient(to right, #007bff, #0056b3);
+      color: #fff;
+      border: none;
+      border-radius: 20px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      font-size: 16px;
+      font-weight: bold;
+      padding: 10px 20px;
+      text-decoration: none;
+    }
+    
+    .btn-primary:hover {
+      background: linear-gradient(to right, #0056b3, #007bff);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    }
+    
+    .btn-primary:active {
+      box-shadow: none;
+      transform: translateY(2px);
+    }
+    
+      
+    .form-control {
+      width: 300px;
+      height: 50px;
+      font-size: 16px;
+      font-weight: bold;
+      color: #333;
+      border: none;
+      background-color: #fff;
+      border-radius: 10px;
+      padding: 10px;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      transition: all 0.2s ease-in-out;
+      box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    
+    .form-control:focus {
+      outline: none;
+      box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.2);
+    }
+    
+    .form-control option {
+      font-size: 16px;
+      font-weight: bold;
+      color: #333;
+      background-color: #f5f5f5;
+    }
+    
+    .form-control option:hover {
+      background-color: #ddd;
+    }
+    
+    .form-control option[selected] {
+      background-color: #333;
+      color: #fff;
+    }
+       
+    .col-card-5 label {
+      font-size: 18px;
+      font-weight: bold;
+      color: #333;
+    }
+    
+    .table thead tr {
+      background: linear-gradient(to right, #007bff, #0056b3);
+      color: #fff;
+      text-align: center;
+      border-bottom: 1px solid #4d4d4d;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .table th,
+    .table td {
+     
+      vertical-align: middle;
+      text-align: center;
+      border-top: none;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    .table {
+      width: 100%;
+    max-width: 100%;
+    background-color:  #ffff;
+    color: #444;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    border-radius: 30px;
+    border: none;
+    }
+
+    .table thead tr {
+      background: linear-gradient(to right, #007bff, #0056b3);
+      color: #fff;
+      text-align: center;
+      border: none;
+      border-bottom: 1px solid #4d4d4d;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .table th,
+    .table td {
+     
+      vertical-align: middle;
+      text-align: center;
+      border: none;
+      border-top: none;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(to right, #0056b3, #007bff);
+      border-radius: 3px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: #f0f0f0;
+      border-radius: 3px;
+    }
+    
+
 </style>
 </head>
 <div class="container">
-  <h2 class="mb-4">Question Bank</h2>
+  <div class="col-12 mt-2 dashboard-header">
+    <h2 class=" my-4 dashboard-title">Question Bank</h2>
+  </div>
   <a href="{% url 'add_quest' %}" class="btn btn-primary mb-4">Add Question</a>
-  <div class="form-group row mb-3">
-    <label for="applied_for" class="col-sm-2 col-form-label">Subjects:</label>
-    <div class="col-sm-5">
-      <form action="{% url 'quest_bank' %}" method="get">
-        <select class="form-control w-50" name="applied_for" id="applied_for" onchange="this.form.submit()">
-          <option value='0|All' {% if request.GET.applied_for == '0' %}{% endif %}>All</option>
-          {% for search in search_filter %}
-          <option value="{{ search.1 }}|{{search.0}}" {% if search.0 == subject_name %} selected {% endif %}>{{ search.0 }}</option>
-          {% endfor %}
-        </select>
-  </div>
-  <div class="col-sm-5">              
-      <select class="form-control w-50" id="filter_by" name="filter_by" onchange="this.form.submit()">          
-        <option value="2" {% if request.GET.filter_by == '2' %}selected{% endif %}>All</option>          
-        <option value="1" {% if request.GET.filter_by == '1' %}selected{% endif %}>Active</option>          
-        <option value="0" {% if request.GET.filter_by == '0' %}selected{% endif %}>Inactive</option>        
-      </select>      
-    </form>      
-  </div>
-  <div class="table-responsive " style="height: 60vh;width:78vw; overflow-y: auto; margin:20px;">
+    <form method="GET" action="{% url 'quest_bank' %}">
+      <div class="form-group row mb-3">
+        <div class="col-md-5 col-card-5 d-flex justify-content-between align-items-center">
+          <label for="applied_for" class="mr-2">Applied for:</label>
+          <select class="form-control w-50" name="applied_for" id="applied_for" onchange="this.form.submit()">
+            <option value='0|All' {% if request.GET.applied_for == '0' %}{% endif %}>All</option>
+            {% for search in search_filter %}
+            <option value="{{ search.1 }}|{{search.0}}" {% if search.0 == subject_name %} selected {% endif %}>{{ search.0 }}</option>
+            {% endfor %}
+          </select>
+      </div>
+        <div class="col-md-7 d-flex justify-content-end align-items-center">
+          
+          <select class="form-control w-50" id="filter_by" name="filter_by" onchange="this.form.submit()">          
+            <option value="2" {% if request.GET.filter_by == '2' %}selected{% endif %}>All</option>          
+            <option value="1" {% if request.GET.filter_by == '1' %}selected{% endif %}>Active</option>          
+            <option value="0" {% if request.GET.filter_by == '0' %}selected{% endif %}>Inactive</option>        
+          </select>
+        </div>
+      </div>
+    </form>     
+  <div class="table-responsive " style="height: 60vh; overflow-y: auto; margin:20px;">
     <table class="table table-bordered table-striped">
       <thead class="sticky-thead">
         <tr>
@@ -71,7 +236,7 @@
           <td>{{ question.6 }}</td>
           <td>{{ question.7 }}</td>
           <td>{{ question.8 }}</td>
-          <td>{{ question.10 }}</td>
+          <td><span>{% if question.10 == True %}Yes{% else %}No{% endif %}</span></td>
           {% if question.10 %}
           <td>
             <a href="#editquesModal{{ question.0 }}" data-bs-toggle="modal" class="btn btn-primary">Edit</a>
@@ -146,7 +311,7 @@
               </div>
             </div>
           </div>
-          <a href="#confirm-delete-modal{{ question.0 }}" data-bs-toggle="modal" class="btn btn-danger">Delete</a>
+          <a href="#confirm-delete-modal{{ question.0 }}" data-bs-toggle="modal" class="btn btn-danger">Delete</i></a>
 
           <div class="modal fade pt-5" id="editquesModal{{ question.0 }}" tabindex="-1" aria-labelledby="editquesModalLabel" aria-hidden="true">
                         <div class="modal-dialog">
@@ -248,6 +413,7 @@
       </tbody>
     </table>
   </div>
+</div>
 </div>
 {% endblock %}
 
