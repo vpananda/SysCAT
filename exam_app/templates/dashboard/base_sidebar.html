@@ -10,7 +10,7 @@
           alt="My Logo"
         />
       </a>
-      <span>Hi {{ request.session.username }}</span> 
+      <span>Hello {{ request.session.username }}</span> 
     </div>
 
     <div class="">
@@ -26,6 +26,16 @@
               class="m-4"
             />
             <span class="sidebar-components">Dashboard</span>
+          </a>
+        </li>
+        <li class="active">
+          <a href="{% url 'candidate_dashboard' %}" class="d-flex align-items-center normal-link">
+            <img
+              src="{% static 'icons/pencil-square.svg' %}"
+              alt="Icon"
+              class="m-4"
+            />
+            <span class="sidebar-components">Candidate Dashboard</span>
           </a>
         </li>
         <li class="active">

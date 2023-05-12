@@ -7,6 +7,7 @@
   href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css"
 />
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style type="text/css">
 
@@ -32,17 +33,17 @@
       --color-black: #000;
     }
     
-.card {
-  box-shadow: 0 1px 2.94px 0.06px rgba(4, 26, 55, 0.16);
-  margin-bottom: 30px;
-  border-radius: 0.5rem;
-  background-color: #fff;
-  color: #ffff;
-  box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.2);
-  transition: all 0.2s ease-in-out;
-  cursor: pointer;
-  overflow: hidden;
-    }
+    .card {
+    box-shadow: 0 1px 2.94px 0.06px rgba(4, 26, 55, 0.16);
+    margin-bottom: 30px;
+    border-radius: 0.5rem;
+    background-color: #fff;
+    color: #ffff;
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.2);
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+    overflow: hidden;
+      }
     
     .card:hover {
       transform: translateY(-0.25rem);
@@ -488,106 +489,7 @@ input[type="date"]:focus {
       </div>
     </a>
     </div>
-    <div class="col-12 today-attendees">
-      <h5 class="headingtoday">Today Attendees</h5>
-    </div>
-    <form method="GET" class="form-inline">
-      <div class="row mb-2">
-          <div class="col-md-3 col-xl-3 col-date">
-            <div>
-              <h6 class="headinginsidedate">Start Date:</h6>
-            </div>
-            <div>
-              <input type="date" id="StartDate" name="start_date" value="{{start_date}}"  onchange="this.form.submit()" >
-            </div>
-          </div>
-  
-          <div class="col-md-3 col-xl-3 col-date">
-            <div>
-              <h6 class="headinginsidedate">End Date:</h6>
-            </div>
-            <div>
-              <input type="date" id="EndDate" name="end_date" value="{{end_date}}"  onchange="this.form.submit()">
-            </div>
-          </div>
-  
-          <div class="col-md-3 col-xl-3 mb-2 text-center">
-              <button type="button" class="btn btn-primary" id="skipped-level-1-btn" onclick="this.form.submit()">Skipped Level 1 Users</button>
-          </div>
-  
-          <div class="col-md-3 col-xl-3 text-center">
-              <button type="button" class="btn btn-primary" id="unlocked-users-btn" onclick="this.form.submit()">Unlocked Users</button>
-          </div>
-      </div>
-      <div class="row justify-content-between align-items-center">
-        <div class="col-md-5 col-card-5 d-flex justify-content-between align-items-center">
-            <label for="applied_for" class="mr-2">Applied for:</label>
-            <select class="form-control" style="width:300px" id="applied_for" name="applied_for" onchange="this.form.submit()">
-                <option value='All' {% if request.GET.applied_for == 'All' %}selected{% endif %}>All</option>
-                {% for search in search_filter %}
-                    <option value="{{search.0}}" {% if search.0 == request.GET.applied_for %}selected{% endif %}>{{ search.0 }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <div class="col-md-7 d-flex justify-content-end align-items-center">
-            <div class="d-flex align-items-center">
-                <a href="{% url 'generate_excel' %}" class="btn btn-primary mr-2"><i class="fas fa-file-excel"></i> "export Excel</a>
-                <input type="text" id="search-bar" style="height:40px;margin-left:40px " name="search-bar" placeholder="Search..." class="mr-2">
-                <button type="submit" class="btn btn-primary" style="height:40px"><i class="fa fa-search"></i></button>
-            </div>
-        </div>
-    </div>
- 
-    <div class="table-responsive"  style="height: 40vh; overflow-y: auto; overflow-x: auto; margin-top:20px;">
-    <table class="table table-bordered text-center" >
-      <thead class="sticky-thead">
-        <tr >
-          <th>S.No</th>
-          <th>Candidate Name</th>
-          <th>User id</th>
-          <th>Password</th>
-          <th>Applied for</th>
-          <th>Start time</th>
-          <th>End time</th>
-          <th>Remaning time</th>
-          <th>unlock <input type="checkbox" id="select-all-unlock"></th>
-          <th>skip level 1 <input type="checkbox" id="select-all-skip-level-1"></th>
-        </tr>
-      </thead>
-      <tr>
-        {% for candidate in candidate_data%}
-        <td> </td>
-        <td><a href="{% url 'show_candidate_data' id=candidate.0 %}">{{candidate.1}} {{candidate.2}}</a></td>
-        <td>{{candidate.3}}</td>
-        <td>{{candidate.4}}</td>
-        <td>{{candidate.5}}</td>
-        <td>{{candidate.6}}</td>
-        <td>{{candidate.7}}</td>
-        <td>{{candidate.8}}</td>
-        {% if not candidate.9 %}
-        <td><input type="checkbox" class="row-checkbox" name="unlock" value="{{candidate.0}}"></td>
-        {% else %}
-        <td><img
-          src="{% static 'icons/check-circle-fill.svg' %}"
-          alt="Icon"
-        /></td>
-        {% endif %}
-        {% if not candidate.10 %}
-        <td><input type="checkbox" class="row-checkbox" name="skip_level_1" value="{{candidate.0}}"></td>
-        {% else %}
-        <td><img
-          src="{% static 'icons/check-circle-fill.svg' %}"
-          alt="Icon" 
-        /></td>
-        {% endif %}
-      </tr>
-      {% empty %}
-      <tr>
-        <td colspan="10">No candidates found.</td>
-      </tr>
-      {% endfor %}
-    </table>
-  </div>  
+    
 {% endfor %}
 </form>
 <script>

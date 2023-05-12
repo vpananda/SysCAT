@@ -1,30 +1,55 @@
 {% extends "base.html" %} 
 {% load static %} 
 <style>
+  .question-buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    
+  }
+  
   .button-container {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    top: 20px;
-    margin-bottom: 20px;
-}
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+  }
+  
   #q_btn {
-    background-color: #4CAF50;
-    color: white;
-    padding: 10px 20px;
+    padding: 10px 15px;
+    font-size: 16px;
+    font-weight: bold;
     border: none;
     border-radius: 5px;
+    background-color: #007bff;
+    color: #fff;
     cursor: pointer;
-    margin-right: 10px;
-}
-
-  #q_btn:focus {
-    outline: none;
-}
-
+  }
+  
   #q_btn:hover {
-    background-color: #3e8e41;
+    background-color: #0069d9;
+  }
+  
+  #defaultOpen {
+    background-color: #0069d9;
+  }
+  
+  #ques_card{
+    overflow-y: scroll;
+    height: 50vh;
+}
+  .tabcontent {
+    display: none;
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    border-top: none;
+    background-color: white; 
+    border-radius: 5px; 
+    border: 0px; 
+    font-family: "century gothic"; 
+    font-weight: bold;
+    height: 55vh;
 }
 
 </style>
@@ -44,10 +69,10 @@
     {% for key,value in questions.items %}
     <div id="{{key}}" class="tabcontent">
         <h3>{{key}}</h3>
-        <div class="card" id="ques_card">
+        <div class="card" style="height:400px" id="ques_card">
             {% for i,j in value.items %}
             <div class="card-body" id="card-body-{{ forloop.counter }}">
-                <p>{{i}}</p>
+                <p>{{ forloop.counter }}. {{i}}</p>
                 <input type="radio" id="option1" name="{{j.4}}${{j.5}}${{user_id}}" value="{{j.0}}" onclick="submitAnswer('{{j.0}}')">
                 <label for="option1">{{j.0}}</label><br>
                 <input type="radio" id="option2" name="{{j.4}}${{j.5}}${{user_id}}" value="{{j.1}}" onclick="submitAnswer('{{j.1}}')">
@@ -71,6 +96,13 @@
             </div>
             {% endfor %}
         </div>
+        <div class="question-buttons" style="display: flex;justify-content: center;align-items: center;margin-top: 20px;">
+          <div class="button-container" style="display: flex;justify-content: center;align-items: center;gap: 10px;">
+            {% for i in value %}
+            <button class="tablinks" style="padding: 10px 15px;font-size: 16px;font-weight: bold;border: none;border-radius: 5px;background-color: #007bff;color: #fff;cursor: pointer;" onclick="openTab(event, '{{key}}', {{forloop.counter}})" {% if forloop.first %}id="defaultOpen"{% endif %}>Q{{forloop.counter}}</button>
+            {% endfor %}
+          </div>
+        </div>
     </div>
     {% endfor %}
     
@@ -86,15 +118,22 @@
     <div class="row" id="r3">
       <h6>Welcome {{ request.session.username }}</h6>
       <h3>Instructions</h3>
+      <ul>
+        <li>You must use a functioning webcam and microphone</li>
+        <li>
+          No cell phones or other secondary devices in the room or test area
+        </li>
+        <li>No one else can be in the room with you</li>
+        <li>No talking</li>
+        <li>
+          The testing room must be well-lit and you must be clearly visible
+        </li>
+        <li>No dual screens/monitors</li>
+        <li>Do not leave the camera</li>
+        <li>No use of additional applications or internet</li>
+      </ul>
       
-      <div class="question-buttons">
-        <div class="button-container">
-          {% for i in value %}
-          <button id="q_btn" class="tablinks" onclick="openTab(event, '{{key}}')" {% if forloop.first %}id="defaultOpen"{% endif %}>Q {{ forloop.counter }}</button>
-          {% endfor %}
-      </div>
-    </div>
-  </div>
+
     </div>
     <div id="countdown" data-total-duration="{{ total_duration }}"><span id="countdown-timer"></span></div>
     <div class="row" id="r4">
@@ -230,6 +269,7 @@ var x = setInterval(function() {
         contentType: "application/json",
         dataType: "json",
         success: function(response) {
+          
         },
         error: function(xhr, status, error) {
           

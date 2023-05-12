@@ -16,6 +16,7 @@
 
   .table-content {
     position: relative;
+    
     padding-top: 50px; /* or add margin-top: 50px; */
   }
 
@@ -27,8 +28,8 @@
 }
 
 .dashboard-title {
-  font-size: 2.5rem;
-  font-weight: bold;
+  font-size: 24px;
+  font-weight: 500
   color: #000000;
   text-shadow: 0px 2px 4px rgba(0, 0, 0, 0.25);
   margin-bottom: 30px;
@@ -51,19 +52,19 @@
 }
  
     .btn-primary {
-      background: linear-gradient(to right, #007bff, #0056b3);
+      background: #1ABC9C;
       color: #fff;
       border: none;
-      border-radius: 20px;
+      border-radius:0px;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
       font-size: 16px;
-      font-weight: bold;
+      font-weight: 400;
       padding: 10px 20px;
       text-decoration: none;
     }
     
     .btn-primary:hover {
-      background: linear-gradient(to right, #0056b3, #007bff);
+      background: #1ABC9C;
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
     }
     
@@ -73,13 +74,13 @@
     }
     .form-control {
       width: 300px;
-      height: 50px;
+      height: 40px;
       font-size: 16px;
-      font-weight: bold;
+      font-weight: 400;
       color: #333;
       border: none;
       background-color: #fff;
-      border-radius: 10px;
+      border-radius: 0px;
       padding: 10px;
       -webkit-appearance: none;
       -moz-appearance: none;
@@ -95,7 +96,7 @@
     
     .form-control option {
       font-size: 16px;
-      font-weight: bold;
+      font-weight: 400;
       color: #333;
       background-color: #f5f5f5;
     }
@@ -130,24 +131,27 @@
       text-align: center;
       border-top: none;
       border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+      font-size: 16px;
+      font-weight: 500;
     }
     .table {
       width: 100%;
     max-width: 100%;
     background-color: #ffff;
+    
     color: #444;
     font-size: 1rem;
     margin-bottom: 1rem;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-    border-radius: 30px;
+    
     border: none;
     }
 
     .table thead tr {
-      background: linear-gradient(to right, #007bff, #0056b3);
+      background: #2c3e50;
       color: #fff;
       text-align: center;
-      border: none;
+      border: #2c3e50;
       border-bottom: 1px solid #4d4d4d;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
@@ -166,7 +170,7 @@
     }
     
     ::-webkit-scrollbar-thumb {
-      background: linear-gradient(to right, #0056b3, #007bff);
+      background: #2c3e50;
       border-radius: 3px;
     }
     
@@ -177,19 +181,20 @@
     
 
 </style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
 </head>
 
 <div class="container">
   <div class="col-12 mt-2 dashboard-header">
     <h2 class=" my-4 dashboard-title">Subjects</h2>
   </div>
-  <div class="row mb-3">
+  <div class="row mb-3 d-flex flex-row justify-content-between">
     <div class="col-md-6 me-4">
       <a href="{% url 'new_subject' %}" class="btn btn-primary">Add New Subject</a>
     </div>
     <div class="col-md-5">
       <form method="GET" class="d-flex flex-row justify-content-end">
-        <select class="form-control w-50" id="filter_by" name="filter_by" onchange="this.form.submit()">
+        <select class="form-control w-50"style="margin-right:5%" id="filter_by" name="filter_by" onchange="this.form.submit()">
           <option value="2" {% if request.GET.filter_by == '2' %}selected{% endif %}>All</option>
           <option value="1" {% if request.GET.filter_by == '1' %}selected{% endif %}>Active</option>
           <option value="0" {% if request.GET.filter_by == '0' %}selected{% endif %}>Inactive</option>
@@ -216,8 +221,8 @@
           <td><span>{% if subject.2 == True %}Yes{% else %}No{% endif %}</span></td>
           {% if subject.2 %}
             <td>
-              <a href="#editSubjectModal{{ subject.0 }}" data-bs-toggle="modal" class="btn btn-primary">Edit</a>
-              <a href="#confirm-delete-modal{{ subject.0 }}" data-bs-toggle="modal" class="btn btn-danger">Delete</a>
+              <a href="#editSubjectModal{{ subject.0 }}" data-bs-toggle="modal" class="btn btn-info"><i class="fas fa-pencil-alt"></i></a>
+              <a href="#confirm-delete-modal{{ subject.0 }}" data-bs-toggle="modal" class="btn btn-danger"><i class="fas fa-trash-alt"></i></a>
             <!-- Model -->
             <div class="modal fade pt-5" id="editSubjectModal{{ subject.0 }}" tabindex="-1" aria-labelledby="editSubjectModal" aria-hidden="true">
               <div class="modal-dialog">

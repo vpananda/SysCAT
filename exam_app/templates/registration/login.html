@@ -1,202 +1,192 @@
-
 {% load static%} 
+
 <!DOCTYPE html>
 <html>
 <head>
-<!-- CSS only -->
-<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet"  crossorigin="anonymous">
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"  crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"  crossorigin="anonymous"></script>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" >
-<style>
-    * {
-        box-sizing: border-box;
+  <title>Login Page</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <style>
+    body {
+      background-color: #ffff;
     }
-        body {
-            color: #000;
-            overflow-x: hidden;
-            height: 100%;
-            background-color: #B0BEC5;
-            background-repeat: no-repeat;
-        }
-        .card0 {
-            box-shadow: 0px 4px 8px 0px #757575;
-            border-radius: 0px;
-        }
-        .card2 {
-            margin: 0px 40px;
-        }
-        .logo {
-            width: 200px;
-            height: 100px;
-            margin-top: 20px;
-            margin-left: 35px;
-        }
-        .image {
-            width: 360px;
-            height: 280px;
-        }
-        .border-line {
-            border-right: 1px solid #EEEEEE;
-        }
-        .line {
-            height: 1px;
-            width: 45%;
-            background-color: #E0E0E0;
-            margin-top: 10px;
-        }
-        .or {
-            width: 10%;
-            font-weight: bold;
-        }
-        .text-sm {
-            font-size: 14px !important;
-        }
-        ::placeholder {
-            color: #BDBDBD;
-            opacity: 1;
-            font-weight: 300
-        }
-        :-ms-input-placeholder {
-            color: #BDBDBD;
-            font-weight: 300
-        }
-        ::-ms-input-placeholder {
-            color: #BDBDBD;
-            font-weight: 300
-        }
-        input, textarea {
-            padding: 10px 12px 10px 12px;
-            border: 1px solid lightgrey;
-            border-radius: 2px;
-             margin-top: 2px;
-        width: 100%;
-        box-sizing: border-box;
-        color: #2C3E50;
-        font-size: 14px;
-        letter-spacing: 1px;
+    .container-login {
+      background-image: url('/static/images/emp_pic.jpg');
+      background-size: cover;
+      background-position: center center;
+      height: 100vh;
+      display: flex;
+      justify-content: left;
     }
-    input:focus, textarea:focus {
-        -moz-box-shadow: none !important;
-        -webkit-box-shadow: none !important;
-        box-shadow: none !important;
-        border: 1px solid #304FFE;
-        outline-width: 0;
+  
+  .text-black {
+    color: #000;
+    margin-left: 20px;
+  }
+  
+.card {
+    border-radius: 0;
+    border: none;
+    
+  }
+  
+  .card-title {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+  
+  .form-control {
+    border-radius: 0;
+    border-color: #dee2e6;
+    border-radius: 10px;
+  }
+  
+  .form-check-input {
+    margin-top: 0.375rem;
+    margin-right: 0.25rem;
+    border-radius: 10px;
+  }
+  
+  .form-check-label {
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+  }
+  
+  .btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+    border-radius: 10px;
+    width:94%;
+
+  }
+  
+  .btn-primary:hover {
+    background-color: #0069d9;
+    border-color: #0062cc;
+  }
+  
+  .text-sm {
+    font-size: 0.875rem;
+  }
+  
+  .bg-light {
+    background-color: #4aa6f7!important;
+  }
+  
+  .py-3 {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+  
+  .text-center {
+    text-align: center!important;
+  }
+  
+  .small {
+    font-size: 0.875rem;
+  }
+  
+  .no-gutters {
+    margin-right: 0;
+    margin-left: 0;
+  }
+  
+  .col-md-4 {
+    flex-basis: 33.333333%;
+    max-width: 33.333333%;
+  }
+  
+  .col-md-8 {
+    flex-basis: 66.666667%;
+    max-width: 66.666667%;
+  }
+  
+  @media (max-width: 767.98px) {
+    .col-md-4,
+    .col-md-8 {
+      flex-basis: 100%;
+      max-width: 100%;
     }
-    button:focus {
-        -moz-box-shadow: none !important;
-        -webkit-box-shadow: none !important;
-        box-shadow: none !important;
-        outline-width: 0;
-    }
-    a {
-        color: inherit;
-        cursor: pointer;
-    }
-    .btn-blue {
-        background-color: #1A237E;
-        width: 150px;
-        color: #fff;
-        border-radius: 2px;
-    }
-    .btn-blue:hover {
-        background-color: #000;
-        cursor: pointer;
-    }
-    .bg-blue {
-        color: #fff;
-        background-color: #1A237E;
-    }
-    @media screen and (max-width: 991px) {
-        .logo {
-            margin-left: 0px;
-        }
-        .image {
-            width: 300px;
-            height: 220px;
-        }
-        .border-line {
-            border-right: none;
-        }
-        .card2 {
-            border-top: 1px solid #EEEEEE !important;
-            margin: 0px 15px;
-        }
-    }
-</style>
+  }  .logo {
+        width: 120px;
+        height: 100px;
+        border-radius: 35%;
+        margin-top: 20px;
+        mix-blend-mode: multiply;
+      }
+  </style>
 </head>
 <body>
-
-<div class="container-fluid px-1 px-md-5 px-lg-1 px-xl-5 py-5 mx-auto">
-    <div class="card card0 border-0">
-        <div class="row d-flex">
-            <div class="col-lg-6" >
-                <div class="card1 pb-5">
-                    <div class="row">
-                        <img src="{% static 'images/systech-logo.png' %}" class="logo me-5">
-                    </div>
-                    <div class="row px-3 justify-content-center mt-4 mb-5 border-line">
-                        <h6 style="padding-left:30px;">please get confirmation from hr before starting the test <br/>
-                            get your user name and password<br/>
-                            <ul style="padding-left:30px;">  
-                                <li>There is no limit for each topic within each level.</li>  
-                                <li>You can switch between the topics but ensure that you have answered all questions.</li>  
-                                <li>Enter the Getresult button on completion of the test.</li>  
-                                <li>Contact the administrator for any issues.</li> 
-                                <li>Please Switch off your mobiles before starting the test.</li>   
-                            </ul> 
-                        </h6>
-                        <h1 style="font-family: Brush Script MT;">Good luck!</h1>
-                    </div>
-                </div>
+  <div class="container-fluid px-0">
+    <div class="row no-gutters">
+      <div class="col-md-4">
+        <div class="container-login">
+          <div class="text-black">
+            <div>
+                <img src="{% static 'images/systech-logo.png' %}" class="logo" />
             </div>
-            <div class="col-lg-6" >
-                <div class="card2 card border-0 px-4 py-5 " style="background:#dbdee0" >
-                    <form method="post">
-                        {% csrf_token %}
-                        <span style="color:red">{{errors}}</span>
-                        <div class="row px-3" style="display:felx;flex-direction:column;margin-bottom:16px;">
-                        </div>
-                        <div class="row px-3">
-                            <label class="mb-1"><h6 class="mb-0 text-sm">Email Address</h6></label>
-                            <input class="mb-4" type="text" name="username" placeholder="Enter a valid email address" required>
-                            <span style="color:red">{{error}}</span>
-                        </div>
-                        <div class="row px-3">
-                            <label class="mb-1"><h6 class="mb-0 text-sm">Password</h6></label>
-                            <input type="password" name="password" placeholder="Enter password" required>
-                            <span style="color:red">{{perror}}</span>
-                        </div>
-                        <div class="row px-3 mb-4">
-                            <div class="custom-control custom-checkbox custom-control-inline">
-                                <input id="chk1" type="checkbox" name="chk" class="custom-control-input">
-                                <label for="chk1" class="custom-control-label text-sm">Remember me</label>
-                            </div>
-                            <a href="#" class="ml-auto mb-0 text-sm">Forgot Password?</a>
-                        </div>
-                        <div class="row mb-3 px-3">
-                            <button type="submit" class="btn btn-blue text-center">Login</button>
-                        </div>
-                        <div class="row px-3 mb-4">
-                            <div class="row mb-4 px-3">
-                                <p class="font-weight-bold">Don't have an account? </p> <a href="{% url 'registration' %}" class="text-danger"> Register</a>
-                            </div>
-                        </div>
-                    </div>
+            <div class=" mt-5">
+                <!-- <h1>Welcome</h1> -->
+                <!-- <p>xvsahv,cvhdasvc ckwhfwejhfcjkwencka.sd acsdgsjk ,.</p> -->
             </div>
-                </div>
-                <div class="bg-blue py-4 ">
-                    <div class="row">
-                        <small class="ml-4 ml-sm-5 mb-2">Copyright © 2019. @Systech online exam system.</small>
-                    </div>
-                </div>
+          </div>
         </div>
-    </div>
-
-                </body>
-                </html>
-
+      </div>
+      <div class="col-md-8">
+        <div class="container-fluid px-5 py-5">
+          <div class="row justify-content-center">
+            <div class="col-md-8">
+              <div class="card mt-5">
+                <div class="card-body">
+                  <h2 class="card-title">Login to your Account</h2>
+                  <form method="POST">
+                    {% csrf_token %}
+                    <span style="color: red">{{errors}}</span>
+                    <div class="form-group">
+                      <label for="username">Username:</label>
+                      <input type="text" class="form-control" name="username" id="username" placeholder="Enter username" required>
+                      
+                    </div>
+                    
+                    <div class="form-group">
+                      <label for="password">Password:</label>
+                      <input type="password" name="password" class="form-control" id="password" placeholder="Enter password" required>
+                      <span style="color: red">{{perror}}</span>
+                    </div>
+                    
+                    <div class="form-group form-check d-flex flex-row justify-content-between">
+                        <div class="">
+                            <input type="checkbox" class="form-check-input" id="remember-me">
+                            <label class="form-check-label" for="remember-me">Remember me</label>
+                        </div>
+                        <div>
+                            <a href="#" class="ml-auto mt-3 text-sm">Forgot Password?</a>
+                        </div>
+                    </div>
+                    <div class="row justify-content-center">
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                      </div>                      
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row justify-content-center">
+            <div class="col-md-8 text-center">
+              <small>Don't have an account? <a href="{% url 'registration' %}">Register here</a></small>
+            </div>
+          </div>
+        </div>
+        <div class="bg-light py-3" style="margin-top:79px">
+          <div class="container" >
+            <div class="row ">
+              <div class="col-md-12 text-center">
+                <small>&copy; 2023 Example Company. All Rights Reserved.</small>
+              </div>
+            </div>
+          </div>
+        </div> 
+      </div>
+    </div> 
+  </div>
 </body>
-<script>
-</script>
 </html>

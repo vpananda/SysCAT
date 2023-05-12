@@ -5,6 +5,7 @@ from . import views
 urlpatterns = [
     # path('',views.sidebar,name='base'),
     path('dashboard/', views.dashboard, name='dashboard'),
+    path('candidate_dashboard/', views.candidate_dashboard, name='candidate_dashboard'),
     path('jobposition/', views.job_positions, name='jobposition'),
     path('jobposition/add_new_job_positions/', views.add_new_job_positions, name='add_new_job_positions'),
     path('delete_job_pos/<int:id>', views.delete_job_pos, name='delete_job_pos'),

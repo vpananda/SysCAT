@@ -25,6 +25,7 @@ import numpy as np
 import math
 import wave
 import datetime
+from django.core.paginator import Paginator
 # import dlib
 import socket
 import os, sys
@@ -126,12 +127,65 @@ def dashboard(request):
         search_name = request.GET.get('search-bar')
         if search_name == "":
             search_name = None 
-        cursor.execute('exec get_data_tb_candidate_karthik @name=%s,@applied_for=%s,@start_date=%s,@end_date=%s',[search_name,applied_for,start_date,end_date])
+        cursor.execute('exec get_data_tb_candidate_av @name=%s,@applied_for=%s,@start_date=%s,@end_date=%s',[search_name,applied_for,start_date,end_date])
         candidate_data = cursor.fetchall()
+        # candidate_data = [...]  # Your list of candidate data
+        items_per_page = 10  # Number of items to display per page
+        page_number = request.GET.get('page')  # Get the requested page number from the URL parameters
+        paginator = Paginator(candidate_data, items_per_page)  # Create a paginator object
+        page_obj = paginator.get_page(page_number)  
         print(candidate_data)
         cursor.execute('exec get_skill_applied_for_data')
         search_filter = cursor.fetchall()
-        return render(request, 'dashboard/dashboard.html',{'dash_data':dash_data,'candidate_data':candidate_data,'search_filter':search_filter,'start_date':start_date,'end_date':end_date})
+        return render(request, 'dashboard/dashboard.html',{'dash_data':dash_data,'page_obj': page_obj,'search_filter':search_filter,'start_date':start_date,'end_date':end_date})
+    return redirect('logout')
+
+def candidate_dashboard(request):
+    if request.session.get('user_authenticated'):
+        applied_for = request.GET.get('applied_for')
+        start_date = request.GET.get('start_date')
+        end_date = request.GET.get('end_date')
+        from datetime import date
+        today = date.today()
+        first_day = date(today.year, today.month, 1)
+        if start_date == '' or start_date == None:
+            start_date = first_day
+        if end_date == '' or end_date == None:
+            end_date = today
+        if request.method == 'POST':
+            unlock_ids = request.POST.getlist('unlocked_ids[]')
+            skip_level_1 = request.POST.getlist('skipped_level_1_ids[]')
+            
+            print(skip_level_1,unlock_ids)
+            cursor = connection.cursor()
+            if unlock_ids:
+                for lockid in unlock_ids:
+                    cursor.execute('exec unlockCandiadtes %s',[lockid])
+            if skip_level_1:
+                for skip_level in skip_level_1:
+                    cursor.execute('exec skip_level_1_Candiadtes %s',[skip_level])
+        if applied_for == None:
+            applied_for = 'All'   
+        cursor = connection.cursor()
+        cursor.execute('exec get_data_dashboard')
+        dash_data = cursor.fetchall()
+        search_name = request.GET.get('search-bar')
+        if search_name == "":
+            search_name = None 
+
+        cursor.execute('exec get_data_tb_candidate_av @name=%s,@applied_for=%s,@start_date=%s,@end_date=%s',[search_name,applied_for,start_date,end_date])
+        candidate_data = cursor.fetchall()
+        # candidate_data = [...]  # Your list of candidate data
+        items_per_page = 5  # Number of items to display per page
+        page_number = request.GET.get('page')  # Get the requested page number from the URL parameters
+        paginator = Paginator(candidate_data, items_per_page)  # Create a paginator object
+        page_obj = paginator.get_page(page_number)  
+        print(candidate_data)
+        cursor.execute('exec get_skill_applied_for_data')
+        search_filter = cursor.fetchall()
+        print(start_date)
+        print(end_date)
+        return render(request, 'dashboard/candidate_dashboard.html',{'dash_data':dash_data,'page_obj': page_obj,'search_filter':search_filter,'start_date':start_date,'end_date':end_date})
     return redirect('logout')
 
 def show_candidate_data(request,id):
@@ -471,9 +525,12 @@ def quest_bank(request):
             sub_id = 0
         if active_value is None:
             active_value = 1
+        level = request.GET.get('level')
+        if level == None:
+            level = 0
         try:
             cursor = connection.cursor()
-            cursor.execute('exec get_SearchQuestiondata %s, %s', [sub_id, active_value])
+            cursor.execute('exec get_SearchQuestiondata %s, %s,%s', [sub_id, active_value,level])
             questions = cursor.fetchall()
             cursor.execute('exec get_subjectData')
             subjects = cursor.fetchall()
@@ -490,6 +547,10 @@ def quest_bank(request):
         finally:
             cursor.close()
     return redirect('login')
+   
+
+
+
     
 
 def add_quest(request):
@@ -1018,13 +1079,6 @@ def capture_card(request):
         # do something with the image
     return render(request, 'registration/camera_card.html')
 
-    
-
-
-
-
-
-
 
 # define function to generate video frames
 def video_feed():
@@ -1046,9 +1100,6 @@ def video(request):
     return StreamingHttpResponse(video_feed(), content_type='multipart/x-mixed-replace; boundary=frame')
 
 
-
-
-
 def result(request):
     if request.session.get('user_authenticated'):
         cursor = connection.cursor()
@@ -1056,6 +1107,10 @@ def result(request):
         search_filter = cursor.fetchall()
         applied_for = request.GET.get('applied_for')
         filter = request.GET.get('filter_by')
+        level = request.GET.get('level')
+        start_date = request.GET.get('start_date')
+        end_date = request.GET.get('end_date')
+        
         if applied_for:
             job_name,job_id  = applied_for.split('|')
         else:
@@ -1065,18 +1120,25 @@ def result(request):
             job_name = None
         if filter == 'ALL':
             filter = None
+        if level == '0':
+            level = None
+        if start_date == '':
+            start_date= None
+        if end_date == '':
+            end_date = None
         print(job_name)
         print(filter)
-        
-
-        cursor.execute('exec [view_results_bycandidate] %s,%s',[job_name,filter])
+        print(level)
+        print(start_date)
+        print(end_date)
+        cursor.execute('exec [view_results_bycandidate] %s,%s,%s,%s,%s',[job_name,level,filter,start_date,end_date])
         user = cursor.fetchall()
-        print(user)
         # result_1 = cursor.fetchall()
         # cursor.execute('exec [get_pass_or_fail_candidate] %s,%s,%s',[jobPosition,user_id,2])
         # result_2 = cursor.fetchall()
-        return render(request, 'dashboard/Result.html',{'user':user,'search_filter':search_filter,'job_name':job_name})
+        return render(request, 'dashboard/Result.html',{'user':user,'search_filter':search_filter,'job_name':job_name,'start_date':start_date,'end_date':end_date})
     return redirect('logout')
+
 
 
 
@@ -1221,7 +1283,7 @@ def exam_portal(request):
                         my_dict[key1] = {key2: values}
 
                 print(my_dict)
-                return render(request,"exam_portal/exam_portal.html",{'questions':my_dict,'total_duration':total_duration,'user_id':user_id,'level':level,'appliedfor':appliedfor})
+                return render(request,"exam_portal/exam_portal_1.html",{'questions':my_dict,'total_duration':total_duration,'user_id':user_id,'level':level,'appliedfor':appliedfor})
             finally:
                 if cursor:
                     cursor.close()

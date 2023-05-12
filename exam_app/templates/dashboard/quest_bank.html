@@ -1,3 +1,4 @@
+
 {% extends 'base.html' %} {% load static %}
 {% block content %}
 <head>  
@@ -28,12 +29,14 @@
 }
 
 .dashboard-title {
-  font-size: 2.5rem;
-  font-weight: bold;
+  font-size: 24px;
+  font-weight: 500
   color: #000000;
   text-shadow: 0px 2px 4px rgba(0, 0, 0, 0.25);
   margin-bottom: 30px;
 }
+
+
 
 /* Table hover effect styles */
 .table tbody tr:hover td {
@@ -52,19 +55,19 @@
 }
  
     .btn-primary {
-      background: linear-gradient(to right, #007bff, #0056b3);
+      background: #1ABC9C;
       color: #fff;
       border: none;
-      border-radius: 20px;
+      border-radius: 0px;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
       font-size: 16px;
-      font-weight: bold;
+      font-weight: 400;
       padding: 10px 20px;
       text-decoration: none;
     }
     
     .btn-primary:hover {
-      background: linear-gradient(to right, #0056b3, #007bff);
+      background: #1ABC9C;
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
     }
     
@@ -76,14 +79,15 @@
       
     .form-control {
       width: 300px;
-      height: 50px;
+      height: 40px;
       font-size: 16px;
-      font-weight: bold;
+      font-weight: 400;
       color: #333;
       border: none;
       background-color: #fff;
-      border-radius: 10px;
+      border-radius: 0px;
       padding: 10px;
+      margin-left: 10px;
       -webkit-appearance: none;
       -moz-appearance: none;
       appearance: none;
@@ -97,8 +101,8 @@
     }
     
     .form-control option {
-      font-size: 16px;
-      font-weight: bold;
+      font-size: 14px;
+      font-weight: 400;
       color: #333;
       background-color: #f5f5f5;
     }
@@ -111,15 +115,56 @@
       background-color: #333;
       color: #fff;
     }
+
+
+    .form-control_1 {
+      width: 100%;
+      height: 50px;
+      font-size: 16px;
+      font-weight: 400;
+      color: #333;
+      border-width: 1px;
+      border-style: groove;
+      border-color: grey;
+      background-color: #fff;
+      border-radius: 0px;
+      padding: 10px;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      transition: all 0.2s ease-in-out;
+      box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    
+    .form-control_1:focus {
+      outline: none;
+      box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.2);
+    }
+    
+    .form-control_1 option {
+      font-size: 16px;
+      font-weight: 400;
+      color: #333;
+      background-color: #f5f5f5;
+    }
+    
+    .form-control_1 option:hover {
+      background-color: #ddd;
+    }
+    
+    .form-control_1 option[selected] {
+      background-color: #333;
+      color: #fff;
+    }
        
     .col-card-5 label {
-      font-size: 18px;
-      font-weight: bold;
+      font-size: 16px;
+      font-weight: 500;
       color: #333;
     }
     
     .table thead tr {
-      background: linear-gradient(to right, #007bff, #0056b3);
+      background: #2c3e50;
       color: #fff;
       text-align: center;
       border-bottom: 1px solid #4d4d4d;
@@ -142,12 +187,12 @@
     font-size: 1rem;
     margin-bottom: 1rem;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-    border-radius: 30px;
+    border-radius: 0px;
     border: none;
     }
 
     .table thead tr {
-      background: linear-gradient(to right, #007bff, #0056b3);
+      background: #2c3e50;
       color: #fff;
       text-align: center;
       border: none;
@@ -163,13 +208,15 @@
       border: none;
       border-top: none;
       border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+      font-size: 16px;
+      font-weight: 400;
     }
     ::-webkit-scrollbar {
       width: 6px;
     }
     
     ::-webkit-scrollbar-thumb {
-      background: linear-gradient(to right, #0056b3, #007bff);
+      background: #2c3e50;
       border-radius: 3px;
     }
     
@@ -180,6 +227,7 @@
     
 
 </style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
 </head>
 <div class="container">
   <div class="col-12 mt-2 dashboard-header">
@@ -188,27 +236,35 @@
   <a href="{% url 'add_quest' %}" class="btn btn-primary mb-4">Add Question</a>
     <form method="GET" action="{% url 'quest_bank' %}">
       <div class="form-group row mb-3">
-        <div class="col-md-5 col-card-5 d-flex justify-content-between align-items-center">
-          <label for="applied_for" class="mr-2">Applied for:</label>
-          <select class="form-control w-50" name="applied_for" id="applied_for" onchange="this.form.submit()">
+        <div class="col-md-4 col-card-5 d-flex align-items-center" >
+          <label for="applied_for" class="mr-8">Subject:</label>
+          <select class="form-control w-50"  name="applied_for" id="applied_for" onchange="this.form.submit()">
             <option value='0|All' {% if request.GET.applied_for == '0' %}{% endif %}>All</option>
             {% for search in search_filter %}
             <option value="{{ search.1 }}|{{search.0}}" {% if search.0 == subject_name %} selected {% endif %}>{{ search.0 }}</option>
             {% endfor %}
           </select>
       </div>
-        <div class="col-md-7 d-flex justify-content-end align-items-center">
-          
-          <select class="form-control w-50" id="filter_by" name="filter_by" onchange="this.form.submit()">          
+        <div class="col-md-4 d-flex  align-items-center">
+          <label for="filter_by" class="mr-8">filter by:</label>
+          <select class="form-control w-50" id="filter_by"style="margin-right:4%" name="filter_by" onchange="this.form.submit()">          
             <option value="2" {% if request.GET.filter_by == '2' %}selected{% endif %}>All</option>          
             <option value="1" {% if request.GET.filter_by == '1' %}selected{% endif %}>Active</option>          
             <option value="0" {% if request.GET.filter_by == '0' %}selected{% endif %}>Inactive</option>        
           </select>
         </div>
+        <div class="col-md-4 d-flex  align-items-center">
+          <label for="level" class="mr-8">Level:</label>
+          <select class="form-control w-50" id="level"style="margin-right:4%" name="level" onchange="this.form.submit()">   
+            <option value="0" {% if request.GET.filter_by == '0' %}selected{% endif %}>All</option>         
+            <option value="1" {% if request.GET.level == '1' %}selected{% endif %}>1</option>          
+            <option value="2" {% if request.GET.level == '2' %}selected{% endif %}>2</option>       
+          </select>
+        </div>
       </div>
     </form>     
-  <div class="table-responsive " style="height: 60vh; overflow-y: auto; margin:20px;">
-    <table class="table table-bordered table-striped">
+  <div style="height: 60vh; overflow-y: auto; margin:20px; overflow:auto">
+    <table class="table table-bordered text-center">
       <thead class="sticky-thead">
         <tr>
           <th>S.NO</th>
@@ -239,80 +295,12 @@
           <td><span>{% if question.10 == True %}Yes{% else %}No{% endif %}</span></td>
           {% if question.10 %}
           <td>
-            <a href="#editquesModal{{ question.0 }}" data-bs-toggle="modal" class="btn btn-primary">Edit</a>
+            <div style="display:flex; align-items:center;">
+            <a href="#editquesModal{{ question.0 }}" data-bs-toggle="modal" class="btn btn-info"><i class="fas fa-pencil-alt"></i></a>
+            <div style="width: 5px;"></div>
+            <a href="#confirm-delete-modal{{ question.0 }}" data-bs-toggle="modal" class="btn btn-danger"><i class="fas fa-trash-alt"></i></a>
            <!-- Model -->
-           <div class="modal fade pt-5" id="editquesModal{{ question.0 }}" tabindex="-1" aria-labelledby="editquesModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-              <div class="modal-content mt-5">
-                <div class="modal-header">
-                  <div
-                    class="d-flex justify-content-between align-items-center w-100"
-                  >
-                    <h5 class="modal-title mb-0">Edit Question</h5>
-                  </div>
-                  <div class="">
-                    <button
-                      type="button"
-                      class="btn-close"
-                      data-bs-dismiss="modal"
-                      aria-label="Close"
-                    ></button>
-                  </div>
-                </div>
-                <div class="modal-body">
-                  <form method="POST" action="{% url 'edit_ques' id=question.0 %}">
-                    {% csrf_token %}
-                    <div class="mb-3">
-                      <label for="subject" class="form-label">Subject</label>
-                      <select class="form-select" name="subject" >
-                        <option value="{{ question.9 }}">{{ question.1 }}</option>
-                        {% for subject in subjects %}
-                          <option value="{{subject.0}}">{{subject.1}}</option>
-                        {% endfor %}
-                      </select>
-                    </div>
-                    <div class="mb-3">
-                      <label for="level" class="form-label">Label</label>
-                      <select class="form-select" name="level" >
-                        <option value="{{ question.2 }}">{{ question.2 }}</option>
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                      </select>
-                    </div>
-                    <div class="mb-3">
-                      <label for="question" class="form-label">Question</label>
-                      <input type="text" class="form-control" id="question" name="question" value="{{question.3}}">
-                    </div>
-                    <div class="mb-3">
-                      <label for="option1" class="form-label">Option 1</label>
-                      <input type="text" class="form-control" id="option1" name="option1" value="{{question.4}}">
-                    </div>
-                    <div class="mb-3">
-                      <label for="option2" class="form-label">Option 2</label>
-                      <input type="text" class="form-control" id="option2" name="option2" value="{{question.5}}">
-                    </div>
-                    <div class="mb-3">
-                      <label for="option3" class="form-label">Option 3</label>
-                      <input type="text" class="form-control" id="option3" name="option3" value="{{question.6}}">
-                    </div>
-                    <div class="mb-3">
-                      <label for="option4" class="form-label">Option 4</label>
-                      <input type="text" class="form-control" id="option4" name="option4" value="{{question.7}}">
-                    </div>
-                    <div class="mb-3">
-                      <label for="answer" class="form-label">Answer</label>
-                      <input type="text" class="form-control" id="answer" name="answer" value="{{question.8}}">
-                    </div>
-                    <button type="submit" class="btn btn-primary">Save changes</button>
-                  </form>
-                </div>
-              </div>
-            </div>
-          </div>
-          <a href="#confirm-delete-modal{{ question.0 }}" data-bs-toggle="modal" class="btn btn-danger">Delete</i></a>
-
+           
           <div class="modal fade pt-5" id="editquesModal{{ question.0 }}" tabindex="-1" aria-labelledby="editquesModalLabel" aria-hidden="true">
                         <div class="modal-dialog">
                           <div class="modal-content mt-5">
@@ -348,27 +336,27 @@
                                           </div>  
                                           <div class="mb-3">   
                                             <label for="question" class="form-label">Question</label>  
-                                            <input type="text" class="form-control" id="question" name="question" value="{{question.3}}">   
+                                            <input type="text" class="form-control_1" id="question" name="question" value="{{question.3}}">   
                                           </div>  
                                           <div class="mb-3"> 
                                             <label for="option1" class="form-label">Option 1</label> 
-                                            <input type="text" class="form-control" id="option1" name="option1" value="{{question.4}}">  
+                                            <input type="text" class="form-control_1" id="option1" name="option1" value="{{question.4}}">  
                                           </div>  
                                           <div class="mb-3">  
                                             <label for="option2" class="form-label">Option 2</label> 
-                                            <input type="text" class="form-control" id="option2" name="option2" value="{{question.5}}"> 
+                                            <input type="text" class="form-control_1" id="option2" name="option2" value="{{question.5}}"> 
                                           </div> 
                                           <div class="mb-3">  
                                             <label for="option3" class="form-label">Option 3</label> 
-                                            <input type="text" class="form-control" id="option3" name="option3" value="{{question.6}}"> 
+                                            <input type="text" class="form-control_1" id="option3" name="option3" value="{{question.6}}"> 
                                           </div> 
                                           <div class="mb-3"> 
                                             <label for="option4" class="form-label">Option 4</label> 
-                                            <input type="text" class="form-control" id="option4" name="option4" value="{{question.7}}">  
+                                            <input type="text" class="form-control_1" id="option4" name="option4" value="{{question.7}}">  
                                           </div> 
                                           <div class="mb-3"> 
                                             <label for="answer" class="form-label">Answer</label> 
-                                            <input type="text" class="form-control" id="answer" name="answer" value="{{question.8}}">  
+                                            <input type="text" class="form-control_1" id="answer" name="answer" value="{{question.8}}">  
                                           </div>  
                                           <button type="submit" class="btn btn-primary">Save changes</button> 
                                         </form> 
@@ -401,7 +389,7 @@
                         </div>
                         </div>
                         </div>
-
+                      </div>
         </td>
         </tr>
         {% else %}
@@ -416,8 +404,3 @@
 </div>
 </div>
 {% endblock %}
-
-
-
-
-

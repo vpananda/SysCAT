@@ -9,6 +9,19 @@
     top: 20px;
     margin-bottom: 20px;
 }
+.tabcontent {
+  display: none;
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  border-top: none;
+  background-color: white; 
+  border-radius: 5px; 
+  border: 0px; 
+  font-family: "century gothic"; 
+  font-weight: bold;
+ 
+}
+
 </style>
 {% block body %}
 {% block content %}
@@ -30,7 +43,7 @@
       <div class="card" id="ques_card">
         {% for i,j in value.items %}
         <div class="card-body" id="card-body-{{ forloop.counter }}">
-            <p>{{i}}</p>
+            <p>{{ forloop.counter }}.{{i}}</p>
             <input type="radio" id="option1" name="{{j.4}}${{j.5}}${{user_id}}" value="{{j.0}}" onclick="submitAnswer('{{j.0}}')">
             <label for="option1">{{j.0}}</label><br>
             <input type="radio" id="option2" name="{{j.4}}${{j.5}}${{user_id}}" value="{{j.1}}" onclick="submitAnswer('{{j.1}}')">

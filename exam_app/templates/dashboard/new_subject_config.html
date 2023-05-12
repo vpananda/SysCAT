@@ -5,7 +5,7 @@
 
     /* New Subject Configuration */
 
-
+   
 h2 {
   color: #4a4a4a;
   font-size: 36px;
@@ -62,26 +62,47 @@ h2 {
 }
 
 .btn-primary {
-  background-color: #0a78ff;
-  border-color: #0a78ff;
-  border-radius: 4px;
+  background: #1ABC9C;
   color: #fff;
-  font-size: 18px;
-  font-weight: 500;
-  padding: 12px 30px;
-  transition: background-color 0.3s ease-in-out;
+  border: none;
+  border-radius:0px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  font-size: 16px;
+  font-weight: 400;
+  padding: 10px 20px;
+  text-decoration: none;
 }
 
 .btn-primary:hover {
-  background-color: #006be6;
-  border-color: #006be6;
+  background: #1ABC9C;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
 
 .btn-primary:active {
-  background-color: #0059b3;
-  border-color: #0059b3;
+  box-shadow: none;
+  transform: translateY(2px);
+}
+.btn-secondary {
+  background: #2c3e50;
+  color: #fff;
+  border: none;
+  border-radius:0px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  font-size: 16px;
+  font-weight: 400;
+  padding: 10px 20px;
+  text-decoration: none;
 }
 
+.btn-secondary:hover {
+  background: #2c3e50;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.btn-secondary:active {
+  box-shadow: none;
+  transform: translateY(2px);
+}
 .form-check-input[type="radio"] {
   margin-top: 10px;
 }
@@ -122,8 +143,8 @@ h2 {
 }
 
 .dashboard-title {
-  font-size: 2.5rem;
-  font-weight: bold;
+  font-size: 24px;
+  font-weight: 500
   color: #000000;
   text-shadow: 0px 2px 4px rgba(0, 0, 0, 0.25);
   margin-bottom: 30px;
@@ -134,7 +155,7 @@ h2 {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(to right, #0056b3, #007bff);
+  background: #2c3e50;
   border-radius: 3px;
 }
 
@@ -151,7 +172,7 @@ h2 {
   <div class="row">
     <div class="col-12">
       <div class="col-12 mt-2 dashboard-header">
-        <h2 class="my-4">New Subject Configuration</h2>
+        <h4 class="my-4">New Subject Configuration</h4>
       </div>
     </div>
   </div>
@@ -254,9 +275,7 @@ h2 {
             </div>
             <div class="d-grid gap-2 d-md-flex justify-content-md-center">
               <button type="submit" class="btn btn-primary">Create</button>
-              <button type="button" class="btn btn-primary me-5">
-                May be later
-              </button>
+              <a href="{% url 'skill_set_config' %}" class="btn btn-secondary">May Be Later</a>
             </div>
           </form>
         </div>

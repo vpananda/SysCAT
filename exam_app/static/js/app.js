@@ -71,3 +71,25 @@ const filter_byDropdown = document.getElementById('filter_by');
 if (filter_by) {
   filter_byDropdown.value = filter_by;
 }
+
+// loader
+
+function showLoader() {
+  var loader = document.querySelector(".loader");
+  loader.style.display = "block";
+}
+
+function hideLoader() {
+  var loader = document.querySelector(".loader");
+  loader.style.display = "none";
+}
+
+window.addEventListener("load", function () {
+  var links = document.querySelectorAll("a");
+  for (var i = 0; i < links.length; i++) {
+    links[i].addEventListener("click", function () {
+      showLoader();
+    });
+  }
+});
+

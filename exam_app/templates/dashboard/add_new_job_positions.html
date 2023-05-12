@@ -69,11 +69,54 @@
 }
 
 .dashboard-title {
-  font-size: 2.5rem;
-  font-weight: bold;
+  font-size: 24px;
+  font-weight: 500
   color: #000000;
   text-shadow: 0px 2px 4px rgba(0, 0, 0, 0.25);
   margin-bottom: 30px;
+}
+
+.btn-primary {
+  background: #1ABC9C;
+  color: #fff;
+  border: none;
+  border-radius:0px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  font-size: 16px;
+  font-weight: 400;
+  padding: 10px 20px;
+  text-decoration: none;
+}
+
+.btn-primary:hover {
+  background: #1ABC9C;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.btn-primary:active {
+  box-shadow: none;
+  transform: translateY(2px);
+}
+.btn-secondary {
+  background: #2c3e50;
+  color: #fff;
+  border: none;
+  border-radius:0px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  font-size: 16px;
+  font-weight: 400;
+  padding: 10px 20px;
+  text-decoration: none;
+}
+
+.btn-secondary:hover {
+  background: #2c3e50;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.btn-secondary:active {
+  box-shadow: none;
+  transform: translateY(2px);
 }
 
   </style>
@@ -83,7 +126,7 @@
   <div class="row">
     <div class="col-md-12">
       <div class="col-12 mt-2 dashboard-header">
-        <h2 class=" my-4 dashboard-title">New Job Positions</h2>
+        <h1 class=" my-4 dashboard-title">New Job Positions</h1>
       </div>
       <div class="card">
         <div class="card-body">
@@ -168,7 +211,7 @@
               >
                 Create Job Position
               </button>
-              <a href="{% url 'jobposition' %}" class="btn btn-primary">May Be Later</a>
+              <a href="{% url 'jobposition' %}" class="btn btn-secondary">May Be Later</a>
             </div>
           </form>
         </div>
