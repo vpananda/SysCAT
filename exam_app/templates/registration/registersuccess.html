@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Registration Successful</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f1f1f1;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            color: #007bff;
+            margin-top: 50px;
+        }
+
+        p {
+            color: #333;
+            font-size: 18px;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <h1>Registration Successful!</h1>
+    <p>Thank you for registering. Your account has been created successfully.</p>
+    <p>You can now log in and access your account.</p>
+    <a href="{% url 'login' %}">Click here to login again</a>
+</body>
+</html>

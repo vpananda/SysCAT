@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Question Sets</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+
+
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <ul class="nav nav-tabs" id="myTabs">
+    {% for set_name, questions_set in questions.items %}
+    <li class="nav-item">
+      <a class="nav-link {% if forloop.first %}active{% endif %}" data-toggle="tab" href="#{{ set_name }}">{{ set_name }}</a>
+    </li>
+    {% endfor %}
+  </ul>
+  <div class="tab-content">
+    {% for set_name, questions_set in questions.items %}
+    <div class="tab-pane fade {% if forloop.first %}show active{% endif %}" id="{{ set_name }}">
+      <h3>{{ set_name }}</h3>
+      <div class="question-container">
+        {% for question, options in questions_set.items %}
+        <div class="question" id="{{ set_name }}-question-{{ forloop.index }}">
+          <h4>{{ question }}</h4>
+          {% comment %} {% for j in options %} {% endcomment %}
+          {% comment %} <input type="radio" id="{{ set_name }}-option{{ forloop.index }}-{{ forloop.parentloop.index0 }}" name="{{ set_name }}${{ forloop.parentloop.index0 }}${{ user_id }}" value="{{ option }}" onclick="submitAnswer('{{ option }}')">
+          <label for="{{ set_name }}-option{{ forloop.index }}-{{ forloop.parentloop.index0 }}">{{ option }}</label><br> {% endcomment %}
+          <input type="radio" id="option1" name="{{options.4}}${{options.5}}${{user_id}}" value="{{options.0}}" onclick="submitAnswer('{{options.0}}')">
+          <label for="option1">{{options.0}}</label><br>
+          <input type="radio" id="option2" name="{{options.4}}${{options.5}}${{user_id}}" value="{{options.1}}" onclick="submitAnswer('{{options.1}}')">
+          <label for="option2">{{options.1}}</label><br>
+          <input type="radio" id="option3" name="{{options.4}}${{options.5}}${{user_id}}" value="{{options.2}}" onclick="submitAnswer('{{options.2}}')">
+          <label for="option3">{{options.2}}</label><br>
+          <input type="radio" id="option4" name="{{options.4}}${{options.5}}${{user_id}}" value="{{options.3}}" onclick="submitAnswer('{{options.3}}')">
+          <label for="option4">{{options.3}}</label>
+          
+        </div>
+        {% endfor %}
+        <div class="question-navigation row">
+          <div class="col-4">
+            <button class="btn btn-primary" id="prevButton-{{ set_name }}" onclick="prevQuestion('{{ set_name }}')">Previous</button>
+          </div>
+          <div class="col-4 text-center">
+            <button class="btn btn-danger" onclick="clearSelection('{{j.4}}${{j.5}}${{user_id}}')">Clear Selection</button>
+          </div>
+          <div class="col-4 text-right">
+            <button class="btn btn-primary" id="nextButton-{{ set_name }}" onclick="nextQuestion('{{ set_name }}')">Next</button>
+          </div>
+        </div>
+
+  
+        
+        
+        
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- JavaScript code -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+  // Initialize the question indices for each set
+  var questionIndices = {};
+  {% for set_name, question_set in questions.items %}
+  questionIndices['{{ set_name }}'] = 0;
+  {% endfor %}
+
+  // Function to update navigation buttons based on the current question
+  function updateNavigationButtons(questionSetId, currentIndex) {
+    var questionSetDiv = document.getElementById(questionSetId);
+    var questionDivs = questionSetDiv.querySelectorAll(".question");
+
+    var prevButton = document.getElementById("prevButton-" + questionSetId);
+    var nextButton = document.getElementById("nextButton-" + questionSetId);
+
+    if (currentIndex === 0) {
+      prevButton.style.display = "none"; // Hide Previous button on the first question
+    } else {
+      prevButton.style.display = "block";
+    }
+
+    if (currentIndex === questionDivs.length - 1) {
+      nextButton.style.display = "none"; // Hide Next button on the last question
+    } else {
+      nextButton.style.display = "block";
+    }
+  }
+
+  // Function to show/hide questions based on the current index
+  function showQuestionAtIndex(questionSetId, currentIndex) {
+    var questionSetDiv = document.getElementById(questionSetId);
+    var questionDivs = questionSetDiv.querySelectorAll(".question");
+
+    // Hide all questions
+    questionDivs.forEach(function (questionDiv) {
+      questionDiv.style.display = "none";
+    });
+
+    // Show the current question
+    questionDivs[currentIndex].style.display = "block";
+  }
+
+  // Function to navigate to the next question
+  function nextQuestion(questionSetId) {
+    var currentQuestionIndex = questionIndices[questionSetId];
+    var questionSetDiv = document.getElementById(questionSetId);
+    var questionDivs = questionSetDiv.querySelectorAll(".question");
+
+    if (currentQuestionIndex < questionDivs.length - 1) {
+      questionIndices[questionSetId]++;
+      currentQuestionIndex = questionIndices[questionSetId];
+      updateNavigationButtons(questionSetId, currentQuestionIndex);
+      showQuestionAtIndex(questionSetId, currentQuestionIndex);
+    }
+  }
+
+  // Function to navigate to the previous question
+  function prevQuestion(questionSetId) {
+    var currentQuestionIndex = questionIndices[questionSetId];
+
+    if (currentQuestionIndex > 0) {
+      questionIndices[questionSetId]--;
+      currentQuestionIndex = questionIndices[questionSetId];
+      updateNavigationButtons(questionSetId, currentQuestionIndex);
+      showQuestionAtIndex(questionSetId, currentQuestionIndex);
+    }
+  }
+
+  // Initialize the first question in each set
+  {% for set_name, question_set in questions.items %}
+  showQuestionAtIndex('{{ set_name }}', 0);
+  updateNavigationButtons('{{ set_name }}', 0);
+  {% endfor %}
+
+  function clearSelection(name) {
+    var radios = document.getElementsByName(name);
+    for (var i = 0; i < radios.length; i++) {
+        radios[i].checked = false;
+          }
+          submitAnswer();
+      }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Face Detection</title>
+</head>
+<body>
+    {% csrf_token %}
+    <h1>Face Detection Web Application</h1>
+    <video id="video" autoplay></video>
+    <canvas id="canvas"></canvas>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+      // Get the CSRF token from the cookie
+function getCookie(name) {
+  var cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+    var cookies = document.cookie.split(';');
+    for (var i = 0; i < cookies.length; i++) {
+      var cookie = cookies[i].trim();
+      // Does this cookie string begin with the name we want?
+      if (cookie.substring(0, name.length + 1) === (name + '=')) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
+
+// Get video and canvas elements
+const video = document.getElementById('video');
+const canvas = document.getElementById('canvas');
+const context = canvas.getContext('2d');
+
+// Get user media stream
+navigator.mediaDevices.getUserMedia({ video: true })
+  .then((stream) => {
+    video.srcObject = stream;
+    captureFrame();
+  })
+  .catch((error) => {
+    console.error('Error accessing camera:', error);
+  });
+
+// Capture frame and send it to the server
+function captureFrame() {
+  context.drawImage(video, 0, 0, canvas.width, canvas.height);
+  const imageData = canvas.toDataURL('image/png');
+  sendData(imageData);
+  requestAnimationFrame(captureFrame);
+}
+
+// Send image data to the server
+function sendData(imageData) {
+  var dataURL = imageData;
+  $.ajax({
+    url: '{% url "detect_face" %}',
+    type: 'POST',
+    data: {
+        user:"{{user_id}}",
+        image: dataURL,
+        csrfmiddlewaretoken: getCookie('csrftoken')
+    },
+    success: function(response) {
+        console.log('Image sent successfully.');
+        
+    },
+    error: function(xhr, status, error) {
+        console.error('Error saving image: ' + error);
+    }
+});
+}
+
+    </script>
+    
+</body>
+</html>

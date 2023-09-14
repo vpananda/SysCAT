@@ -2,15 +2,7 @@
 {% extends 'base.html' %} {% load static %}
 {% block content %}
 <head>  
-  <style>    body
-  {
-      counter-reset: Serial;           /* Set the Serial counter to 0 */
-  }
-  tr td:first-child:before
-  {
-    counter-increment: Serial;      /* Increment the Serial counter */
-    content: counter(Serial); /* Display the counter */
-  }
+  <style>    
   .sticky-thead {
     position: sticky;
     top:-1px;
@@ -224,7 +216,75 @@
       background: #f0f0f0;
       border-radius: 3px;
     }
+
+    /* Set the width of the scrollbar */
+/* Use 'thin' or 'auto' to let the browser determine the width, or specify a specific width value */
+/* Example: scrollbar-width: 6px; */
+/* Note: Not all browsers support the scrollbar-width property yet */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px; /* Webkit-based browsers (e.g., Chrome, Safari) */
+  scrollbar-width: thin; /* Firefox */
+}
+
+/* Set the color of the scrollbar thumb */
+/* Example: scrollbar-color: red blue; */
+/* The first color is for the thumb, the second color is for the track */
+/* Note: Not all browsers support the scrollbar-color property yet */
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #2c3e50;
+  border-radius: 3px;
+}
+
+/* Set the color of the scrollbar track */
+/* Note: Not all browsers support the scrollbar-color property yet */
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #f0f0f0;
+  border-radius: 3px;
+}
+
+
+    #pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 20px;
+    }
     
+    #prevBtn,
+    #nextBtn {
+      background: #1abc9c;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      border: none;
+      color: white;
+      padding: 8px 16px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    
+    #prevBtn:hover,
+    #nextBtn:hover {
+      background: #1abc9c;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    }
+    
+    #pageNumbers {
+      margin: 0 10px;
+      font-size: 16px;
+    }
+    
+    .modal-content {
+      background-color: #fff;
+      border-radius: 10px;
+    }
+
+    .modal-dialog {
+      max-width: 800px; /* Increase the modal size as needed */
+      margin: 1.75rem auto; /* Center the modal on the page */
+    }
 
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
@@ -237,7 +297,7 @@
     <form method="GET" action="{% url 'quest_bank' %}">
       <div class="form-group row mb-3">
         <div class="col-md-4 col-card-5 d-flex align-items-center" >
-          <label for="applied_for" class="mr-8">Subject:</label>
+          <label for="applied_for" class="mx-4">Skills:</label>
           <select class="form-control w-50"  name="applied_for" id="applied_for" onchange="this.form.submit()">
             <option value='0|All' {% if request.GET.applied_for == '0' %}{% endif %}>All</option>
             {% for search in search_filter %}
@@ -246,15 +306,15 @@
           </select>
       </div>
         <div class="col-md-4 d-flex  align-items-center">
-          <label for="filter_by" class="mr-8">filter by:</label>
+          <label for="filter_by" class="mx-4">Status:</label>
           <select class="form-control w-50" id="filter_by"style="margin-right:4%" name="filter_by" onchange="this.form.submit()">          
-            <option value="2" {% if request.GET.filter_by == '2' %}selected{% endif %}>All</option>          
-            <option value="1" {% if request.GET.filter_by == '1' %}selected{% endif %}>Active</option>          
+            <option value="1" {% if request.GET.filter_by == '1' %}selected{% endif %}>Active</option>
+            <option value="2" {% if request.GET.filter_by == '2' %}selected{% endif %}>All</option>                   
             <option value="0" {% if request.GET.filter_by == '0' %}selected{% endif %}>Inactive</option>        
           </select>
         </div>
         <div class="col-md-4 d-flex  align-items-center">
-          <label for="level" class="mr-8">Level:</label>
+          <label for="level" class="mx-4">Level:</label>
           <select class="form-control w-50" id="level"style="margin-right:4%" name="level" onchange="this.form.submit()">   
             <option value="0" {% if request.GET.filter_by == '0' %}selected{% endif %}>All</option>         
             <option value="1" {% if request.GET.level == '1' %}selected{% endif %}>1</option>          
@@ -263,12 +323,12 @@
         </div>
       </div>
     </form>     
-  <div style="height: 60vh; overflow-y: auto; margin:20px; overflow:auto">
+  <div style="height: 55vh; overflow-y: auto; margin:20px; overflow:auto">
     <table class="table table-bordered text-center">
       <thead class="sticky-thead">
         <tr>
           <th>S.NO</th>
-          <th>Subject</th>
+          <th>Skill</th>
           <th>Level</th>
           <th>Question</th>
           <th>Option1</th>
@@ -283,7 +343,7 @@
       <tbody>
         {% for question in questions %}
         <tr>
-          <td> </td>
+          <td> {{ forloop.counter }} </td>
           <td>{{ question.1 }}</td>
           <td>{{ question.2 }}</td>
           <td>{{ question.3 }}</td>
@@ -299,71 +359,82 @@
             <a href="#editquesModal{{ question.0 }}" data-bs-toggle="modal" class="btn btn-info"><i class="fas fa-pencil-alt"></i></a>
             <div style="width: 5px;"></div>
             <a href="#confirm-delete-modal{{ question.0 }}" data-bs-toggle="modal" class="btn btn-danger"><i class="fas fa-trash-alt"></i></a>
-           <!-- Model -->
-           
-          <div class="modal fade pt-5" id="editquesModal{{ question.0 }}" tabindex="-1" aria-labelledby="editquesModalLabel" aria-hidden="true">
-                        <div class="modal-dialog">
-                          <div class="modal-content mt-5">
-                            <div class="modal-header">
-                              <div class="d-flex justify-content-between align-items-center w-100">                    
-                                <h5 class="modal-title mb-0">Edit Question</h5>                  
-                              </div>                  
-                              <div class="">                    
-                                <button  type="button"   class="btn-close" data-bs-dismiss="modal" aria-label="Close" ></button> 
-                              </div>                
-                            </div>  
-                            <div class="modal-body">  
-                              <form method="POST" action="{% url 'edit_ques' id=question.0 %}">  
-                                {% csrf_token %}
-                                <div class="mb-3">  
-                                  <label for="subject" class="form-label">Subject</label>  
-                                  <select class="form-select" name="subject" >   
-                                    <option value="{{ question.9 }}">{{ question.1 }}</option>
-                                     {% for subject in subjects %}
-                                        <option value="{{subject.0}}">{{subject.1}}</option>
-                                        {% endfor %}
-                                          </select>  
-                                        </div>  
-                                          <div class="mb-3">   
-                                            <label for="level" class="form-label">Label</label>  
-                                            <select class="form-select" name="level" >   
-                                              <option value="{{ question.2 }}">{{ question.2 }}</option>   
-                                              <option value="1">1</option>  
-                                              <option value="2">2</option>   
-                                              <option value="3">3</option>  
-                                              <option value="4">4</option>  
-                                              </select>  
-                                          </div>  
-                                          <div class="mb-3">   
-                                            <label for="question" class="form-label">Question</label>  
-                                            <input type="text" class="form-control_1" id="question" name="question" value="{{question.3}}">   
-                                          </div>  
-                                          <div class="mb-3"> 
-                                            <label for="option1" class="form-label">Option 1</label> 
-                                            <input type="text" class="form-control_1" id="option1" name="option1" value="{{question.4}}">  
-                                          </div>  
-                                          <div class="mb-3">  
-                                            <label for="option2" class="form-label">Option 2</label> 
-                                            <input type="text" class="form-control_1" id="option2" name="option2" value="{{question.5}}"> 
-                                          </div> 
-                                          <div class="mb-3">  
-                                            <label for="option3" class="form-label">Option 3</label> 
-                                            <input type="text" class="form-control_1" id="option3" name="option3" value="{{question.6}}"> 
-                                          </div> 
-                                          <div class="mb-3"> 
-                                            <label for="option4" class="form-label">Option 4</label> 
-                                            <input type="text" class="form-control_1" id="option4" name="option4" value="{{question.7}}">  
-                                          </div> 
-                                          <div class="mb-3"> 
-                                            <label for="answer" class="form-label">Answer</label> 
-                                            <input type="text" class="form-control_1" id="answer" name="answer" value="{{question.8}}">  
-                                          </div>  
-                                          <button type="submit" class="btn btn-primary">Save changes</button> 
-                                        </form> 
-                                      </div>  
-                                    </div>  
-                                  </div> 
-                                </div>
+           <!-- Model --> 
+           <div class="modal fade" id="editquesModal{{ question.0 }}" tabindex="-1" aria-labelledby="editquesModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content mt-5 "> <!-- Add bg-light class for background color -->
+                <div class="modal-header">
+                  <div class="d-flex justify-content-between align-items-center w-100">
+                    <h5 class="modal-title mb-0">Edit Question</h5>
+                  </div>
+                  <div class="">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                </div>
+                <div class="modal-body">
+                  <form method="POST" action="{% url 'edit_ques' id=question.0 %}">
+                    {% csrf_token %}
+                    <div class="row mb-3">
+                      <div class="col-md-6">
+                        <label for="subject" class="form-label">Skill</label>
+                        <select class="form-select" name="subject">
+                          <option value="{{ question.9 }}">{{ question.1 }}</option>
+                          {% for subject in subjects %}
+                          <option value="{{subject.0}}">{{subject.1}}</option>
+                          {% endfor %}
+                        </select>
+                      </div>
+                      <div class="col-md-6">
+                        <label for="level" class="form-label">Level</label>
+                        <select class="form-select" name="level">
+                          <option value="{{ question.2 }}">{{ question.2 }}</option>
+                          <option value="1">1</option>
+                          <option value="2">2</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="row mb-3 ">
+                      <div class="col-md-12 d-flex flex-column align-items-center">
+                        <label for="question" class="form-label">Question</label>
+                        <input type="text" class="form-control w-100" id="question" name="question" value="{{question.3}}">
+                      </div>
+                    </div>
+                    <div class="row mb-3">
+                      <div class="col-md-6">
+                        <label for="option1" class="form-label">Option 1</label>
+                        <input type="text" class="form-control" id="option1" name="option1" value="{{question.4}}">
+                      </div>
+                      <div class="col-md-6">
+                        <label for="option2" class="form-label">Option 2</label>
+                        <input type="text" class="form-control" id="option2" name="option2" value="{{question.5}}">
+                      </div>
+                    </div>
+                    <div class="row mb-3">
+                      <div class="col-md-6">
+                        <label for="option3" class="form-label">Option 3</label>
+                        <input type="text" class="form-control" id="option3" name="option3" value="{{question.6}}">
+                      </div>
+                      <div class="col-md-6">
+                        <label for="option4" class="form-label">Option 4</label>
+                        <input type="text" class="form-control" id="option4" name="option4" value="{{question.7}}">
+                      </div>
+                    </div>
+                    <div class="row mb-3 ">
+                      <div class="col-md-12 d-flex flex-column align-items-center">
+                        <label for="answer" class="form-label">Answer</label>
+                        <input type="text" class="form-control w-100" id="answer" name="answer" value="{{question.8}}">
+                      </div>
+                    </div>
+                    <div class="d-flex justify-content-center">
+                      <button type="submit" class="btn btn-primary">Save changes</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+
                 <!-- Delete Confirmation Modal -->
                         <div class="modal fade" id="confirm-delete-modal{{ question.0 }}" tabindex="-1" aria-labelledby="confirm-delete-modal-label" aria-hidden="true">
                         <div class="modal-dialog">
@@ -401,6 +472,76 @@
       </tbody>
     </table>
   </div>
+  <div id="pagination">
+    <button id="prevBtn">&lt; Prev</button>
+    <span id="pageNumbers"></span>
+    <button id="nextBtn">Next &gt;</button>
+  </div>
 </div>
 </div>
+<script>
+  function paginateTable(pageSize) {
+    var table = document.querySelector('.table');
+    var tbody = table.querySelector('tbody');
+    var rows = Array.from(tbody.querySelectorAll('tr'));
+
+    var currentPage = 1;
+    var totalPages = Math.ceil(rows.length / pageSize);
+
+    function showPage(page) {
+      currentPage = page;
+      var start = (currentPage - 1) * pageSize;
+      var end = start + pageSize;
+
+      rows.forEach(function (row, index) {
+        if (index >= start && index < end) {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
+        }
+      });
+
+      updatePageNumbers();
+    }
+
+    function updatePageNumbers() {
+      var pageNumbers = document.getElementById('pageNumbers');
+      pageNumbers.textContent = currentPage + ' / ' + totalPages;
+    }
+
+    function goToPrevPage() {
+      if (currentPage > 1) {
+        showPage(currentPage - 1);
+      }
+    }
+
+    function goToNextPage() {
+      if (currentPage < totalPages) {
+        showPage(currentPage + 1);
+      }
+    }
+
+    document.getElementById('prevBtn').addEventListener('click', goToPrevPage);
+    document.getElementById('nextBtn').addEventListener('click', goToNextPage);
+
+    // Initial check for empty table
+    if (rows.length === 0) {
+      var tableBody = document.getElementById('tableBody');
+      var emptyRow = document.createElement('tr');
+      var emptyData = document.createElement('td');
+      emptyData.setAttribute('colspan', '8');
+      emptyData.textContent = 'No candidates found.';
+      emptyRow.appendChild(emptyData);
+      tableBody.appendChild(emptyRow);
+
+      // Hide the pagination controls if the table is empty
+      var paginationDiv = document.getElementById('pagination');
+      paginationDiv.style.display = 'none';
+    } else {
+      showPage(1);
+    }
+  }
+
+  paginateTable(5); 
+</script>
 {% endblock %}

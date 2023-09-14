@@ -131,17 +131,20 @@
       <div class="card">
         <div class="card-body">
           <h5 class="card-title mb-4">Create a New Job Position</h5>
-          <form method="POST">
+          <form method="POST" onsubmit="return validateForm()">
             {% csrf_token %}
             <div class="mb-3">
               <label for="job-title" class="form-label">Job Position</label>
               <input
                 type="text"
                 class="form-control w-50"
-                id="job-title"
+                id="job_title"
                 name="job_title"
                 placeholder="Enter job position"
-              />
+                required
+              >
+              <span class="error-message" style="color: red; display: none;">Please enter a Job Position.</span>
+              
             </div>
             <div class="mb-3">
               <label for="is-non-cs" class="form-label">Is Non-CS</label>
@@ -211,7 +214,7 @@
               >
                 Create Job Position
               </button>
-              <a href="{% url 'jobposition' %}" class="btn btn-secondary">May Be Later</a>
+              <a href="{% url 'jobposition' %}" class="btn btn-secondary">Cancel</a>
             </div>
           </form>
         </div>
@@ -220,3 +223,17 @@
   </div>
 </div>
 {% endblock content %}
+<script>
+  function validateForm() {
+      const jobInput = document.getElementById('job_title');
+      const errorMessage = document.querySelector('.error-message');
+
+      if (jobInput.value.trim() === '') {
+          errorMessage.style.display = 'inline';
+          return false; // Prevent form submission
+      } else {
+          errorMessage.style.display = 'none';
+          return true; // Allow form submission
+      }
+  }
+</script>

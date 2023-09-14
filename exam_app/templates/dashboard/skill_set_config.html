@@ -5,15 +5,7 @@
 {% block content %}
 
 <head>  
-  <style>    body
-    {
-        counter-reset: Serial;           /* Set the Serial counter to 0 */
-    }
-    tr td:first-child:before
-    {
-      counter-increment: Serial;      /* Increment the Serial counter */
-      content: counter(Serial); /* Display the counter */
-    }
+  <style>   
     .sticky-thead {
       position: sticky;
       top:-1px;
@@ -184,6 +176,39 @@
         background: #f0f0f0;
         border-radius: 3px;
       }
+
+      #pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 20px;
+      }
+      
+      #prevBtn,
+      #nextBtn {
+        background: #1abc9c;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        border: none;
+        color: white;
+        padding: 8px 16px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 14px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+      
+      #prevBtn:hover,
+      #nextBtn:hover {
+        background: #1abc9c;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      }
+      
+      #pageNumbers {
+        margin: 0 10px;
+        font-size: 16px;
+      }
       
  
   </style>
@@ -191,13 +216,13 @@
 </head>
 <div class="container">
   <div class="col-12 mt-2 dashboard-header">
-    <h2 class=" my-4 dashboard-title">Skill Configuration</h2>
+    <h2 class=" my-4 dashboard-title">Skill Set Configuration</h2>
   </div>
   <a href="{% url 'create_Skill' %}" class="btn btn-primary mb-4">Add Skill</a>
   <form method="GET">
     <div class="form-group row mb-3">
      <div class="col-md-5 col-card-5 d-flex justify-content-between align-items-center">
-        <label for="applied_for" class="mr-1">Applied for:</label>
+        <label for="applied_for" class="mr-1" style="margin-left:30px;">Job Position:</label>
         <select class="form-control" style="width:300px" id="applied_for" name="applied_for" onchange="this.form.submit()">
             <option value='All|0' {% if request.GET.applied_for == '0' %}selected{% endif %}>All</option>
             {% for search in search_filter %}
@@ -205,28 +230,28 @@
             {% endfor %}
         </select>
     </div> 
-      <div class="col-md-7 d-flex justify-content-end align-items-center">
-        
+      <div class="col-md-7 d-flex justify-content-end align-items-center" >
+        <label  class="mr-1" style="margin-right:30px;">Status:</label>
         <select class="form-control w-50" id="filter_by" name="filter_by" onchange="this.form.submit()">
-          <option value="2" {% if request.GET.filter_by == '2' %}selected{% endif %} >All</option>
           <option value="1" {% if request.GET.filter_by == '1' %}selected{% endif %}>Active</option>
+          <option value="2" {% if request.GET.filter_by == '2' %}selected{% endif %} >All</option>
           <option value="0" {% if request.GET.filter_by == '0' %}selected{% endif %}>Inactive</option>
         </select>
       </div>
     </div>
   </form>
 
-  <div class="table-responsive"  style="height: 50vh; overflow-y: auto; overflow-x: auto;">
+  <div >
     <table class="table table-bordered text-center" >
       <thead class="sticky-thead">
         <tr>
           <th>S.No</th>
           <th>Job Position</th>
-          <th>Subject</th>
+          <th>Skill</th>
           <th>Level</th>
-          <th>No. of Questions</th>
+          <th>No.of.Questions</th>
           <th>Cutoff Marks</th>
-          <th>Duration(in min)</th>
+          <th>Duration(in mins)</th>
           <th>Active</th>
           <th>Actions</th>
         </tr>
@@ -235,7 +260,7 @@
         {% for skill in skills %}
         
                 <tr >
-                  <td> </td>
+                  <td> {{ forloop.counter }} </td>
                    <td >{{ skill.1 }}</td>
                   <td>{{ skill.2 }}</td>
                   <td>{{ skill.3 }}</td>
@@ -273,17 +298,17 @@
                                 <label for="job_Position" class="form-label">Job Position</label>
                                 <input type="text" class="form-control" id="job_Position" name="job_Position" value="{{skill.1}}">
                               </div> -->
-                               <div class="mb-3">       
-                                <label for="job_Position" class="form-label">Job Position</label> 
-                                      <select class="form-control" id="job_Position" name="job_Position"> 
-                                               <option value="{{skill.7}}" selected>{{skill.1}}</option> 
-                                                      {% for job in jobs %}
-                                                      <option value="{{job.0}}">{{job.1}}</option>
-                                                          {% endfor %}      
-                                                         </select>      
-                                                        </div>
-                                  <div class="mb-3">       
-                                      <label for="subjects" class="form-label">Job Position</label> 
+                              <div class="mb-3 d-flex flex-column align-items-center">
+                                <label for="job_Position" class="form-label">Job Position</label>
+                                <select class="form-control" id="job_Position" name="job_Position">
+                                    <option value="{{skill.7}}" selected>{{skill.1}}</option>
+                                    {% for job in jobs %}
+                                    <option value="{{job.0}}">{{job.1}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                                  <div class="mb-3 d-flex flex-column align-items-center">       
+                                      <label for="subjects" class="form-label">Skill</label> 
                                   <select class="form-control" id="subjects" name="subjects"> 
                                             <option value="{{skill.8}}" selected >{{skill.2}}</option> 
                                                   {% for subject in subjects %}        
@@ -291,19 +316,19 @@
                                                       {% endfor %}      
                                                       </select>
                                                     </div>
-                          <div class="mb-3">
+                          <div class="mb-3 d-flex flex-column align-items-center">
                                 <label for="level" class="form-label">level</label>
                                 <input type="text" class="form-control" id="level" name="level" value="{{skill.3}}">
                               </div>
-                              <div class="mb-3">
+                              <div class="mb-3 d-flex flex-column align-items-center">
                                 <label for="noofquestions" class="form-label">No.Of Questions</label>
                                 <input type="text" class="form-control" id="noofquestions" name="noofquestions" value="{{skill.4}}">
                               </div>
-                              <div class="mb-3">
+                              <div class="mb-3 d-flex flex-column align-items-center">
                                 <label for="cutoffmarks" class="form-label">cut off Marks</label>
                                 <input type="text" class="form-control" id="cutoffmarks" name="cutoffmarks" value="{{skill.5}}">
                               </div>
-                              <div class="mb-3">
+                              <div class="mb-3 d-flex flex-column align-items-center">
                                 <label for="duration" class="form-label">Duration (in min)</label>
                                 <input type="text" class="form-control" id="duration" name="duration" value="{{skill.6}}">
                               </div>
@@ -349,7 +374,77 @@
       </tbody>
     </table>
   </div>
+  <div id="pagination">
+    <button id="prevBtn">&lt; Prev</button>
+    <span id="pageNumbers"></span>
+    <button id="nextBtn">Next &gt;</button>
+  </div>
 </div>
+<script>
+  function paginateTable(pageSize) {
+    var table = document.querySelector('.table');
+    var tbody = table.querySelector('tbody');
+    var rows = Array.from(tbody.querySelectorAll('tr'));
+
+    var currentPage = 1;
+    var totalPages = Math.ceil(rows.length / pageSize);
+
+    function showPage(page) {
+      currentPage = page;
+      var start = (currentPage - 1) * pageSize;
+      var end = start + pageSize;
+
+      rows.forEach(function (row, index) {
+        if (index >= start && index < end) {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
+        }
+      });
+
+      updatePageNumbers();
+    }
+
+    function updatePageNumbers() {
+      var pageNumbers = document.getElementById('pageNumbers');
+      pageNumbers.textContent = currentPage + ' / ' + totalPages;
+    }
+
+    function goToPrevPage() {
+      if (currentPage > 1) {
+        showPage(currentPage - 1);
+      }
+    }
+
+    function goToNextPage() {
+      if (currentPage < totalPages) {
+        showPage(currentPage + 1);
+      }
+    }
+
+    document.getElementById('prevBtn').addEventListener('click', goToPrevPage);
+    document.getElementById('nextBtn').addEventListener('click', goToNextPage);
+
+    // Initial check for empty table
+    if (rows.length === 0) {
+      var tableBody = document.getElementById('tableBody');
+      var emptyRow = document.createElement('tr');
+      var emptyData = document.createElement('td');
+      emptyData.setAttribute('colspan', '8');
+      emptyData.textContent = 'No candidates found.';
+      emptyRow.appendChild(emptyData);
+      tableBody.appendChild(emptyRow);
+
+      // Hide the pagination controls if the table is empty
+      var paginationDiv = document.getElementById('pagination');
+      paginationDiv.style.display = 'none';
+    } else {
+      showPage(1);
+    }
+  }
+
+  paginateTable(5); 
+</script>
 {% endblock %}
 
 

@@ -49,6 +49,9 @@ body {
   padding: 5px 10px;
   color: #000;
 }
+.bold-text {
+  font-weight: 900;
+}
     </style>
 </head>
 <body>
@@ -82,15 +85,29 @@ body {
                  <td width="2%">:</td>
                  <td>{{ candidate_data.8 }}</td>
                </tr>
+               <tr>
+                <th width="30%">Job Position</th>
+                <td width="2%">:</td>
+                <td><strong class="bold-text">{{jobposition}}</strong></td>
+              </tr>
+              <tr>
+                <th width="30%">Total Duration of exam</th>
+                <td width="2%">:</td>
+                <td><strong class="bold-text">{{total_duration}} </strong>minutes</td>
+              </tr>
              </table>
-               <p>Applied for the Job Position {{jobposition}}</p>
+               <!-- <p>Applied for the Job Position {{jobposition}}</p>
+               <p> Total Duration of exam {{total_duration}} minutes</p> -->
+               <h5> <strong>Level {{level}}</strong></h5>
+             
+               {% comment %} <p>Applied for the Job Position {{jobposition}}</p>
                <p> Total Duration of exam {{total_duration}} minutes</p>
-               <p> Level {{level}}</p>
+               <p> Level {{level}}</p> {% endcomment %}
                <table class="table table-bordered">
                  <thead>
                    <tr>
                      
-                     <th>subjects</th>
+                     <th>Subjects</th>
                      <th>No of questions</th>
                      <th>Cut off Marks</th>
                      <th>Duration</th>
@@ -102,7 +119,7 @@ body {
                    <td >{{subject.2}}</td>
                    <td>{{subject.4}}</td>
                    <td>{{subject.5}}</td>
-                   <td>{{subject.6}}</td>
+                   <td>{{subject.6}} minutes</td>
                  </tr>
                  {% endfor %}
                </table>

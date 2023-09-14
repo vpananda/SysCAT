@@ -1,13 +1,5 @@
 {% extends 'base.html' %} {% load static%} {% block content %}
-<head>  <style>    body
-  {
-      counter-reset: Serial;           /* Set the Serial counter to 0 */
-  }
-  tr td:first-child:before
-  {
-    counter-increment: Serial;      /* Increment the Serial counter */
-    content: counter(Serial); /* Display the counter */
-  }
+<head>  <style>   
   .sticky-thead {
     position: sticky;
     top:-1px;
@@ -178,6 +170,39 @@
       background: #f0f0f0;
       border-radius: 3px;
     }
+
+    #pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 20px;
+    }
+    
+    #prevBtn,
+    #nextBtn {
+      background: #1abc9c;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      border: none;
+      color: white;
+      padding: 8px 16px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    
+    #prevBtn:hover,
+    #nextBtn:hover {
+      background: #1abc9c;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    }
+    
+    #pageNumbers {
+      margin: 0 10px;
+      font-size: 16px;
+    }
     
 
 </style>
@@ -186,17 +211,18 @@
 
 <div class="container">
   <div class="col-12 mt-2 dashboard-header">
-    <h2 class=" my-4 dashboard-title">Subjects</h2>
+    <h2 class=" my-4 dashboard-title">Skills</h2>
   </div>
   <div class="row mb-3 d-flex flex-row justify-content-between">
     <div class="col-md-6 me-4">
-      <a href="{% url 'new_subject' %}" class="btn btn-primary">Add New Subject</a>
+      <a href="{% url 'new_subject' %}" class="btn btn-primary">Add New Skill</a>
     </div>
     <div class="col-md-5">
-      <form method="GET" class="d-flex flex-row justify-content-end">
+      <form method="GET" class="d-flex flex-row justify-content-end  align-items-center">
+        <label  style="margin-right:30px;">Status:</label>
         <select class="form-control w-50"style="margin-right:5%" id="filter_by" name="filter_by" onchange="this.form.submit()">
-          <option value="2" {% if request.GET.filter_by == '2' %}selected{% endif %}>All</option>
           <option value="1" {% if request.GET.filter_by == '1' %}selected{% endif %}>Active</option>
+          <option value="2" {% if request.GET.filter_by == '2' %}selected{% endif %}>All</option>
           <option value="0" {% if request.GET.filter_by == '0' %}selected{% endif %}>Inactive</option>
         </select>
       </form>
@@ -208,15 +234,15 @@
       <thead class="sticky-thead">
         <tr>
           <th>S.No</th>
-          <th>Subject</th>
+          <th>Skill</th>
           <th>Active</th>
-          <th>Action</th>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
         {% for subject in subjects %}
         <tr>
-          <td> </td>
+          <td> {{ forloop.counter }} </td>
           <td>{{subject.1}}</td>
           <td><span>{% if subject.2 == True %}Yes{% else %}No{% endif %}</span></td>
           {% if subject.2 %}
@@ -231,7 +257,7 @@
                     <div
                       class="d-flex justify-content-between align-items-center w-100"
                     >
-                      <h5 class="modal-title mb-0">Edit Subject</h5>
+                      <h5 class="modal-title mb-0">Edit Skill</h5>
                     </div>
                     <div class="">
                       <button
@@ -245,8 +271,8 @@
                   <div class="modal-body">
                     <form method="POST" action="{% url 'edit_subject' id=subject.0 %}">
                       {% csrf_token %}
-                      <div class="mb-3">
-                        <label for="subject" class="form-label">subject</label>
+                      <div class="mb-3 d-flex flex-column align-items-center">
+                        <label for="subject" class="form-label">Skill</label>
                         <input type="text" class="form-control" id="subject" name="subject" value="{{subject.1}}">
                       </div>
                       <button type="submit" class="btn btn-primary">Save changes</button>
@@ -284,12 +310,82 @@
           </td>
         </tr>
         {% else %}
-          <td><a href="{% url 'activatePosition' id=subject.0 %}" class="btn btn-success">Activate</a>
+          <td><a href="{% url 'activateSubject' id=subject.0 %}" class="btn btn-success">Activate</a>
           </td>
           {% endif %}
         {% endfor %}
       </tbody>
     </table>
+    <div id="pagination">
+      <button id="prevBtn">&lt; Prev</button>
+      <span id="pageNumbers"></span>
+      <button id="nextBtn">Next &gt;</button>
+    </div>
   </div>
 </div>
+<script>
+  function paginateTable(pageSize) {
+    var table = document.querySelector('.table');
+    var tbody = table.querySelector('tbody');
+    var rows = Array.from(tbody.querySelectorAll('tr'));
+
+    var currentPage = 1;
+    var totalPages = Math.ceil(rows.length / pageSize);
+
+    function showPage(page) {
+      currentPage = page;
+      var start = (currentPage - 1) * pageSize;
+      var end = start + pageSize;
+
+      rows.forEach(function (row, index) {
+        if (index >= start && index < end) {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
+        }
+      });
+
+      updatePageNumbers();
+    }
+
+    function updatePageNumbers() {
+      var pageNumbers = document.getElementById('pageNumbers');
+      pageNumbers.textContent = currentPage + ' / ' + totalPages;
+    }
+
+    function goToPrevPage() {
+      if (currentPage > 1) {
+        showPage(currentPage - 1);
+      }
+    }
+
+    function goToNextPage() {
+      if (currentPage < totalPages) {
+        showPage(currentPage + 1);
+      }
+    }
+
+    document.getElementById('prevBtn').addEventListener('click', goToPrevPage);
+    document.getElementById('nextBtn').addEventListener('click', goToNextPage);
+
+    // Initial check for empty table
+    if (rows.length === 0) {
+      var tableBody = document.getElementById('tableBody');
+      var emptyRow = document.createElement('tr');
+      var emptyData = document.createElement('td');
+      emptyData.setAttribute('colspan', '8');
+      emptyData.textContent = 'No candidates found.';
+      emptyRow.appendChild(emptyData);
+      tableBody.appendChild(emptyRow);
+
+      // Hide the pagination controls if the table is empty
+      var paginationDiv = document.getElementById('pagination');
+      paginationDiv.style.display = 'none';
+    } else {
+      showPage(1);
+    }
+  }
+
+  paginateTable(5); 
+</script>
 {% endblock %}

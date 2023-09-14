@@ -191,16 +191,21 @@
         }
       }
     </style>
+    <script type="text/javascript">
+      function preventBack(){window.history.forward()};
+      setTimeout("preventBack()",0);
+        window.onunload = function(){null;}
+    </script>
   </head>
   <body>
     <div class="wrapper">
       {% if passorfail == 'FAIL'%}
       <h1>Better Luck Next time!</h1>
-      <p>You are not reached the requirement!</p>
+      <p>You have not cleared this Level!</p>
       <a href="{%url 'logout'%}"  style="background-color: #007bff; color: #fff; border: none; padding: 10px 20px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer;" >logout</a>
-      {% else %}
+      {% elif passorfail == 'PASS' and level == '1' %}
       <h1>Congratulations!</h1>
-      <p>You passed the exam!</p>
+      <p>You passed the level 1 exam!</p>
       
       <span> click here for next level<button onclick="location.href='{% url 'exam_main_dashboard' %}';" style="background-color: #007bff; color: #fff; border: none; padding: 10px 20px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer;">level 2</button></span>
       <div class="confetti"></div>
@@ -219,6 +224,29 @@
       <div class="confetti"></div>
       <div class="confetti"></div>
     </div>
+
+    {% elif passorfail == 'PASS' and level == '2' %}
+    <h1>Congratulations!</h1>
+      <p>You passed the Level 2 exam!</p>
+      
+      <span> click here for logout<button onclick="location.href='{% url 'logout' %}';" style="background-color: #007bff; color: #fff; border: none; padding: 10px 20px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer;">logout</button></span>
+      <div class="confetti"></div>
+      <div class="confetti"></div>
+      <div class="confetti"></div>
+      <div class="confetti"></div>
+      <div class="confetti"></div>
+      <div class="confetti"></div>
+      <div class="confetti"></div>
+      <div class="confetti"></div>
+      <div class="confetti"></div>
+      <div class="confetti"></div>
+      <div class="confetti"></div>
+      <div class="confetti"></div>
+      <div class="confetti"></div>
+      <div class="confetti"></div>
+      <div class="confetti"></div>
+    </div>
+
     {% endif %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/wow/1.1.2/wow.min.js"></script>
     <script>

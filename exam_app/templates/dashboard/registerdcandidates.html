@@ -22,14 +22,14 @@
   <div class="container" style="border-radius: 20px;">
     <div class="row">
       <div class="col-12 mt-2 mb-2">
-          <h4>Candiate Details</h4>
+          <h4>Candidate Details</h4>
       </div>
             <div class="table-responsive"  style="height: 90vh; overflow-y: auto; overflow-x: auto;">
                 <div class="container">
         <form method="get" class="form-inline">
             <div class="row justify-content-between align-items-center">
                 <div class="col-md-4 d-flex justify-content-start align-items-center">
-                    <label for="applied_for" class="mr-2">Applied For:</label>
+                    <label for="applied_for" class="mr-2">Job Position:</label>
                     <select class="form-select" id="applied_for" name="applied_for" onchange="this.form.submit()">
                         <option value='All' {% if request.GET.applied_for == 'All' %}selected{% endif %}>All</option>
                         {% for search in search_filter %}

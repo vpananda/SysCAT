@@ -10,7 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
-from pathlib import Path
+from pathlib import Path, os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,12 +20,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-dv3u-$*7-%$)cw^j4lj45s1*f%2g_ok#^5yn%a290py6*+4)n%'
+SECRET_KEY = 'django-insecure-fqhr3^=&1=idmnb7o0_*p$#*=h$-#r=+$mmrigp8-c@q%hck^9'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -38,8 +38,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'exam_app',
-    'django_jinja',
-    # 'webcam',
 ]
 
 MIDDLEWARE = [
@@ -83,8 +81,6 @@ WSGI_APPLICATION = 'exam_project.wsgi.application'
 #     }
 # }
 
-
-
 DATABASES = {
     'default': {
         # String. It must be "mssql".
@@ -94,24 +90,24 @@ DATABASES = {
         'NAME': 'OLT_DEV',
 
         # String. Database user name in "user" format. If not given then MS Integrated Security will be used.
-        'USER': 'OltDevUser',
+        'USER': 'Bharath',
 
         # String. Database user password.
-        'PASSWORD': 'OltDevProd',
+        'PASSWORD': 'Systech123',
         
 
          # String. SQL Server instance in "server\instance" format.
-        'HOST': '10.100.130.21',
+        'HOST': 'systech-exam-app-prod-1.database.windows.net',
 
         # String. Server instance port. An empty string means the default port.
-        'PORT': '',
+        'PORT': '1433',
 
         # Dictionary. Additional database settings.
         'OPTIONS': {
             # String. ODBC Driver to use ("ODBC Driver 17 for SQL Server", 
             # "SQL Server Native Client 11.0", "FreeTDS" etc). 
             # Default is "ODBC Driver 17 for SQL Server".
-            'driver': 'ODBC Driver 17 for SQL Server',
+            'driver': 'ODBC Driver 18 for SQL Server',
         },
     },
 }
@@ -153,7 +149,27 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+CSRF_TRUSTED_ORIGINS = ['https://*.azurewebsites.net']
+
+# Email
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp-mail.outlook.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'kalaiselvanj@systechusa.com'  # Replace with your Gmail address
+EMAIL_HOST_PASSWORD = 'M1cr0A((0fK@l@1'  # Replace with your Gmail password or an app-specific password
+

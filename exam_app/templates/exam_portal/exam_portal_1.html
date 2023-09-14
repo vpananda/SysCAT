@@ -51,6 +51,10 @@
     font-weight: bold;
     height: 55vh;
 }
+.tablinks.active {
+  background-color: #007bff; /* Change this to the color you want */
+  color: #fff; /* Change this to the text color you want */
+}
 
 </style>
 {% block body %}
@@ -60,15 +64,17 @@
     <div class="container" id="b1">
       <div class="tab">
         {% for key,value in questions.items %}
-        <button class="tablinks" onclick="openTab(event, '{{key}}')" {% if forloop.first %}id="defaultOpen"{% endif %}>{{key}}</button>
+        <button class="tablinks" onclick="openTab(event, '{{key}}', 1)" {% if forloop.first %}id="defaultOpen"{% endif %}>{{key}}</button>
         {% endfor %}
-        <button id="demo"></button>
-    </div>
-    
+        <div class="d-flex flex-col justify-content-end ">
+          <button id="timer" style="background-color:red; color:white"></button>
+        </div>
+      </div>
+      
     
     {% for key,value in questions.items %}
     <div id="{{key}}" class="tabcontent">
-        <h3>{{key}}</h3>
+      <h3 id="question-heading-{{key}}">{{key}}</h3>
         <div class="card" style="height:400px" id="ques_card">
             {% for i,j in value.items %}
             <div class="card-body" id="card-body-{{ forloop.counter }}">
@@ -113,8 +119,9 @@
     </div>
   <div class="col-md-3">
     <div class="row" id="r2">
-      <img src="{% url 'videostream' stream_path='video' %}" class="center" />
+      <video id="video" autoplay></video>
     </div>
+    
     <div class="row" id="r3">
       <h6>Welcome {{ request.session.username }}</h6>
       <h3>Instructions</h3>
@@ -125,10 +132,10 @@
         </li>
         <li>No one else can be in the room with you</li>
         <li>No talking</li>
-        <li>
+        {% comment %} <li>
           The testing room must be well-lit and you must be clearly visible
-        </li>
-        <li>No dual screens/monitors</li>
+        </li> {% endcomment %}
+        {% comment %} <li>No dual screens/monitors</li> {% endcomment %}
         <li>Do not leave the camera</li>
         <li>No use of additional applications or internet</li>
       </ul>
@@ -144,20 +151,38 @@
 {% endblock %} 
 {% block scripts %}
 {% comment %} <script type="text/javascript" src="{% static 'js/app.js' %}"></script> {% endcomment %}
-<script type="text/javascript">
+<!-- Your HTML code remains the same -->
 
+<script type="text/javascript">
+  function preventBack(){window.history.forward()};
+  setTimeout("preventBack()",0);
+    window.onunload = function(){null;}
+</script>
+
+<script>
   function openTab(evt, tabName, questionIndex) {
     var i, tabcontent, tablinks;
+    var questionHeading = document.getElementById("question-heading-" + tabName);
+    var key = questionHeading.textContent;
+  
     tabcontent = document.getElementsByClassName("tabcontent");
     for (i = 0; i < tabcontent.length; i++) {
       tabcontent[i].style.display = "none";
     }
+  
     tablinks = document.getElementsByClassName("tablinks");
     for (i = 0; i < tablinks.length; i++) {
-      tablinks[i].className = tablinks[i].className.replace(" active", "");
+      if (tablinks[i].textContent === key) {
+        // Add the 'active' class for the matching tablink
+        tablinks[i].classList.add("active");
+      } else {
+        // Remove the 'active' class for other tablinks
+        tablinks[i].classList.remove("active");
+      }
     }
+  
     document.getElementById(tabName).style.display = "block";
-    evt.currentTarget.className += " active";
+    evt.currentTarget.classList.add("active");
     
     if (questionIndex === undefined) {
       questionIndex = 1;
@@ -208,7 +233,10 @@
     openTab(evt, tabName, nextQuestionIndex);
   });
 </script>
-<script>
+
+
+
+<!-- <script>
   //countdown timer
 var countdownEl = document.getElementById('countdown');
 var totalDuration = countdownEl.dataset.totalDuration;
@@ -242,11 +270,11 @@ var x = setInterval(function() {
     window.location.href = "{% url 'submission' %}?level={{level}}&applied_for={{appliedfor}}&user={{user_id}}";
   }
 }, 1000);
-</script>
+</script> -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   {% csrf_token %}
   <script>
-    {% comment %} window.onbeforeunload = function () {return false;} {% endcomment %}
+
     function submitAnswer(answerValue) {
       var formData = {};
       var radios = document.querySelectorAll("input[type=radio]");
@@ -304,6 +332,183 @@ for (var i = 0; i < radios.length; i++) {
   });
 </script>
 
+{% comment %} <script>
+  // Get the video element
+  const video = document.getElementById('video');
+
+  // Check if the browser supports the getUserMedia API
+  if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+      // Get the user's webcam stream
+      navigator.mediaDevices.getUserMedia({ video: true })
+          .then(function(stream) {
+              // Set the video source to the user's webcam stream
+              video.srcObject = stream;
+
+              // Perform face detection on each video frame
+              video.addEventListener('play', function() {
+                  const canvas = document.createElement('canvas');
+                  const context = canvas.getContext('2d');
+                  setInterval(function() {
+                      context.drawImage(video, 0, 0, 640, 480);
+
+                      // Get the image data from the canvas
+                      const imageData = context.getImageData(0, 0, 640, 480);
+                      // Perform face detection on the image data
+                      // Add your face detection code here using JavaScript libraries like face-api.js or TensorFlow.js
+
+                      // Display the detected faces or take further actions
+                      // You can update the canvas or show notifications, etc.
+                  }, 1000 / 30);  // Adjust the interval based on your requirements
+              });
+          })
+          .catch(function(error) {
+              console.error('Error accessing the webcam:', error);
+          });
+  } else {
+      console.error('getUserMedia is not supported by this browser.');
+  }
+</script> {% endcomment %}
+
+<script>
+  // Get the CSRF token from the cookie
+function getCookie(name) {
+var cookieValue = null;
+if (document.cookie && document.cookie !== '') {
+var cookies = document.cookie.split(';');
+for (var i = 0; i < cookies.length; i++) {
+  var cookie = cookies[i].trim();
+  // Does this cookie string begin with the name we want?
+  if (cookie.substring(0, name.length + 1) === (name + '=')) {
+    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+    break;
+  }
+}
+}
+return cookieValue;
+}
+
+// Get video and canvas elements
+const video = document.getElementById('video');
+var canvas = document.createElement('canvas');
+const context = canvas.getContext('2d');
+
+// Get user media stream
+navigator.mediaDevices.getUserMedia({ video: true })
+.then((stream) => {
+video.srcObject = stream;
+})
+.catch((error) => {
+console.error('Error accessing camera:', error);
+});
+
+// Continuously capture frames and send them to the server
+setInterval(() => {
+context.drawImage(video, 0, 0, canvas.width, canvas.height);
+const imageData = canvas.toDataURL('image/png');
+sendData(imageData);
+}, 1000);  // Adjust the interval as per your requirements
+
+// Send image data to the server
+function sendData(imageData) {
+var dataURL = imageData;
+$.ajax({
+url: '{% url "detect_face" %}',
+type: 'POST',
+data: {
+    user:"{{user_id}}",
+    image: dataURL,
+    csrfmiddlewaretoken: getCookie('csrftoken')
+},
+success: function(response) {
+    console.log('Image sent successfully.');
+    
+},
+error: function(xhr, status, error) {
+    console.error('Error saving image: ' + error);
+}
+});
+}
+
+</script>
+
+<script>
+  let intervalId; // Declare intervalId outside the countdown function
+  // Function to start or resume the countdown timer
+  function startTimer() {
+    let endTime = sessionStorage.getItem('countdownEndTime');
+    if (endTime) {
+      // If an endTime value exists in session storage, resume the countdown from that value
+      const remainingTime = endTime// Ensure countdown doesn't go below zero
+      countdown(remainingTime);
+    } else {
+      var countdownEl =document.getElementById('countdown');
+      var totalDurationInMinutes = countdownEl.dataset.totalDuration;
+      
+      var countDownDate = (totalDurationInMinutes *60*1000);
+      console.log(countDownDate)
+      // If no endTime value exists, start a new countdown from the calculated countDownDate
+      countdown(countDownDate);
+    }
+  }
+
+  // Function to stop the countdown timer
+  function stopTimer() {
+    clearInterval(intervalId); // Stop the interval to pause the countdown
+  }
+
+  // Function to reset the countdown timer
+  function resetTimer() {
+    stopTimer(); // Stop the interval
+    sessionStorage.removeItem('countdownEndTime'); // Clear the endTime value from session storage
+    document.getElementById('timer').textContent = '00:00:00'; // Reset the displayed time to 00:00:00
+  }
+
+  // Function to handle the countdown
+  function countdown(remainingTime) {
+    const timerDisplay = document.getElementById('timer');
+
+    function formatTime(hours, minutes, seconds) {
+      if (hours > 0) {
+        return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+      } else {
+        return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+      }
+    }
+
+    function tick() {
+      if (remainingTime <= 0) {
+        // If the countdown is completed, stop the interval and display 00:00:00
+        stopTimer();
+        timerDisplay.textContent = formatTime(0, 0, 0);
+        sessionStorage.removeItem('countdownEndTime'); // Clear the endTime value from session storage
+        alert("Your time is up. Please submit your answers.");
+        window.location.href = "{% url 'submission' %}?level={{level}}&applied_for={{appliedfor}}&user={{user_id}}";
+      } else {
+          console.log("remainingTime",remainingTime)
+          // Calculate hours, minutes, and seconds from the remaining time
+          const hours = Math.floor((remainingTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+          const minutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
+          const seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
+
+          // Display the time in the appropriate format based on the duration
+          timerDisplay.textContent = formatTime(hours, minutes, seconds);
+
+          // Store the remaining time in session storage just before the page is unloaded
+          window.addEventListener('beforeunload', () => {
+            sessionStorage.setItem('countdownEndTime', remainingTime);
+        });
+      }
+      remainingTime -= 1000;
+    }
+
+    // Call the tick function immediately
+    tick();
+    intervalId = setInterval(tick, 1000); // Assign intervalId to the setInterval instance
+  }
+
+  // Automatically start the timer when the page loads
+  startTimer();
+</script>
 
 {% endblock scripts %} 
 {% endblock body %}
