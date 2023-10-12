@@ -17,6 +17,8 @@ import imutils
 import wave
 import time
 import numpy as np
+import pandas as pd
+from sqlalchemy import create_engine
 import math
 import wave
 import datetime
@@ -206,7 +208,7 @@ def registration(request):
         current_date = datetime.date.today()
 
         # Check the last entered ID in the database
-        cursor.execute("SELECT MAX(KeyID) FROM dbo.tb_Candidate")
+        cursor.execute("SELECT MAX(Username) FROM dbo.tb_Candidate")
         last_id = cursor.fetchone()[0]
         print(last_id)
         
@@ -278,10 +280,10 @@ def save_image(request):
         if data_url:
             # Decode the data URL and save the image to a file
             image_data = base64.b64decode(data_url.split(',')[1])
-            now = datetime.datetime.now()
-            image_path = 'C:/Users/KJayavel/Downloads/Systech_merged_latest/Systech/exam_app/img/image{}.png'.format(str(now).replace(":",''))  # Replace with the desired image path
-            with open(image_path, 'wb') as f:
-                f.write(image_data)
+            # now = datetime.datetime.now()
+            # image_path = 'C:/Users/KJayavel/Downloads/Systech_merged_latest/Systech/exam_app/img/image{}.png'.format(str(now).replace(":",''))  # Replace with the desired image path
+            # with open(image_path, 'wb') as f:
+            #     f.write(image_data)
 
             try:
                 cursor = connection.cursor()
@@ -428,12 +430,24 @@ def candidate_dashboard(request):
         if request.method == 'POST':
             unlock_ids = request.POST.getlist('unlocked_ids[]')
             skip_level_1 = request.POST.getlist('skipped_level_1_ids[]')
-            
-            print(skip_level_1, unlock_ids)
+            schedule_start_date_format = request.POST.get('schedule_start_date')
+            schedule_start_date = datetime.datetime.strptime(schedule_start_date_format, "%Y-%m-%dT%H:%M")
+            schedule_end_date_format = request.POST.get('schedule_end_date')
+            schedule_end_date = datetime.datetime.strptime(schedule_end_date_format, "%Y-%m-%dT%H:%M")
+            print("schedule_start_date   :",schedule_start_date, schedule_end_date)
             cursor = connection.cursor()
             if unlock_ids:
                 for lockid in unlock_ids:
-                    cursor.execute('exec unlockCandiadtes %s', [lockid])
+                    cursor.execute('exec unlockCandiadtes %s',[lockid])
+                    cursor.execute('exec ScheduleCandiadtes %s,%s,%s', [lockid,schedule_start_date,schedule_end_date])
+                    cursor.execute('exec get_details_for_email %s',[lockid])
+                    details_for_email = cursor.fetchone()
+                    print(details_for_email)
+                    subject = 'Mail for User-credentials'
+                    message = 'Hi '+details_for_email[0]+', Your Username is '+lockid+' and password is '+details_for_email[1]+', your Scheduled Exam Timing is '+str(schedule_start_date)+' to '+str(schedule_end_date)+'. All the best for your exam!'
+                    from_email = 'kalaiselvanj@systechusa.com'  # Replace with your Gmail address
+                    recipient_list = [details_for_email[2]]  # Replace with recipient email addresses
+                    send_mail(subject, message, from_email, recipient_list)
             if skip_level_1:
                 for skip_level in skip_level_1:
                     cursor.execute('exec skip_level_1_Candiadtes %s', [skip_level])
@@ -454,7 +468,7 @@ def candidate_dashboard(request):
         cursor.execute('exec get_data_tb_candidate_av @name=%s, @applied_for=%s, @start_date=%s, @end_date=%s', [search_name, applied_for, start_date, end_date])
         candidate_data = cursor.fetchall()
 
-        print(candidate_data)
+        print('candidate_data    :',candidate_data)
 
         candidate_data_json = json.dumps(candidate_data)
 
@@ -1115,7 +1129,7 @@ def resultsdetail(request,id,level):
         # Convert the transformed data dictionary into a list of values
         final_data = list(transformed_data.values())
         print(final_data)
-        connection_string = "DefaultEndpointsProtocol=https;AccountName=systechstorageaccount;AccountKey=CWR/rOf2VS9a86WHYw1nh51obWUV2ICC8p1ftDQOFGvG5fhLAsl2JotTrDd5Hp1wHM9H4YWosvP2+ASt/KbrHA==;EndpointSuffix=core.windows.net"
+        connection_string = "DefaultEndpointsProtocol=https;AccountName=syscatblob;AccountKey=sNAAF/WQMFwPkSqV4MBGPPGU/n3yu66s2rzelg1UEq9SLW7vXRiOTpbnMN5sO00gzobhyAUPgtoy+AStxg6x2Q==;EndpointSuffix=core.windows.net"
         blob_service_client = BlobServiceClient.from_connection_string(connection_string)
         container_name = str(id)
         container_client = blob_service_client.get_container_client(container_name)
@@ -1335,7 +1349,7 @@ def detect_face(request):
             image = cv2.imdecode(image, cv2.IMREAD_COLOR)
 
             # Provide your Azure Storage connection string and container name
-            connection_string = "DefaultEndpointsProtocol=https;AccountName=systechstorageaccount;AccountKey=CWR/rOf2VS9a86WHYw1nh51obWUV2ICC8p1ftDQOFGvG5fhLAsl2JotTrDd5Hp1wHM9H4YWosvP2+ASt/KbrHA==;EndpointSuffix=core.windows.net"
+            connection_string = "DefaultEndpointsProtocol=https;AccountName=syscatblob;AccountKey=sNAAF/WQMFwPkSqV4MBGPPGU/n3yu66s2rzelg1UEq9SLW7vXRiOTpbnMN5sO00gzobhyAUPgtoy+AStxg6x2Q==;EndpointSuffix=core.windows.net"
             container_name = user_id
 
             # Call the function to create or get the blob container
@@ -1377,6 +1391,193 @@ def camera_part(request):
     return render(request, 'exam_portal/camera_part.html', {'questions':a})
 
 
+
+
+def import_questions(request):
+    if request.session.get('user_authenticated'):
+        if request.method == 'POST' and request.FILES['file']:
+            uploaded_file = request.FILES['file']
+            if uploaded_file:
+                # Read the Excel file into a DataFrame
+                df = pd.read_excel(uploaded_file)
+
+                # Now, you can work with the DataFrame 'df' as needed
+                # For example, you can print it to the console:
+                # print(df)
+                cursor = connection.cursor()
+                cursor.execute('Select * from tb_subject')
+                subjectdata = cursor.fetchall()
+                
+                df['Subject'] = df['Subject'].str.lower()
+                subject_mapping = {subject.lower(): subject_id for subject_id, subject, _ in subjectdata}
+                print('subject_mapping     :',subject_mapping)
+                # Replace values in the DataFrame
+                df['Subject'] = df['Subject'].str.strip().map(subject_mapping).astype(str)
+                df['level'] = df['level'].astype(str)
+                df['typeflag'] = 'E'
+                df['FLAG'] = '0'
+
+                print(df)
+                column_data_types = df.dtypes
+
+                print(column_data_types)
+
+                # Database connection parameters
+                server_name = '10.100.130.21'
+                database_name = 'OLT_DEV'
+                username = 'OltDevUser'
+                password = 'OltDevProd'
+
+                # Create a database connection using SQLAlchemy
+                db_url = f"mssql+pyodbc://{username}:{password}@{server_name}/{database_name}?driver=ODBC+Driver+17+for+SQL+Server"
+                engine = create_engine(db_url)
+
+                # Define the SQL statement for bulk insert
+                insert_sql = """
+                    INSERT INTO dbo.tb_Question_test (Subject_ID, level_ID, Questions, option1, option2, option3, option4, Answer, typeflag, FLAG)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """
+
+                # Prepare data for bulk insert as a list of tuples
+                data_to_insert = [tuple(row) for row in df.values]
+
+                # Create a connection and cursor
+                conn = engine.raw_connection()
+                cursor = conn.cursor()
+
+                # Execute the bulk insert
+                cursor.executemany(insert_sql, data_to_insert)
+
+                # Commit the transaction
+                conn.commit()
+
+                # Close the cursor and connection
+                cursor.close()
+                conn.close()
+
+                # Optionally, close the SQLAlchemy engine
+                engine.dispose()
+                return render(request, 'dashboard/import_quest.html', {'message': 'File uploaded and processed successfully.'})
+            else:
+                return render(request, 'dashboard/import_quest.html', {'error_message': 'Please upload a valid Excel file.'})
+            
+        return render(request, 'dashboard/import_quest.html')
+    return redirect('login')
+
+
+def import_candidates(request):
+    if request.session.get('user_authenticated'):
+        if request.method == 'POST' and request.FILES['file']:
+            uploaded_file = request.FILES['file']
+            if uploaded_file:
+                # Read the Excel file into a DataFrame
+                df = pd.read_excel(uploaded_file)
+                print(df)
+
+                current_date_1 = datetime.date.today()
+                current_date = datetime.datetime.now()
+                date_part = current_date.strftime("%Y%m%d")
+
+                cursor = connection.cursor()
+                cursor.execute("SELECT MAX(Username) FROM dbo.tb_Candidate_test")
+                last_id = cursor.fetchone()[0]
+                cursor.close()
+                
+
+                if last_id:
+                    cursor = connection.cursor()
+                    # Check if the last entered ID has the same date
+                    cursor.execute("SELECT id_date FROM dbo.tb_Candidate WHERE KeyID=%s", [last_id])
+                    last_date = cursor.fetchone()[0]
+                    cursor.close()
+
+                    if last_date == str(current_date_1):
+                        # Check the last entered ID in the database
+                        a = int(last_id[-3:].lstrip('0'))
+
+                        # Initialize an incrementing variable
+                        increment = a+1
+                        # Function to generate key_ID
+                        def generate_key_id():
+                            nonlocal increment  # Use global instead of nonlocal
+                            key_id = date_part + str(increment).zfill(3)
+                            increment += 1
+                            return key_id
+
+                        # Apply the function to create the key_ID column
+                        df['key_ID'] = df.apply(lambda row: generate_key_id(), axis=1)
+                    else:
+                        # Initialize an incrementing variable
+                        new_increment = 1
+                        # Function to generate key_ID
+                        def generate_key_id():
+                            nonlocal new_increment  # Use global instead of nonlocal
+                            key_id = date_part + str(new_increment).zfill(3)
+                            new_increment += 1
+                            return key_id
+
+                        # Apply the function to create the key_ID column
+                        df['key_ID'] = df.apply(lambda row: generate_key_id(), axis=1)
+                else:
+                    # Initialize an incrementing variable
+                    new_increment = 1
+                    # Function to generate key_ID
+                    def generate_key_id():
+                        nonlocal new_increment  # Use global instead of nonlocal
+                        key_id = date_part + str(new_increment).zfill(3)
+                        new_increment += 1
+                        return key_id
+
+                    # Apply the function to create the key_ID column
+                    df['key_ID'] = df.apply(lambda row: generate_key_id(), axis=1)
+
+                df['id_date'] = current_date_1
+                df['Username'] = df['key_ID']
+                df['Password'] = df['Phone']
+                
+                print(df)
+                                
+                # Database connection parameters
+                server_name = '10.100.130.21'
+                database_name = 'OLT_DEV'
+                username = 'OltDevUser'
+                password = 'OltDevProd'
+
+                # Create a database connection using SQLAlchemy
+                db_url = f"mssql+pyodbc://{username}:{password}@{server_name}/{database_name}?driver=ODBC+Driver+17+for+SQL+Server"
+                engine = create_engine(db_url)
+
+                # Define the SQL statement for bulk insert
+                insert_sql = """
+                    INSERT INTO dbo.tb_Candidate_test (First_Name, Email, Phone, Applied_For, KeyID, id_date, Username, Password)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                """
+
+                # Prepare data for bulk insert as a list of tuples
+                data_to_insert = [tuple(row) for row in df.values]
+
+                # Create a connection and cursor
+                conn = engine.raw_connection()
+                cursor = conn.cursor()
+
+                # Execute the bulk insert
+                cursor.executemany(insert_sql, data_to_insert)
+
+                # Commit the transaction
+                conn.commit()
+
+                # Close the cursor and connection
+                cursor.close()
+                conn.close()
+
+                # Optionally, close the SQLAlchemy engine
+                engine.dispose()
+                return render(request, 'dashboard/import_quest.html', {'message': 'File uploaded and processed successfully.'})
+            else:
+                return render(request, 'dashboard/import_quest.html', {'error_message': 'Please upload a valid Excel file.'})
+            
+        return render(request, 'dashboard/import_quest.html')
+    return redirect('login')
 
 
 

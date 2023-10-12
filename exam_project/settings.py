@@ -90,14 +90,14 @@ DATABASES = {
         'NAME': 'OLT_DEV',
 
         # String. Database user name in "user" format. If not given then MS Integrated Security will be used.
-        'USER': 'Bharath',
+        'USER': 'SysPortalAdmin',
 
         # String. Database user password.
-        'PASSWORD': 'Systech123',
+        'PASSWORD': 'spa@Systech2o23',
         
 
          # String. SQL Server instance in "server\instance" format.
-        'HOST': 'systech-exam-app-prod-1.database.windows.net',
+        'HOST': 'sysportaldbs.database.windows.net',
 
         # String. Server instance port. An empty string means the default port.
         'PORT': '1433',
@@ -107,7 +107,7 @@ DATABASES = {
             # String. ODBC Driver to use ("ODBC Driver 17 for SQL Server", 
             # "SQL Server Native Client 11.0", "FreeTDS" etc). 
             # Default is "ODBC Driver 17 for SQL Server".
-            'driver': 'ODBC Driver 18 for SQL Server',
+            'driver': 'ODBC Driver 17 for SQL Server',
         },
     },
 }
