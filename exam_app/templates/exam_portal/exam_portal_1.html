@@ -67,6 +67,8 @@
         <button class="tablinks" onclick="openTab(event, '{{key}}', 1)" {% if forloop.first %}id="defaultOpen"{% endif %}>{{key}}</button>
         {% endfor %}
         <div class="d-flex flex-col justify-content-end ">
+          <!-- <p>attempted: <span id="attempted-count">0</span>/{{total_questions}}</p> -->
+          <p style="font-size: 14px; margin-right: 10px; margin-top: 15px;">Attempted: <span id="attempted-count">0</span>/{{total_questions}}</p> <!-- Smaller font size and margin -->
           <button id="timer" style="background-color:red; color:white"></button>
         </div>
       </div>
@@ -278,10 +280,13 @@ var x = setInterval(function() {
     function submitAnswer(answerValue) {
       var formData = {};
       var radios = document.querySelectorAll("input[type=radio]");
+      var checkedCount = 0;
+
       for (var i = 0; i < radios.length; i++) {
         var name = radios[i].name;
         if (radios[i].checked) {
           formData[name] = radios[i].value;
+          checkedCount++;
         } 
         else if (!formData.hasOwnProperty(name)) {
           formData[name] = null;
@@ -409,7 +414,7 @@ sendData(imageData);
 }, 1000);  // Adjust the interval as per your requirements
 
 // Send image data to the server
-function sendData(imageData) {
+{% comment %} function sendData(imageData) {
 var dataURL = imageData;
 $.ajax({
 url: '{% url "detect_face" %}',
@@ -427,7 +432,7 @@ error: function(xhr, status, error) {
     console.error('Error saving image: ' + error);
 }
 });
-}
+} {% endcomment %}
 
 </script>
 
@@ -508,7 +513,96 @@ error: function(xhr, status, error) {
 
   // Automatically start the timer when the page loads
   startTimer();
+
+  
 </script>
+
+<script>
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      var level = "{{ level }}"; // Replace with the actual value
+      var appliedfor = "{{ appliedfor }}"; // Replace with the actual value
+      var user_id = "{{ user_id }}"; // Replace with the actual value
+
+      var url = "/submission/?level=" + level + "&applied_for=" + appliedfor + "&user=" + user_id;
+
+      window.location.href = url;
+    }
+});
+
+
+</script>
+<script>
+  // Check if the page should be in fullscreen mode
+  if (!document.fullscreenElement && // no fullscreen element
+      !document.mozFullScreenElement && // Firefox
+      !document.webkitFullscreenElement && // Chrome, Safari and Opera
+      !document.msFullscreenElement) { // IE/Edge
+    // Request fullscreen mode for the entire document
+    if (document.documentElement.requestFullscreen) {
+      document.documentElement.requestFullscreen().catch((error) => {
+        console.error('Error entering fullscreen mode:', error);
+      });
+    } else if (document.documentElement.mozRequestFullScreen) { // Firefox
+      document.documentElement.mozRequestFullScreen().catch((error) => {
+        console.error('Error entering fullscreen mode:', error);
+      });
+    } else if (document.documentElement.webkitRequestFullscreen) { // Chrome, Safari and Opera
+      document.documentElement.webkitRequestFullscreen().catch((error) => {
+        console.error('Error entering fullscreen mode:', error);
+      });
+    } else if (document.documentElement.msRequestFullscreen) { // IE/Edge
+      document.documentElement.msRequestFullscreen().catch((error) => {
+        console.error('Error entering fullscreen mode:', error);
+      });
+    }
+  }
+</script>
+<script>
+  function shouldEnterFullscreen() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const fullscreenParam = urlParams.get('fullscreen');
+    const fullscreenStorage = localStorage.getItem('fullscreen');
+  
+    return fullscreenParam === 'true' || fullscreenStorage === 'true';
+  }
+  
+  function enterFullscreen() {
+    if (
+      !document.fullscreenElement && 
+      !document.mozFullScreenElement && 
+      !document.webkitFullscreenElement && 
+      !document.msFullscreenElement
+    ) {
+      if (document.documentElement.requestFullscreen) {
+        document.documentElement.requestFullscreen().catch((error) => {
+          console.error('Error entering fullscreen mode:', error);
+        });
+      } else if (document.documentElement.mozRequestFullScreen) {
+        document.documentElement.mozRequestFullScreen().catch((error) => {
+          console.error('Error entering fullscreen mode:', error);
+        });
+      } else if (document.documentElement.webkitRequestFullscreen) {
+        document.documentElement.webkitRequestFullscreen().catch((error) => {
+          console.error('Error entering fullscreen mode:', error);
+        });
+      } else if (document.documentElement.msRequestFullscreen) {
+        document.documentElement.msRequestFullscreen().catch((error) => {
+          console.error('Error entering fullscreen mode:', error);
+        });
+      }
+    }
+  }
+  
+  // Check if fullscreen should be active when the page loads
+  if (shouldEnterFullscreen()) {
+    enterFullscreen();
+  }
+  
+  // Your existing code here
+  </script>
+  
+
 
 {% endblock scripts %} 
 {% endblock body %}

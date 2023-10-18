@@ -199,28 +199,15 @@
         saveButton.addEventListener('click', function() {
             // Get the data URL of the captured image from the preview element
             var dataURL = previewImage.src;
-
-            // Send the data URL to the server to save the image
-            $.ajax({
-                url: '{% url "save_image" %}',
-                type: 'POST',
-                data: {
-                    image: dataURL,
-                    csrfmiddlewaretoken: getCookie('csrftoken')
-                },
-                success: function(response) {
-                    console.log('Image saved successfully.');
-                    window.alert('Image saved successfully!');
-                },
-                error: function(xhr, status, error) {
-                    console.error('Error saving image: ' + error);
-                }
-            });
-
+            
             // Store image data in session storage
             sessionStorage.setItem('FaceimageData', dataURL);
-
-            history.back()
+            
+            // Define the URL you want to navigate to
+            var url = "{% url 'registration' %}";
+            
+            // Navigate to the specified URL
+            window.location.href = url;
 
         });
     } else {

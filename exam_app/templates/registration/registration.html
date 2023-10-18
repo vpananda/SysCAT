@@ -251,6 +251,49 @@
                         </div>
                     </div>
                     <hr style="width:100% ">
+                    <div class="sub-heading">ID Proof Details</div>
+                    <div class="container" >
+                        <div class="head2">
+                           
+                        
+                                <div class='heading'>
+                                    <label for="cardImageDataField">
+                                      <span style="color:red">*</span>
+                                    </label>
+                                    <a href="{% url 'capture_card' %}" class="button">ID Proof</a>
+                                    <img id="cardImage" src="#" name="iddata" value={{CardimageData}} alt="" style="width:100px; height:100px; margin-top:15px;">
+                                    <input type="hidden" name="card_image_data" id="cardImageDataField" required>
+                                  </div>
+                                  <div class='heading'>
+                                    <label for="faceImageDataField">
+                                      <span style="color:red">*</span>
+                                    </label>
+                                    <a href="{% url 'capture' %}" class="button">face</a>
+                                    <img id="faceImage" src="#" name="facedata" value={{FaceimageData}} alt="" style="width:100px; height:100px; margin-top:15px;">
+                                    <input type="hidden" name="face_image_data" id="faceImageDataField" required>
+                                  </div>
+                                  
+
+                            
+                           
+                            <div class="heading  col-md-4">
+                                <label class="input-label" for="Id_proof">Type of ID Proof<span style="color:red">*</span></label>
+                                <select name="Id_proof"  id="Id_proof" required>
+                                    <option value="" disabled selected hidden>Select option</option>
+                                    <option value="PAN CARD">PAN CARD</option> 
+                                    <option value="AADHAR">AADHAR</option>
+                                    <option value="DRIVING LICENSE">DRIVING LICENSE</option>
+                                    <option value="PASSPORT">PASSPORT</option>
+                                </select>
+                            </div>
+                            <div class="heading col-md-4" >
+                                <label class="input-label" for="ID_NO" id="idNoLabel">ID NO<span style="color:red">*</span></label>
+                                <input type="text" name="ID_NO" id="ID_NO" size="15" placeholder="Enter ID_NO"  pattern=""  required />
+                                <span class="error-message" id="idNoErrorMessage"></span>
+                            </div>
+                              
+                        </div>
+                    </div>
                     <div class="sub-heading">Job Details</div>
                     <div class="container">
                         <div class="col-md-4">
@@ -582,49 +625,7 @@
                               </div>
                         </div>
                     </div>
-                    <div class="sub-heading">ID Proof Details</div>
-                    <div class="container" >
-                        <div class="head2">
-                           
-                            <div class="head2" >
-                                <div class='heading'>
-                                    <label for="cardImageDataField">
-                                      <span style="color:red">*</span>
-                                    </label>
-                                    <a href="{% url 'capture_card' %}" class="button">ID Proof</a>
-                                    <img id="cardImage" src="#" name="iddata" value={{CardimageData}} alt="" style="width:100px; height:100px; margin-top:15px;">
-                                    <input type="hidden" name="card_image_data" id="cardImageDataField" required>
-                                  </div>
-                                  <div class='heading'>
-                                    <label for="faceImageDataField">
-                                      <span style="color:red">*</span>
-                                    </label>
-                                    <a href="{% url 'capture' %}" class="button">face</a>
-                                    <img id="faceImage" src="#" name="facedata" value={{FaceimageData}} alt="" style="width:100px; height:100px; margin-top:15px;">
-                                    <input type="hidden" name="face_image_data" id="faceImageDataField" required>
-                                  </div>
-                                  
-
-                            
-                            </div>
-                            <div class="heading  col-md-4">
-                                <label class="input-label" for="Id_proof">Type of ID Proof<span style="color:red">*</span></label>
-                                <select name="Id_proof"  id="Id_proof" required>
-                                    <option value="" disabled selected hidden>Select option</option>
-                                    <option value="PAN CARD">PAN CARD</option> 
-                                    <option value="AADHAR">AADHAR</option>
-                                    <option value="DRIVING LICENSE">DRIVING LICENSE</option>
-                                    <option value="PASSPORT">PASSPORT</option>
-                                </select>
-                            </div>
-                            <div class="heading col-md-4" >
-                                <label class="input-label" for="ID_NO" id="idNoLabel">ID NO<span style="color:red">*</span></label>
-                                <input type="text" name="ID_NO" id="ID_NO" size="15" placeholder="Enter ID_NO"  pattern=""  required />
-                                <span class="error-message" id="idNoErrorMessage"></span>
-                            </div>
-                              
-                        </div>
-                    </div>
+                    
                     <div class="container2">
                         <button id="back_button" class="btn btn-secondary" onclick="navigateToAnotherPage()">Back</button>
                         <button type="submit" id="reg_sub">Submit</button>
@@ -633,8 +634,39 @@
             </div>
         </form>
     </body>
-</html>
+
 <script>
+     // Get the data from sessionStorage
+    var CardimageData = sessionStorage.getItem('CardimageData');
+
+    console.log("CardimageData from sessionStorage:", CardimageData);
+    
+    // Set the image source to the retrieved data
+    if(CardimageData){
+    document.getElementById('cardImage').src = CardimageData;
+    }
+    else{
+    document.getElementById('cardImage').src = "{% static 'images/default_image.jpg' %}";
+    }
+    
+    
+    // Get the data from sessionStorage
+    var FaceimageData = sessionStorage.getItem('FaceimageData');
+
+    console.log("FaceimageData from sessionStorage:", FaceimageData);
+    
+    // Set the image source to the retrieved data
+    if(FaceimageData){
+    document.getElementById('faceImage').src = FaceimageData;
+    }
+    else{
+    document.getElementById('faceImage').src = "{% static 'images/default_image.jpg' %}";
+    }
+    
+    
+    document.getElementById('cardImageDataField').value = CardimageData;
+    document.getElementById('faceImageDataField').value = FaceimageData;
+
     const phoneInput = document.getElementById('phone');
     const errorMsg = document.querySelector('.error-msg');
 
@@ -762,32 +794,7 @@
 
     
     
-    // Get the data from sessionStorage
-    var CardimageData = sessionStorage.getItem('CardimageData');
-    
-    // Set the image source to the retrieved data
-    if(CardimageData){
-    document.getElementById('cardImage').src = CardimageData;
-    }
-    else{
-    document.getElementById('cardImage').src = "{% static 'images/default_image.jpg' %}";
-    }
-    
-    
-    // Get the data from sessionStorage
-    var FaceimageData = sessionStorage.getItem('FaceimageData');
-    
-    // Set the image source to the retrieved data
-    if(FaceimageData){
-    document.getElementById('faceImage').src = FaceimageData;
-    }
-    else{
-    document.getElementById('faceImage').src = "{% static 'images/default_image.jpg' %}";
-    }
-    
-    
-    document.getElementById('cardImageDataField').value = CardimageData;
-    document.getElementById('faceImageDataField').value = FaceimageData;
+   
     
     submitButton.addEventListener('click', function() {
     sessionStorage.clear();
@@ -1055,8 +1062,7 @@ function validateCGPA_10(input) {
             window.location.href = loginUrl;
 
         }
-    
-    
-        
 
 </script>
+
+</html>

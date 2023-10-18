@@ -27,7 +27,7 @@ urlpatterns = [
     path('delete_ques/<int:id>', views.delete_ques, name='delete_ques'),
     path('activate_quest/<int:id>', views.activate_quest, name='activate_quest'),
     path('result/', views.result, name='result'),
-    path('resultsdetail/<int:id>/<str:level>/',views.resultsdetail,name='resultsdetail'),
+    path('resultsdetail/<int:id>/',views.resultsdetail,name='resultsdetail'),
     path('registration/', views.registration, name='registration'),
     path('registersuccess/',views.registersuccess,name='registersuccess'),
     path('alert_page_exam/',views.alert_page_exam,name="alert_page_exam"), 
@@ -48,6 +48,8 @@ urlpatterns = [
     path('registercandidate/',views.registercandidate,name='registercandidate'),
     path('detect_face/', views.detect_face, name='detect_face'),
     path('video/', views.camera_part, name='video'),
+    path('import_questions/',views.import_questions, name='import_questions'),
+    path('import_candidates/',views.import_candidates, name='import_candidates'),
     
 
     

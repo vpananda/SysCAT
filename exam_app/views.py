@@ -1048,105 +1048,88 @@ def logout(request):
     return render(request, 'registration/logout.html')
 
 def result(request):
+    if not request.session.get('user_authenticated'):
+        return redirect('logout')
+
+    cursor = connection.cursor()
+    cursor.execute('exec get_skill_applied_for_data')
+    search_filter = cursor.fetchall()
+
+    def get_param(request, param_name, default=None):
+        value = request.GET.get(param_name, '')
+        return value if value and value != default else None
+
+    applied_for = get_param(request, 'applied_for')
+    filter = get_param(request, 'filter_by', 'ALL')
+    level = get_param(request, 'level', '0')
+    start_date = get_param(request, 'start_date')
+    end_date = get_param(request, 'end_date')
+    candidate_id = get_param(request, 'candidate_id')
+
+    job_name, job_id = applied_for.split('|') if applied_for else (None, 0)
+    job_name = None if job_name == 'ALL' else job_name
+
+    print(job_name, filter, start_date, end_date)
+
+    cursor.execute('exec [GetCandidateResults] %s,%s,%s,%s', [job_name, filter, start_date, end_date])
+    user = cursor.fetchall()
+    cursor.close()
+
+    return render(request, 'dashboard/Result.html', {'user': user, 'search_filter': search_filter, 'job_name': job_name, 'start_date': start_date, 'end_date': end_date})
+
+def resultsdetail(request,id):
     if request.session.get('user_authenticated'):
         cursor = connection.cursor()
-        cursor.execute('exec get_skill_applied_for_data')
-        search_filter = cursor.fetchall()
-        applied_for = request.GET.get('applied_for')
-        filter = request.GET.get('filter_by')
-        level = request.GET.get('level')
-        start_date = request.GET.get('start_date')
-        end_date = request.GET.get('end_date')
-
-        if applied_for:
-            job_name, job_id = applied_for.split('|')
-        else:
-            job_id = 0
-            job_name = None
-        if job_name == 'ALL':
-            job_name = None
-        if filter == 'ALL':
-            filter = None
-        if level == '0':
-            level = None
-        if start_date == '':
-            start_date = None
-        if end_date == '':
-            end_date = None
-        print(job_name)
-        print(filter)
-        print(level)
-        print(start_date)
-        print(end_date)
-        cursor.execute('exec [view_results_bycandidate] %s,%s,%s,%s,%s', [job_name, level, filter, start_date, end_date])
-        user = cursor.fetchall()
-
-        print(user)
-
-        # Close the cursor after fetching the data
-        cursor.close()
-
-        return render(request, 'dashboard/Result.html', {'user': user, 'search_filter': search_filter, 'job_name': job_name, 'start_date': start_date, 'end_date': end_date})
-    return redirect('logout')
-
-def resultsdetail(request,id,level):
-    
-    if request.session.get('user_authenticated'):
-        cursor = connection.cursor()
-        cursor.execute('EXEC getdetailresult %s,%s',[id,level])
+        cursor.execute('EXEC level_wise_data %s',[id])
         result_data = cursor.fetchall()
-        cursor.close()
-        # Create a dictionary to store the transformed data
-        transformed_data = {}
+        # print(result_data)
+        level_1_data = [item for item in result_data if item[-1] == 1]
+        level_2_data = [item for item in result_data if item[-1] == 2]
+                
+        # Initialize dictionaries to store transformed data for level 1 and level 2
+        transformed_data_level_1 = {}
+        transformed_data_level_2 = {}
 
-        # Iterate over the existing data and organize it into the desired structure
-        for item in result_data:
-            subject = item[4]
-            question = item[0]
-            answer = item[1]
-            is_attended = item[2]
-            score = item[3]
-            
-            # Check if the subject already exists in the transformed data dictionary
-            if subject in transformed_data:
-                transformed_data[subject]['questions'].append({
-                    'question': question,
-                    'answer': answer,
-                    'is_attended': is_attended,
-                    'score': score
-                })
-            else:
-                transformed_data[subject] = {
-                    'subject': subject,
-                    'questions': [{
+        # Combine data from both level 1 and level 2
+        for data in [level_1_data, level_2_data]:
+            transformed_data = transformed_data_level_1 if data == level_1_data else transformed_data_level_2
+            for item in data:
+                subject = item[4]
+                question = item[0]
+                answer = item[1]
+                is_attended = item[2]
+                score = item[3]
+
+                # Check if the subject already exists in the transformed_data dictionary
+                if subject in transformed_data:
+                    transformed_data[subject]['questions'].append({
                         'question': question,
                         'answer': answer,
                         'is_attended': is_attended,
                         'score': score
-                    }]
-                }
+                    })
+                else:
+                    transformed_data[subject] = {
+                        'subject': subject,
+                        'questions': [{
+                            'question': question,
+                            'answer': answer,
+                            'is_attended': is_attended,
+                            'score': score
+                        }]
+                    }
 
-        # Convert the transformed data dictionary into a list of values
-        final_data = list(transformed_data.values())
-        print(final_data)
-        connection_string = "DefaultEndpointsProtocol=https;AccountName=syscatblob;AccountKey=sNAAF/WQMFwPkSqV4MBGPPGU/n3yu66s2rzelg1UEq9SLW7vXRiOTpbnMN5sO00gzobhyAUPgtoy+AStxg6x2Q==;EndpointSuffix=core.windows.net"
-        blob_service_client = BlobServiceClient.from_connection_string(connection_string)
-        container_name = str(id)
-        container_client = blob_service_client.get_container_client(container_name)
-
-        blob_urls = []
-        for blob in container_client.list_blobs():
-            blob_url = container_client.url + '/' + blob.name
-            blob_urls.append(blob_url)
+        # Convert the transformed data dictionaries into lists of values
+        final_data_level_1 = list(transformed_data_level_1.values())
+        final_data_level_2 = list(transformed_data_level_2.values())
 
         context = {
-            'blob_urls': blob_urls,
-            'final_data':final_data
+            'final_data_level_1':final_data_level_1,
+            'final_data_level_2' : final_data_level_2
         }
         
         return render(request,'dashboard/resultsdetail.html', context)
     return redirect('logout')
-
 
 
 def exam_main_dashboard(request):
@@ -1391,8 +1374,6 @@ def camera_part(request):
     return render(request, 'exam_portal/camera_part.html', {'questions':a})
 
 
-
-
 def import_questions(request):
     if request.session.get('user_authenticated'):
         if request.method == 'POST' and request.FILES['file']:
@@ -1423,10 +1404,10 @@ def import_questions(request):
                 print(column_data_types)
 
                 # Database connection parameters
-                server_name = '10.100.130.21'
+                server_name = 'sysportaldbs.database.windows.net'
                 database_name = 'OLT_DEV'
-                username = 'OltDevUser'
-                password = 'OltDevProd'
+                username = 'SysPortalAdmin'
+                password = 'spa@Systech2o23'
 
                 # Create a database connection using SQLAlchemy
                 db_url = f"mssql+pyodbc://{username}:{password}@{server_name}/{database_name}?driver=ODBC+Driver+17+for+SQL+Server"
@@ -1479,7 +1460,7 @@ def import_candidates(request):
                 date_part = current_date.strftime("%Y%m%d")
 
                 cursor = connection.cursor()
-                cursor.execute("SELECT MAX(Username) FROM dbo.tb_Candidate_test")
+                cursor.execute("SELECT MAX(Username) FROM dbo.tb_Candidate")
                 last_id = cursor.fetchone()[0]
                 cursor.close()
                 
@@ -1538,10 +1519,10 @@ def import_candidates(request):
                 print(df)
                                 
                 # Database connection parameters
-                server_name = '10.100.130.21'
+                server_name = 'sysportaldbs.database.windows.net'
                 database_name = 'OLT_DEV'
-                username = 'OltDevUser'
-                password = 'OltDevProd'
+                username = 'SysPortalAdmin'
+                password = 'spa@Systech2o23'
 
                 # Create a database connection using SQLAlchemy
                 db_url = f"mssql+pyodbc://{username}:{password}@{server_name}/{database_name}?driver=ODBC+Driver+17+for+SQL+Server"
@@ -1572,11 +1553,11 @@ def import_candidates(request):
 
                 # Optionally, close the SQLAlchemy engine
                 engine.dispose()
-                return render(request, 'dashboard/import_quest.html', {'message': 'File uploaded and processed successfully.'})
+                return render(request, 'dashboard/import_candidates.html', {'message': 'File uploaded and processed successfully.'})
             else:
-                return render(request, 'dashboard/import_quest.html', {'error_message': 'Please upload a valid Excel file.'})
+                return render(request, 'dashboard/import_candidates.html', {'error_message': 'Please upload a valid Excel file.'})
             
-        return render(request, 'dashboard/import_quest.html')
+        return render(request, 'dashboard/import_candidates.html')
     return redirect('login')
 
 

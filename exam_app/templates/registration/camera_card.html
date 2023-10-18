@@ -219,8 +219,12 @@
 
             // Store image data in session storage
             sessionStorage.setItem('CardimageData', dataURL);
-
-            history.back()
+            
+            // Define the URL you want to navigate to
+            var url = "{% url 'registration' %}";
+            
+            // Navigate to the specified URL
+            window.location.href = url;
 
             
         });

@@ -1,3 +1,4 @@
+
 {% extends 'base.html' %} {% load static %} 
 
 
@@ -24,8 +25,7 @@
       margin-left: 50px; /* You can change this value to adjust the spacing */
       margin-top: 2px;
       color: #1abc9c;
-      {% comment %} box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); {% endcomment %}
-      
+
     }
     
     .excel-link:hover {
@@ -310,7 +310,29 @@
       margin-right: 5px;
     }
     
+    .textareabox {
+      height:150px;
+      width: 100%;
+      font-size: 16px;
+      font-weight: 400;
+      color: #333;
+      border: none;
+      background-color: #fff;
+      border-radius: 0px;
+      padding: 10px;
+      margin-left: 10px;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      transition: all 0.2s ease-in-out;
+      box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    }
  
+    .custom-width {
+      width: 50px;
+      margin:20px;
+       /* Adjust the width as needed */
+    }
     
     .col-card-5 label {
       font-size: 16px;
@@ -419,7 +441,7 @@ input[type="date"]:focus {
 
 .dashboard-title {
   font-size: 24px;
-  font-weight: 500
+  font-weight: 500;
   color: #000000;
   text-shadow: 0px 2px 4px rgba(0, 0, 0, 0.25);
   margin-bottom: 30px;
@@ -474,12 +496,12 @@ input[type="date"]:focus {
   
    
   
-        </style>
+  </style>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 
 
-<!-- style="border-radius: 20px;" -->
+
 <div class="container">
     <div class="row">
 
@@ -487,7 +509,6 @@ input[type="date"]:focus {
         <h5 class="dashboard-title">Candidate Dashboard</h5>
       </div>
       <form method="GET" class="form-inline">
-        
           <div class="row mb-2">
             <div class="col-md-3 col-xl-3 col-date" style="margin:0px;">
               <div>
@@ -496,8 +517,7 @@ input[type="date"]:focus {
               <div>
                 <input type="date" id="StartDate" name="start_date" value="{{ start_date }}" onchange="this.form.submit()">
               </div>
-            </div>
-                  
+            </div> 
             <div class="col-md-3 col-xl-3 col-date" style="margin:0px;">
               <div>
                 <h6 class="headinginsidedate">End Date:</h6>
@@ -506,7 +526,6 @@ input[type="date"]:focus {
                 <input type="date" id="EndDate" name="end_date" value="{{ end_date }}" onchange="this.form.submit()">
               </div>
             </div>
-                  
             <div class="col-md-6 col-card-5 d-flex justify-content-end align-items-center">
               <label for="applied_for" class="mr-2">Job Position:</label>
               <select class="form-control" style="width:300px" id="applied_for" name="applied_for" onchange="this.form.submit()">
@@ -517,8 +536,7 @@ input[type="date"]:focus {
               </select>
             </div>
           </div>
-          
-        
+      
           <div class="row justify-content-between align-items-center mt-3">
             <div class="col-md-6 d-flex justify-content-start align-items-center justify-content-start">
               <div class="d-flex align-items-center justify-content-start">
@@ -529,28 +547,71 @@ input[type="date"]:focus {
                 <a href="{% url 'generate_excel' %}" class="ml-2 excel-link">
                   <i class="fas fa-file-excel fa-lg"></i>
                 </a>
+                <div class="col-md-3 text-center">
+                <button type="button" class="btn btn-primary" style="margin-left:5%"id="bulk-insert-btn">Bulk Insert</button>
+              </div>
               </div>
             </div>
             
-
             <div class="col-md-3 text-center">
-              <button type="button" class="btn btn-primary" style="margin-left:32%"id="unlocked-users-btn" onclick="this.form.submit()">Unlocked Users</button>
+              <button type="button" class="btn btn-primary" style="margin-left:32%"id="open-modal-btn">Schedule Users</button>
             </div>
-
+<!-- Modal with a wider width -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header d-flex justify-content-between">
+        <div>
+        <h5 class="modal-title">Schedule Candidates</h5>
+      </div>
+      <div>
+        <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      </div>      
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="nametag">Candidates :</label>
+              <textarea class="textareabox" id="nametag" name="nametag" rows="10" readonly></textarea>
+              <div id="nametag-error" class="text-danger"></div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <form>
+              <div class="form-group">
+                <label for="start-date">Start Date:</label>
+                <input type="datetime-local" class="form-control custom-width" id="start-date" name="startdate">
+              </div>
+              <div class="form-group">
+                <label for="end-date">End date :</label>
+                <input type="datetime-local" class="form-control custom-width" id="end-date" name="enddate">
+              </div>
+            </form>
+          </div>
+          
+        </div>
+      </div>
+      <div class="modal-footer">
+        <!-- Submit button inside the modal -->
+        <button type="button" class="btn btn-primary" id="unlocked-users-btn" onclick="this.form.submit()">Schedule</button>
+        <button type="button" class="close btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
             <div class="col-md-3 text-center">
               <button type="button" class="btn btn-primary" style="margin-left:18%" id="skipped-level-1-btn" onclick="this.form.submit()">Skipped Level 1 Users</button>
             </div>
-          
-          
-            
+
           </form>
           </div>
-          
-        
-   
-          
+
+
 <div class="table-responsive" style="height: 70vh; overflow-y: auto; overflow-x: auto; margin-top: 20px;">
-  <table class="table table-bordered text-center">
+  <table class="table table-bordered text-left">
     <thead class="sticky-thead">
       <tr>
         <th>S.No</th>
@@ -560,7 +621,7 @@ input[type="date"]:focus {
         <th>Job Position</th>
         <th>Applied Date</th>
         <!-- Other header columns (if any) -->
-        <th>Unlock <input type="checkbox" id="select-all-unlock"></th>
+        <th>Schedule <input type="checkbox" id="select-all-unlock"></th>
         <th>Skip Level 1 <input type="checkbox" id="select-all-skip-level-1"></th>
       </tr>
     </thead>
@@ -579,7 +640,8 @@ input[type="date"]:focus {
             {% if not candidate.11 %}
             <input type="checkbox" class="row-checkbox" name="unlock" value="{{ candidate.0 }}">
             {% else %}
-            <img src="{% static 'icons/check-circle-fill.svg' %}" alt="Icon" />
+            <!-- <img src="{% static 'icons/check-circle-fill.svg' %}" alt="Icon" /> -->
+            <p>{{candidate.8}} to {{candidate.9}}</p>
             {% endif %}
           </td>
           <td>
@@ -604,8 +666,71 @@ input[type="date"]:focus {
     <button id="nextBtn">Next &gt;</button>
   </div>
 </div>
-                      
 
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    // Get references to the button elements and the form
+    var startDateInput = document.getElementById("start-date");
+
+    // Get the current date and time in ISO format
+    var currentDate = new Date().toISOString().slice(0, 16);
+
+    // Set the min attribute of the Start Date input to the current date
+    startDateInput.min = currentDate;
+
+    var openModalBtn = document.getElementById("open-modal-btn");
+  
+    // Add a click event listener to the "Unlocked Users" button
+    openModalBtn.addEventListener("click", function () {
+      // Populate the name input
+      populateNameInput();
+      $("#myModal").modal("show");
+    });
+  
+    document.querySelector('#myModal .btn-close').addEventListener('click', function () {
+      $('#myModal').modal('hide');
+    });
+    document.querySelector('#myModal .close').addEventListener('click', function () {
+      $('#myModal').modal('hide');
+    });
+  
+    var combinedName; // Declare combinedName variable at a higher scope
+  
+    function populateNameInput() {
+      var selectedNames = [];
+      var checkboxes = document.querySelectorAll('input[name="unlock"]:checked');
+  
+      checkboxes.forEach(function (checkbox) {
+        var row = checkbox.closest('tr');
+        var nameColumn = row.querySelector('td:nth-child(2)');
+        var appliedforColumn = row.querySelector('td:nth-child(5)');
+        var name = nameColumn.textContent.trim();
+        var appliedFor = appliedforColumn.textContent.trim();
+  
+        // Combine Name and Applied For values
+        combinedName = name + ' (' + appliedFor + ')';
+        selectedNames.push(combinedName);
+        console.log(selectedNames);
+      });
+  
+      // Join the selected names into a comma-separated string
+      var nameInput = document.getElementById("nametag");
+      nameInput.value = selectedNames.join(", ");
+    }
+  
+    document.getElementById("unlocked-users-btn").addEventListener("click", function () {
+      // Get the start date and end date values
+      var startDate = document.getElementById("start-date").value;
+      var endDate = document.getElementById("end-date").value;
+  
+      // Print the combinedName, startDate, and endDate
+       // This will log the last combinedName set in populateNameInput
+      console.log(startDate, endDate);
+    });
+  });
+  
+  </script>
   <script>
     
    function paginateTable(pageSize) {
@@ -669,7 +794,7 @@ input[type="date"]:focus {
       showPage(1);
     }
   }
-
+ 
   paginateTable(5); // Change the page size as needed
     
     function getCookie(name) {
@@ -724,22 +849,30 @@ input[type="date"]:focus {
         });
       });
     
-      // Handle form submission for Unlocked Users button
-      $('#unlocked-users-btn').click(function(event) {
-        event.preventDefault();
+ 
+      document.getElementById("unlocked-users-btn").addEventListener("click", function () {
+        // Get the start date and end date values
+        var startDate = document.getElementById("start-date").value;
+        var endDate = document.getElementById("end-date").value;
+    
+        // Get the unlocked IDs
         var unlocked_ids = [];
         $('input[name="unlock"]:checked').each(function() {
           unlocked_ids.push($(this).val());
         });
+    
+        // Send the data to the backend using AJAX
         $.ajax({
           type: 'POST',
-          url: '{% url "dashboard" %}',
+          url: '{% url "candidate_dashboard" %}',
           data: {
             'unlocked_ids': unlocked_ids,
+            'schedule_start_date': startDate, // Include start date
+            'schedule_end_date': endDate,     // Include end date
             'csrfmiddlewaretoken': csrftoken,
           },
           success: function(response) {
-            console.log(unlocked_ids)
+            console.log(unlocked_ids);
             // Handle success response
           },
           error: function(response) {
@@ -747,7 +880,6 @@ input[type="date"]:focus {
           }
         });
       });
-    
     });
 
     // Get the current date
@@ -773,5 +905,15 @@ input[type="date"]:focus {
     var formattedEndDate = `${year}-${month}-${day}`;
     document.getElementById("EndDate").value = formattedEndDate;
   }
+
+  document.getElementById("bulk-insert-btn").addEventListener("click", function() {
+    // Define the URL you want to navigate to
+    var url = "{% url 'import_candidates' %}";
+    
+    // Navigate to the specified URL
+    window.location.href = url;
+});
   </script>
+
+  
   {% endblock content %}

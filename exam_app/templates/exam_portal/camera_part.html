@@ -55,13 +55,13 @@
         </div>
 
   
-        
-        
+       
         
       </div>
     </div>
     {% endfor %}
   </div>
+  <button class="btn btn-primary" id="fullscreen-button">Request Fullscreen Permission</button>
 </div>
 
 <!-- JavaScript code -->
@@ -149,6 +149,55 @@
           }
           submitAnswer();
       }
+
+
+      
+ 
+        let isWelcomeTextDisplayed = false;
+        
+        // Add this script to your existing script
+        if (!isWelcomeTextDisplayed) {
+          requestFullscreenPermission(); // Request fullscreen permission when the page loads
+        }
+        
+        function requestFullscreenPermission() {
+          if (document.documentElement.requestFullscreen) {
+            document.documentElement.requestFullscreen().then(() => {
+              displayWelcomeText();
+            }).catch((error) => {
+              console.error('Error entering fullscreen mode:', error);
+            });
+          } else if (document.documentElement.mozRequestFullScreen) {
+            document.documentElement.mozRequestFullScreen().then(() => {
+              displayWelcomeText();
+            }).catch((error) => {
+              console.error('Error entering fullscreen mode:', error);
+            });
+          } else if (document.documentElement.webkitRequestFullscreen) {
+            document.documentElement.webkitRequestFullscreen().then(() => {
+              displayWelcomeText();
+            }).catch((error) => {
+              console.error('Error entering fullscreen mode:', error);
+            });
+          } else if (document.documentElement.msRequestFullscreen) {
+            document.documentElement.msRequestFullscreen().then(() => {
+              displayWelcomeText();
+            }).catch((error) => {
+              console.error('Error entering fullscreen mode:', error);
+            });
+          }
+        }
+        
+        function displayWelcomeText() {
+          const welcomeText = document.createElement('h1');
+          welcomeText.textContent = 'Welcome to Django';
+        
+          document.body.appendChild(welcomeText);
+          isWelcomeTextDisplayed = true;
+        }
+   
+        
+
 </script>
 
 </body>

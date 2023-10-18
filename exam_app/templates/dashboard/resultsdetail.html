@@ -1,4 +1,3 @@
- 
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,11 +9,7 @@
             font-family: Arial, sans-serif;
             counter-reset: Serial;           /* Set the Serial counter to 0 */
         }
-        tr td:first-child:before
-        {
-          counter-increment: Serial;      /* Increment the Serial counter */
-          content: counter(Serial); /* Display the counter */
-        }
+
         h1 {
             text-align: center;
             margin: 20px 0;
@@ -91,6 +86,8 @@
 </head>
 <body>
     <h1>Results Detail</h1>
+
+    <h3>Level 1 </h3>
     <div style="height: 60vh; overflow-y: auto; margin: 20px; overflow:auto;">
         <table class="table table-bordered">
             <thead class="sticky-thead">
@@ -102,15 +99,15 @@
                 </tr>
             </thead>
             <tbody>
-                {% for subject_data in final_data %}
+                {% for subject_data in final_data_level_1 %}
                 <tr>
                     <th colspan="4">{{ subject_data.subject }}</th>
                 </tr>
                 {% for question_data in subject_data.questions %}
                 <tr>
-                    <td></td>
+                    <td>{{ forloop.counter }} </td>
                     <td>{{ question_data.question }}</td>
-                    <td>{{ question_data.answer }}</td>
+                    <td>{{ question_data.is_attended }}</td>
                     <td>{{ question_data.score }}</td>
                 </tr>
                 {% endfor %}
@@ -118,12 +115,43 @@
             </tbody>
         </table>
     </div>
-    <div>
+    
+    <h3>Level 2</h3>
+    <div style="height: 60vh; overflow-y: auto; margin: 20px; overflow:auto;">
+        <table class="table table-bordered">
+            <thead class="sticky-thead">
+                <tr>
+                    <th>S.No</th>
+                    <th>Question</th>
+                    <th>Answered</th>
+                    <th>Score</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for subject_data in final_data_level_2 %}
+                <tr>
+                    <th colspan="4">{{ subject_data.subject }}</th>
+                </tr>
+                {% for question_data in subject_data.questions %}
+                <tr>
+                    <td>{{ forloop.counter }} </td>
+                    <td>{{ question_data.question }}</td>
+                    <td>{{ question_data.is_attended }}</td>
+                    <td>{{ question_data.score }}</td>
+                </tr>
+                {% endfor %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    
+    <!-- <div>
         <h1>Captured Images</h1>
     {% for blob_url in blob_urls %}
         <img src="{{ blob_url }}" alt="Blob Image">
     {% endfor %}
-    </div>
+    </div> -->
     <div class="centered">
         <a href="{% url 'result' %}" class="btn btn-secondary">Back</a>
     </div>

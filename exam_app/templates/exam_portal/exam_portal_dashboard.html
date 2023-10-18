@@ -179,10 +179,62 @@ body {
    document.getElementById("fullscreen-button").addEventListener("click", function() {
      var url = "{% url 'index' %}?level={{level}}&jobposition={{jobposition}}&total_duration={{total_duration}}&user={{user.0}}";
      window.location.href = url;
-     document.documentElement.requestFullscreen();
+     
    });
    
  </script>
+<!-- Check if fullscreen mode should be active based on URL parameter or browser storage -->
+<script>
+function shouldEnterFullscreen() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const fullscreenParam = urlParams.get('fullscreen');
+  const fullscreenStorage = localStorage.getItem('fullscreen');
+
+  return fullscreenParam === 'true' || fullscreenStorage === 'true';
+}
+
+function enterFullscreen() {
+  if (
+    !document.fullscreenElement && 
+    !document.mozFullScreenElement && 
+    !document.webkitFullscreenElement && 
+    !document.msFullscreenElement
+  ) {
+    if (document.documentElement.requestFullscreen) {
+      document.documentElement.requestFullscreen().catch((error) => {
+        console.error('Error entering fullscreen mode:', error);
+      });
+    } else if (document.documentElement.mozRequestFullScreen) {
+      document.documentElement.mozRequestFullScreen().catch((error) => {
+        console.error('Error entering fullscreen mode:', error);
+      });
+    } else if (document.documentElement.webkitRequestFullscreen) {
+      document.documentElement.webkitRequestFullscreen().catch((error) => {
+        console.error('Error entering fullscreen mode:', error);
+      });
+    } else if (document.documentElement.msRequestFullscreen) {
+      document.documentElement.msRequestFullscreen().catch((error) => {
+        console.error('Error entering fullscreen mode:', error);
+      });
+    }
+  }
+}
+
+// Check if fullscreen should be active when the page loads
+if (shouldEnterFullscreen()) {
+  enterFullscreen();
+}
+
+// Your existing code here
+document.getElementById("fullscreen-button").addEventListener("click", function() {
+  // Set fullscreen flag in local storage
+  localStorage.setItem('fullscreen', 'true');
+
+  var url = "{% url 'index' %}?level={{level}}&jobposition={{jobposition}}&total_duration={{total_duration}}&user={{user.0}}&fullscreen=true";
+  window.location.href = url;
+});
+</script>
+
 
 
 

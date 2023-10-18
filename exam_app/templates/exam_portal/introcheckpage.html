@@ -210,12 +210,45 @@
     } {% endcomment %}
 
     document.getElementById("next-button").addEventListener("click", function() {
-        redirectToURL();
-    });
-    function redirectToURL() {
-        // Replace 'your_target_url' with the URL you want to redirect to
-        window.location.href = '/exam_main_dashboard';
+      // Check if fullscreen is supported by the browser
+      if (document.documentElement.requestFullscreen) {
+        // Request fullscreen mode
+        document.documentElement.requestFullscreen().then(() => {
+          // Successfully entered fullscreen mode
+          redirectToURL();
+        }).catch((error) => {
+          console.error('Error entering fullscreen mode:', error);
+        });
+      } else if (document.documentElement.mozRequestFullScreen) { // Firefox
+        document.documentElement.mozRequestFullScreen().then(() => {
+          // Successfully entered fullscreen mode
+          redirectToURL();
+        }).catch((error) => {
+          console.error('Error entering fullscreen mode:', error);
+        });
+      } else if (document.documentElement.webkitRequestFullscreen) { // Chrome, Safari, and Opera
+        document.documentElement.webkitRequestFullscreen().then(() => {
+          // Successfully entered fullscreen mode
+          redirectToURL();
+        }).catch((error) => {
+          console.error('Error entering fullscreen mode:', error);
+        });
+      } else if (document.documentElement.msRequestFullscreen) { // IE/Edge
+        document.documentElement.msRequestFullscreen().then(() => {
+          // Successfully entered fullscreen mode
+          redirectToURL();
+        }).catch((error) => {
+          console.error('Error entering fullscreen mode:', error);
+        });
       }
+    });
+    
+    function redirectToURL() {
+      // Replace 'your_target_url' with the URL you want to redirect to
+      window.location.href = '/exam_main_dashboard?fullscreen=true';
+    }
+    
+
     
   </script>
 </body>
