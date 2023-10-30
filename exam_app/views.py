@@ -215,7 +215,7 @@ def registration(request):
 
         if last_id:
             # Check if the last entered ID has the same date
-            cursor.execute("SELECT id_date FROM dbo.tb_Candidate WHERE KeyID=%s", [last_id])
+            cursor.execute("SELECT id_date FROM dbo.tb_Candidate WHERE Username=%s", [last_id])
             last_date = cursor.fetchone()[0]
 
             if last_date == str(current_date):
