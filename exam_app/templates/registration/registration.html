@@ -396,7 +396,9 @@
                         </div>
                     </div>
                     <div class="sub-heading">Education Details</div>
-                    <div class="container">
+                    
+                    <div class="container" >
+                        <div id="edu">
                         <h1 class="garduation-heading">10th
                         </h1>
                         <div class="head">
@@ -509,29 +511,18 @@
                         </h1>
                         <div class="head">
                             <div class="col-md-row-5">
-                                <label class="input-label" for="Graduation"> UG Graduation<span style="color:red">*</span>
+                                <label class="input-label" for="Graduation"> UG Graduation
                                 </label>   
-                                <select  name="Graduation" id="Graduation"  required>
-                                    <option value="" disabled selected hidden>Select option</option>
-                                    {% for degree in ug %}
-                                    <option value="{{degree.1}}" >{{degree.1}}
-                                    </option>
-                                    {% endfor %}   
-                                </select>
+                                <input  name="Graduation" id="Graduation" placeholder="Enter Graduation" maxlength="200" required/>
+                                    
                             </div>
                             <div  class="col-md-row-5">
-                                <label class="input-label" for="UGDiscipline"> UG Discipline<span style="color:red">*</span>
+                                <label class="input-label" for="UGDiscipline"> UG Discipline
                                 </label>   
-                                <select  name="UGDiscipline"  id="UGDiscipline"  required>
-                                    <option value="" disabled selected hidden>Select option</option>
-                                    {% for i in branch %}
-                                    <option value="{{i.1}}" >{{i.1}}
-                                    </option>
-                                    {% endfor %}
-                                </select>
+                                <input  name="UGDiscipline"  id="UGDiscipline"  placeholder="Enter Discipline" maxlength="200" required/>
                             </div>
                             <div  class="col-md-row-5"> 
-                                <label class="input-label" for="UGCollege"> College<span style="color:red">*</span>
+                                <label class="input-label" for="UGCollege"> College
                                 </label>    
                                 <input type="text" name="UGCollege" id="UGCollege" placeholder="Enter College" maxlength="200" required >
                             </div>
@@ -539,18 +530,19 @@
                                 <div class="radio-buttons">
                                     <label style="font-size: 14px; font-weight: 400; display: flex; align-items: center; margin-right: 10px;">
                                         <input type="radio" name="option3" value="option1">
-                                        CGPA<span style="color:red">*</span>
+                                        CGPA
                                     </label>
                                     <label style="font-size: 14px; font-weight: 400; display: flex; align-items: center; margin-right: 10px;">
                                         <input type="radio" name="option3" value="option2">
-                                        Percentage<span style="color:red">*</span>
+                                        Percentage
                                     </label>
+                                    <span style="color:red">*</span>
                                 </div>  
                                 <input type="text" name="CGPAUG" id="CGPAUG" placeholder="Enter % (or) CGPA" size="15" maxlength="5" oninput="validateCGPA_UG(this)" required  >
                                 <span class="validation-message"></span>
                             </div>
                             <div  class="col-md-row-5"> 
-                                <label class="input-label" for="YOPUG"> Year of Passing<span style="color:red">*</span>
+                                <label class="input-label" for="YOPUG"> Year of Passing
                                 </label>    
                                 <select name="YOPUG"  id="YOPUG" placeholder="Enter YOP" onchange="validateForm_2(event)" required>
                                     <option value="" disabled selected hidden>Select option</option>
@@ -568,25 +560,13 @@
                             <div  class="col-md-row-5">
                                 <label class="input-label" for="PGraduation"> PG Graduation
                                 </label>   
-                                <select  name="PGraduation"   id="PGraduation" >
-                                    <option value="" disabled selected hidden>Select option</option>
-                                    {% for degree in pg %}
-                                    <option value="{{degree.1}}" >{{degree.1}}
-                                    </option>
-                                    {% endfor %}    
-                                </select>
+                                <input  name="PGraduation"   id="PGraduation" placeholder="Enter PG Graduation" maxlength="200"/>
                             </div>
-                            <div  class="col-md-row-5">
-                                <label class="input-label" for="PGDiscipline"> PG Discipline
-                                </label>   
-                                <select  name="PGDiscipline" id="PGDiscipline"  >
-                                    <option value="" disabled selected hidden>Select option</option>
-                                    {% for i in branch %}
-                                    <option value="{{i.1}}" >{{i.1}}
-                                    </option>
-                                    {% endfor %}
-                                </select>
+                            <div class="col-md-row-5">
+                                <label class="input-label" for="PGDiscipline"> PG Discipline </label>
+                                <input type="text" name="PGDiscipline" id="PGDiscipline" placeholder="Enter PG Discipline" maxlength="200" />
                             </div>
+                            
                             <div  class="col-md-row-5"> 
                                 <label class="input-label" for="PGCollege"> College
                                 </label>    
@@ -596,12 +576,13 @@
                                 <div class="radio-buttons">
                                     <label style="font-size: 14px; font-weight: 400; display: flex; align-items: center; margin-right: 10px;">
                                         <input type="radio" name="option4" value="option1">
-                                        CGPA<span style="color:red">*</span>
+                                        CGPA
                                     </label>
                                     <label style="font-size: 14px; font-weight: 400; display: flex; align-items: center; margin-right: 10px;">
                                         <input type="radio" name="option4" value="option2">
-                                        Percentage<span style="color:red">*</span>
+                                        Percentage
                                     </label>
+                                    <span style="color:red">*</span>
                                 </div>
                                 <input type="text" name="CGPAPG" id="CGPAPG" placeholder="Enter % (or) CGPA" size="15" maxlength="5" oninput="validateCGPA_PG(this)">
                                 <span class="validation-message"></span>
@@ -618,8 +599,13 @@
                                 <span id="pyear-validation-message"></span>
                             </div>
                         </div>
+                    </div>
+                        <button onclick="addRow()">Add Row</button>
                         {% comment %} <button id="addDiplomaGrid">Add Diploma</button> {% endcomment %}
                     </div>
+                    
+                
+                    
                     <div class="sub-heading">Other Details</div>
                     <div class="container">
                         <div class="head">
@@ -1142,6 +1128,87 @@ function validateCGPA_10(input) {
         }
     }
 
+    function validateCGPA_Diploma(input) {
+        const inputValue = parseFloat(input.value);
+        const radioGroupName = "option4"; // Set the name of the radio button group to "option4"
+        const isCGPASelected = document.querySelector(`input[name="${radioGroupName}"][value="option1"]`).checked;
+        const isPercentageSelected = document.querySelector(`input[name="${radioGroupName}"][value="option2"]`).checked;
+        var messageSpan = input.nextElementSibling;
+    
+        if (isCGPASelected) {
+            if (isNaN(inputValue) || inputValue < 1 || inputValue > 10) {
+                messageSpan.textContent = "CGPA must be a number between 1 and 10";
+            } else {
+                // Clear the validation message if it was previously set
+                messageSpan.textContent = "";
+            }
+        } else if (isPercentageSelected) {
+            // Handle Percentage validation
+            if (isNaN(inputValue) || inputValue < 35 || inputValue > 100) {
+                messageSpan.textContent = "Percentage must be a number between 35 and 100";
+            } else {
+                messageSpan.textContent = "";
+            }
+        } else {
+            messageSpan.textContent = "Select any one of the radio buttons given above";
+        }
+    }
+
+    function validateCGPA_Extra-1(input) {
+        const inputValue = parseFloat(input.value);
+        const radioGroupName = "option4"; // Set the name of the radio button group to "option4"
+        const isCGPASelected = document.querySelector(`input[name="${radioGroupName}"][value="option1"]`).checked;
+        const isPercentageSelected = document.querySelector(`input[name="${radioGroupName}"][value="option2"]`).checked;
+        var messageSpan = input.nextElementSibling;
+    
+        if (isCGPASelected) {
+            if (isNaN(inputValue) || inputValue < 1 || inputValue > 10) {
+                messageSpan.textContent = "CGPA must be a number between 1 and 10";
+            } else {
+                // Clear the validation message if it was previously set
+                messageSpan.textContent = "";
+            }
+        } else if (isPercentageSelected) {
+            // Handle Percentage validation
+            if (isNaN(inputValue) || inputValue < 35 || inputValue > 100) {
+                messageSpan.textContent = "Percentage must be a number between 35 and 100";
+            } else {
+                messageSpan.textContent = "";
+            }
+        } else {
+            messageSpan.textContent = "Select any one of the radio buttons given above";
+        }
+    }
+
+    function validateCGPA_Extra-2(input) {
+        const inputValue = parseFloat(input.value);
+        const radioGroupName = "option4"; // Set the name of the radio button group to "option4"
+        const isCGPASelected = document.querySelector(`input[name="${radioGroupName}"][value="option1"]`).checked;
+        const isPercentageSelected = document.querySelector(`input[name="${radioGroupName}"][value="option2"]`).checked;
+        var messageSpan = input.nextElementSibling;
+    
+        if (isCGPASelected) {
+            if (isNaN(inputValue) || inputValue < 1 || inputValue > 10) {
+                messageSpan.textContent = "CGPA must be a number between 1 and 10";
+            } else {
+                // Clear the validation message if it was previously set
+                messageSpan.textContent = "";
+            }
+        } else if (isPercentageSelected) {
+            // Handle Percentage validation
+            if (isNaN(inputValue) || inputValue < 35 || inputValue > 100) {
+                messageSpan.textContent = "Percentage must be a number between 35 and 100";
+            } else {
+                messageSpan.textContent = "";
+            }
+        } else {
+            messageSpan.textContent = "Select any one of the radio buttons given above";
+        }
+    }
+
+
+
+
 
     var loginUrl = "{% url 'login' %}";
 
@@ -1150,6 +1217,78 @@ function validateCGPA_10(input) {
             window.location.href = loginUrl;
 
         }
+
+</script>
+<script>
+    var rowCounter = 0; // Initialize the counter
+
+function addRow() {
+    var container = document.getElementById('edu');
+    
+    console.log(container.childElementCount)
+    // Check if the current number of rows is less than 2
+    if (container.childElementCount < 12) {
+        var newRow = document.createElement('div');
+        newRow.id = 'head' + (container.childElementCount + 1);
+
+        // Increment the counter and update the label
+        rowCounter++;
+        var rowLabel = 'Extra-' + rowCounter + ' Academic (PhD, M.phil)';
+        var rowName = 'Extra-' + rowCounter
+
+        newRow.innerHTML = `
+            <h1 class="garduation-heading">${rowLabel}</h1>
+            
+            <div class="head" >
+                <div  class="col-md-row-5">
+                    <label class="input-label" for="${rowName}Graduation"> ${rowName} Graduation
+                    </label>   
+                    <input  name="${rowName}Graduation"   id="${rowName}Graduation" placeholder="${rowName} Graduation" maxlength="200"/>
+                </div>
+                <div class="col-md-row-5">
+                    <label class="input-label" for="${rowName}Discipline"> PG Discipline </label>
+                    <input type="text" name="${rowName}Discipline" id="${rowName}Discipline" placeholder="${rowName} Discipline" maxlength="200" />
+                </div>
+                
+                <div  class="col-md-row-5"> 
+                    <label class="input-label" for="${rowName}College"> College
+                    </label>    
+                    <input type="text" name="${rowName}College" id="${rowName}College" placeholder="Enter ${rowName} College" maxlength="200"  >
+                </div>
+                <div class="col-md-row-5">
+                    <div class="radio-buttons">
+                        <label style="font-size: 14px; font-weight: 400; display: flex; align-items: center; margin-right: 10px;">
+                            <input type="radio" name="option4" value="option1">
+                            CGPA
+                        </label>
+                        <label style="font-size: 14px; font-weight: 400; display: flex; align-items: center; margin-right: 10px;">
+                            <input type="radio" name="option4" value="option2">
+                            Percentage
+                        </label>
+                        <span style="color:red">*</span>
+                    </div>
+                    <input type="text" name="CGPA${rowName}" id="CGPA${rowName}" placeholder="Enter % (or) CGPA" size="15" maxlength="5" oninput="validateCGPA_${rowName}(this)">
+                    <span class="validation-message"></span>
+                </div>
+                <div  class="col-md-row-5"> 
+                    <label class="input-label" for="YOP${rowName}"> Year of Passing 
+                    </label>    
+                    <select name="YOP${rowName}"  id="YOP${rowName}" placeholder="Enter YOP" onchange="validateForm_3(event)" >
+                        <option value="" disabled selected hidden>Select option</option>
+                        {% for year in years %}
+                        <option value="{{ year }}">{{ year }}</option>
+                        {% endfor %}
+                    </select>
+                    <span id="pyear-validation-message"></span>
+                </div>
+            </div>
+        `;
+
+        container.insertBefore(newRow, document.getElementById('addButton'));
+    } else {
+        alert("You can add a maximum of 2 rows.");
+    }
+}
 
 </script>
 

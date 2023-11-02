@@ -8,6 +8,7 @@ from django.views.decorators.cache import never_cache
 from django.http import HttpResponse,StreamingHttpResponse,JsonResponse,HttpResponseServerError,HttpResponseBadRequest
 # import cv2
 import pycountry
+import pyodbc
 import phonenumbers
 import asyncio
 import threading
@@ -1381,72 +1382,98 @@ def import_questions(request):
         if request.method == 'POST' and request.FILES['file']:
             uploaded_file = request.FILES['file']
             if uploaded_file:
-                # Read the Excel file into a DataFrame
-                df = pd.read_excel(uploaded_file)
-
-                # Now, you can work with the DataFrame 'df' as needed
-                # For example, you can print it to the console:
-                # print(df)
-                cursor = connection.cursor()
-                cursor.execute('Select * from tb_subject')
-                subjectdata = cursor.fetchall()
+                try:
+                    # Read the Excel file into a DataFrame
+                    df = pd.read_excel(uploaded_file)
+                    # Now, you can work with the DataFrame 'df' as needed
+                    # For example, you can print it to the console:
+                    
+                    # print(df)
+                    for question in df['Question']:
+                        cursor = connection.cursor()
+                        cursor.execute("SELECT * FROM tb_question_test WHERE Questions = %s", [question])
+                    x = cursor.fetchall()
+                    print("already there Question :",x)
+                    if x:
+                        raise ValueError(f"Questions was already Present in the DataBase \n Please check Question Bank Before inserting")
+                    
+                    cursor.close()
+                    cursor = connection.cursor()
+                    cursor.execute('Select * from tb_subject')
+                    subjectdata = cursor.fetchall()
+                    df['Subject'] = df['Subject'].str.lower()
+                    subject_mapping = {subject.lower(): subject_id for subject_id, subject, _ in subjectdata}
+                    print('subject_mapping     :',subject_mapping)
+                    print('timezone            : ',datetime.datetime.now())
+                    # Replace values in the DataFrame
+                    distinct_subjects = pd.unique(df['Subject'].dropna())
+                    subject_list = distinct_subjects.tolist()
+                    print(subject_list)
+                     # Check if values in subject_list are present in the dictionary
+                    for subject in subject_list:
+                        if subject.strip() not in subject_mapping:
+                            raise ValueError(f"Subject '{subject}' not found in dictionary")
+                    
+                    df['Subject'] = df['Subject'].str.strip().map(subject_mapping).astype(str)
+                    df['level'] = df['level'].astype(str)
+                    df['typeflag'] = 'E'
+                    df['FLAG'] = '0'
+                    print(df)
+                    column_data_types = df.dtypes
+                    print(column_data_types)
+                    # Database connection parameters
+                    server_name = '10.100.130.21'
+                    database_name = 'OLT_DEV'
+                    username = 'OltDevUser'
+                    password = 'OltDevProd'
+                    # Create a database connection using SQLAlchemy
+                    db_url = f"mssql+pyodbc://{username}:{password}@{server_name}/{database_name}?driver=ODBC+Driver+17+for+SQL+Server"
+                    engine = create_engine(db_url)
+                    # Define the SQL statement for bulk insert
+                    insert_sql = """
+                        INSERT INTO dbo.tb_Question_test (Subject_ID, level_ID, Questions, option1, option2, option3, option4, Answer, typeflag, FLAG)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """
+                    # Prepare data for bulk insert as a list of tuples
+                    data_to_insert = [tuple(row) for row in df.values]
+                    # Create a connection and cursor
+                    conn = engine.raw_connection()
+                    cursor = conn.cursor()
+                    # Execute the bulk insert
+                    cursor.executemany(insert_sql, data_to_insert)
+                    # Commit the transaction
+                    conn.commit()
+                    # Close the cursor and connection
+                    cursor.close()
+                    conn.close()
+                    # Optionally, close the SQLAlchemy engine
+                    engine.dispose()
+                    return render(request, 'dashboard/import_quest.html', {'message': 'File uploaded and processed successfully.'})
                 
-                df['Subject'] = df['Subject'].str.lower()
-                subject_mapping = {subject.lower(): subject_id for subject_id, subject, _ in subjectdata}
-                print('subject_mapping     :',subject_mapping)
-                # Replace values in the DataFrame
-                df['Subject'] = df['Subject'].str.strip().map(subject_mapping).astype(str)
-                df['level'] = df['level'].astype(str)
-                df['typeflag'] = 'E'
-                df['FLAG'] = '0'
+                except ValueError as e:
+                    # Handle custom value not found in dictionary error
+                    error_message = f"Error: {str(e)}"
+                    return render(request, 'dashboard/import_quest.html', {'error_message': error_message})
 
-                print(df)
-                column_data_types = df.dtypes
+                except pyodbc.IntegrityError as e:
+                    # Handle primary key violation error
+                    match = re.search(r"The duplicate key value is \((.*?)\)", str(e))
+                    if match:
+                        duplicate_key_value = match.group(1)
+                        error_message = f"Duplicate key value: {duplicate_key_value}"
+                        return render(request, 'dashboard/import_quest.html', {'error_message': error_message})
 
-                print(column_data_types)
+                except Exception as e:
+                    # Handle other exceptions
+                    error_message = f"Error: {str(e)}"
+                    return render(request, 'dashboard/import_quest.html', {'error_message': error_message})
+                
 
-                # Database connection parameters
-                server_name = 'sysportaldbs.database.windows.net'
-                database_name = 'OLT_DEV'
-                username = 'SysPortalAdmin'
-                password = 'spa@Systech2o23'
 
-                # Create a database connection using SQLAlchemy
-                db_url = f"mssql+pyodbc://{username}:{password}@{server_name}/{database_name}?driver=ODBC+Driver+17+for+SQL+Server"
-                engine = create_engine(db_url)
-
-                # Define the SQL statement for bulk insert
-                insert_sql = """
-                    INSERT INTO dbo.tb_Question_test (Subject_ID, level_ID, Questions, option1, option2, option3, option4, Answer, typeflag, FLAG)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                """
-
-                # Prepare data for bulk insert as a list of tuples
-                data_to_insert = [tuple(row) for row in df.values]
-
-                # Create a connection and cursor
-                conn = engine.raw_connection()
-                cursor = conn.cursor()
-
-                # Execute the bulk insert
-                cursor.executemany(insert_sql, data_to_insert)
-
-                # Commit the transaction
-                conn.commit()
-
-                # Close the cursor and connection
-                cursor.close()
-                conn.close()
-
-                # Optionally, close the SQLAlchemy engine
-                engine.dispose()
-                return render(request, 'dashboard/import_quest.html', {'message': 'File uploaded and processed successfully.'})
             else:
                 return render(request, 'dashboard/import_quest.html', {'error_message': 'Please upload a valid Excel file.'})
-            
         return render(request, 'dashboard/import_quest.html')
     return redirect('login')
-
 
 def import_candidates(request):
     if request.session.get('user_authenticated'):
