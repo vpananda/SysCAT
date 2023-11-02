@@ -292,6 +292,7 @@ var x = setInterval(function() {
           formData[name] = null;
         }
       }
+      document.getElementById("attempted-count").textContent = checkedCount;
       $.ajax({
         type: "POST",
         url: '{% url "submit_answers" %}',
@@ -471,49 +472,67 @@ error: function(xhr, status, error) {
   // Function to handle the countdown
   function countdown(remainingTime) {
     const timerDisplay = document.getElementById('timer');
-
+    let blinkingTime = 0; // Time to trigger blinking (in milliseconds)
+    let isBlinking = false;
+  
     function formatTime(hours, minutes, seconds) {
-      if (hours > 0) {
-        return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-      } else {
-        return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+     if (hours > 0) {
+          return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        } else {
+          return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
       }
-    }
-
+  
     function tick() {
       if (remainingTime <= 0) {
         // If the countdown is completed, stop the interval and display 00:00:00
         stopTimer();
         timerDisplay.textContent = formatTime(0, 0, 0);
-        sessionStorage.removeItem('countdownEndTime'); // Clear the endTime value from session storage
+        sessionStorage.removeItem('countdownEndTime');
         alert("Your time is up. Please submit your answers.");
         window.location.href = "{% url 'submission' %}?level={{level}}&applied_for={{appliedfor}}&user={{user_id}}";
       } else {
-          console.log("remainingTime",remainingTime)
-          // Calculate hours, minutes, and seconds from the remaining time
-          const hours = Math.floor((remainingTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-          const minutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
-          const seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
-
-          // Display the time in the appropriate format based on the duration
-          timerDisplay.textContent = formatTime(hours, minutes, seconds);
-
-          // Store the remaining time in session storage just before the page is unloaded
-          window.addEventListener('beforeunload', () => {
-            sessionStorage.setItem('countdownEndTime', remainingTime);
-        });
+        // Calculate hours, minutes, and seconds from the remaining time
+        const hours = Math.floor((remainingTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
+  
+        // Display the time in the appropriate format based on the duration
+        timerDisplay.textContent = formatTime(hours, minutes, seconds);
+  
+        // Determine if blinking should start
+        if (remainingTime === 8* 60 * 1000 || remainingTime === 60 * 1000 || remainingTime === 10000) {
+          blinkingTime = 5000; // 5 seconds
+          if (!isBlinking) {
+            startBlinking(blinkingTime);
+          }
+        } else {
+          isBlinking = false; // Reset the blinking flag
+        }
       }
       remainingTime -= 1000;
     }
-
+  
+    function startBlinking(duration) {
+      const timerBlink = setInterval(function () {
+        timerDisplay.style.color = (timerDisplay.style.color === 'red') ? 'white' : 'red';
+      }, 1000);
+  
+      // Stop the blinking after the specified duration
+      setTimeout(function () {
+        clearInterval(timerBlink);
+        timerDisplay.style.color = 'white'; // Reset the color to default
+      }, duration);
+    }
+  
     // Call the tick function immediately
     tick();
-    intervalId = setInterval(tick, 1000); // Assign intervalId to the setInterval instance
+    intervalId = setInterval(tick, 1000);
   }
-
+  
   // Automatically start the timer when the page loads
   startTimer();
-
+  
   
 </script>
 
