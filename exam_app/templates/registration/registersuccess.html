@@ -33,10 +33,21 @@
         }
     </style>
 </head>
+{%if error %}
+<body>
+    <h1>Already Registerd</h1>
+    <p>{{error}}</p>
+    <p>You can log in and access your account.</p>
+    <a href="{% url 'login' %}">Click here to login again </a>
+</body>
+{%else%}
+
 <body>
     <h1>Registration Successful!</h1>
     <p>Thank you for registering. Your account has been created successfully.</p>
     <p>You can now log in and access your account.</p>
     <a href="{% url 'login' %}">Click here to login again</a>
+
 </body>
+{%endif%}
 </html>

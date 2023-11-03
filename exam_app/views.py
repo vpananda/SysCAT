@@ -147,7 +147,7 @@ def registration(request):
     pg = cursor.fetchall()
     cursor.execute('exec getBranch')
     branch = cursor.fetchall()
-    cursor.execute('exec get_skill_applied_for_data')     
+    cursor.execute('exec get_skill_applied_for_data')    
     jobs = cursor.fetchall()
     if request.method == "POST":  
         Applyingfor = request.POST.get('Applyingfor')
@@ -187,9 +187,12 @@ def registration(request):
         ID_NO=request.POST.get('ID_NO')
         iddata=request.POST.get('card_image_data')
         facedata=request.POST.get('face_image_data')
-        id_image_file = ContentFile(iddata)
-        face_image_file = ContentFile(facedata)
-
+        InstitutionDiploma = request.POST.get('InstitutionDiploma')
+        CGPADiploma = request.POST.get('CGPADiploma')
+        YOPDiploma = request.POST.get('YOPDiploma')
+        BranchDiploma = request.POST.get('BranchDiploma')
+        
+ 
         if PGraduation == None:
             PGraduation='null'        
         if PGDiscipline == None:
@@ -199,51 +202,83 @@ def registration(request):
         if CGPAPG == None:
             CGPAPG = 0        
         if YOPPG == None:
-            YOPPG = 0   
-
-        print(iddata)
-        print(facedata) 
-        print(id_image_file)
-        print(face_image_file)   
-
+            YOPPG = 0  
+        if InstitutionDiploma == None:
+            InstitutionDiploma ='null'
+        if CGPADiploma == None:
+            CGPADiploma = 0
+        if YOPDiploma == None:
+            YOPDiploma = 0
+        if BranchDiploma == None:
+            BranchDiploma = 'null'
+ 
+        # print(iddata)
+        # print(facedata)
+        # print(id_image_file)
+        # print(face_image_file)  
+ 
         current_date = datetime.date.today()
 
-        # Check the last entered ID in the database
-        cursor.execute("SELECT MAX(Username) FROM dbo.tb_Candidate")
-        last_id = cursor.fetchone()[0]
-        print(last_id)
-        
+        print(email,phone,dob,Applyingfor ,type(dob),type,(phone),type(Applyingfor))
 
-        if last_id:
-            # Check if the last entered ID has the same date
-            cursor.execute("SELECT id_date FROM dbo.tb_Candidate WHERE Username=%s", [last_id])
-            last_date = cursor.fetchone()[0]
+        cursor.execute("exec unique_candidate %s,%s,%s,%s",[email,phone,dob,Applyingfor])
+        is_user_in_table = cursor.fetchone()
+        appllied_date = is_user_in_table[3]
+        from dateutil.relativedelta import relativedelta
 
-            if last_date == str(current_date):
-                # Increment the ID by 1
-                new_id = str(int(last_id) + 1)
-            else:
-                # Change the date and start from 1
-                new_id = str(current_date).replace('-','')+'001'
+        # Given input date in yyyy-mm-dd format
+        x = appllied_date
+        # Get the current date
+        current_date = dt.now().date()
+        # Calculate the difference in months
+        difference = relativedelta(current_date, x)
+        # Calculate the total number of months as years * 12 + months
+        total_months_difference = difference.years * 12 + difference.months
+        print(total_months_difference)
+        if is_user_in_table and total_months_difference <= 6:
+            print('code is running this ')
+            error = 'You have already register Previousely'
+            return render(request,'registration/registersuccess.html',{'error':error})
         else:
-            # No previous IDs in the database, start from 1
-            new_id = str(current_date).replace('-','')+'001'
-
-        try:
-            cursor = connection.cursor()
-            cursor.execute('exec insertregistrationdata %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s' ,[Applyingfor,firstname,lastname,gender,dob,MaritalStatus,phone,email,CAddress,PAddress,Institution10,CGPA10,YOP10,Institution12,CGPA12,YOP12,Branch12,Graduation,UGCollege,UGDiscipline,CGPAUG,YOPUG,PGraduation,PGDiscipline,PGCollege,CGPAPG,YOPPG,Source,Referredthrough,Applied,Adate,countrycode,Id_proof,ID_NO,iddata,facedata,new_id,current_date])
-            # return render(request, 'registration/login.html')
-            subject = 'Mail for User-credentials'
-            message = 'Hi '+firstname+', Your Username is '+new_id+' and password is '+phone+', our HR Team will let you know when will exam starts. All the best for your exam!'
-            from_email = 'kalaiselvanj@systechusa.com'  # Replace with your Gmail address
-            recipient_list = [email]  # Replace with recipient email addresses
-            send_mail(subject, message, from_email, recipient_list)
-            return redirect('registersuccess')
-
-
-        finally:
-            cursor.close()
-            request.session.flush()
+            print('code is executng this ')
+ 
+            # Check the last entered ID in the database
+            cursor.execute("SELECT MAX(Username) FROM dbo.tb_Candidate")
+            last_id = cursor.fetchone()[0]
+            print(last_id)
+        
+    
+            if last_id:
+                # Check if the last entered ID has the same date
+                cursor.execute("SELECT id_date FROM dbo.tb_Candidate WHERE Username=%s", [last_id])
+                last_date = cursor.fetchone()[0]
+    
+                if last_date == str(current_date):
+                    # Increment the ID by 1
+                    new_id = str(int(last_id) + 1)
+                else:
+                    # Change the date and start from 1
+                    new_id = str(current_date).replace('-','')+'001'
+            else:
+                # No previous IDs in the database, start from 1
+                new_id = str(current_date).replace('-','')+'001'
+    
+            try:
+                cursor = connection.cursor()
+                cursor.execute('exec insertregistrationdata %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s' ,[Applyingfor,firstname,lastname,gender,dob,MaritalStatus,phone,email,CAddress,PAddress,Institution10,CGPA10,YOP10,Institution12,CGPA12,YOP12,Branch12,Graduation,UGCollege,UGDiscipline,CGPAUG,YOPUG,PGraduation,PGDiscipline,PGCollege,CGPAPG,YOPPG,Source,Referredthrough,Applied,Adate,countrycode,Id_proof,ID_NO,iddata,facedata,new_id,current_date,InstitutionDiploma,CGPADiploma,YOPDiploma,BranchDiploma])
+                # return render(request, 'registration/login.html')
+                subject = 'Mail for User-credentials'
+                message = 'Hi '+firstname+', Your Username is '+new_id+' and password is '+phone+', our HR Team will let you know when will exam starts. All the best for your exam!'
+                from_email = 'kalaiselvanj@systechusa.com'  # Replace with your Gmail address
+                recipient_list = [email]  # Replace with recipient email addresses
+                send_mail(subject, message, from_email, recipient_list)
+                return redirect('registersuccess')
+    
+ 
+            finally:
+                cursor.close()
+                request.session.flush()
+        
     countries = []
     for country in pycountry.countries:
         try:
@@ -255,7 +290,7 @@ def registration(request):
     current_year = dt.now().year
     years = [year for year in range(1990, current_year+1)]
     context = {'countries': countries,'ug':ug,'pg':pg,'branch':branch,'jobs':jobs,'years':years}
-    return render(request, 'registration/registration.html',context)  
+    return render(request, 'registration/registration.html',context)
 
 def registersuccess(request):
     return render(request,'registration/registersuccess.html')
