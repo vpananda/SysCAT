@@ -269,7 +269,7 @@
                                     <label for="faceImageDataField">
                                         <span style="color:red">*</span>
                                     </label>
-                                    <a href="{% url 'capture' %}" class="button">face</a>
+                                    <a href="{% url 'capture' %}" class="button">Face</a>
                                     <img id="faceImage" src="#" name="facedata" value={{FaceimageData}} alt="" style="width:100px; height:100px; margin-top:15px;">
                                     <input type="hidden" name="face_image_data" id="faceImageDataField" required>
                                   </div>
@@ -551,7 +551,7 @@
                                 
                             </div>
                         </div>
-                    <div id="post-graduations">
+                    
                         <h1 class="garduation-heading">Post Graduation
                         </h1>
                         <div class="head post-graduation">
@@ -597,9 +597,99 @@
                                 <span id="pyear-validation-message"></span>
                             </div>
                         </div>
+                        <h1 class="garduation-heading">Extra-1 Graduation
+                        </h1>
+                        <div class="head post-graduation">
+                            <div  class="col-md-row-5">
+                                <label class="input-label" for="PGraduation"> Extra-1 Graduation
+                                </label>   
+                                <input  name="Extra_1_Graduation"   id="Extra_1_Graduation" placeholder="Enter Extra-1 Graduation" maxlength="200"/>
+                            </div>
+                            <div class="col-md-row-5">
+                                <label class="input-label" for="Extra_1_Discipline"> Extra-1 Discipline </label>
+                                <input type="text" name="Extra_1_Discipline" id="Extra_1_Discipline" placeholder="Enter Extra-1 Discipline" maxlength="200" />
+                            </div>
+                            
+                            <div  class="col-md-row-5"> 
+                                <label class="input-label" for="Extra_1_College"> College
+                                </label>    
+                                <input type="text" name="Extra_1_College" id="Extra_1_College" placeholder="Enter College" maxlength="200"  >
+                            </div>
+                            <div class="col-md-row-5">
+                                <div class="radio-buttons">
+                                    <label style="font-size: 14px; font-weight: 400; display: flex; align-items: center; margin-right: 10px;">
+                                        <input type="radio" name="option5" value="option1">
+                                        CGPA
+                                    </label>
+                                    <label style="font-size: 14px; font-weight: 400; display: flex; align-items: center; margin-right: 10px;">
+                                        <input type="radio" name="option5" value="option2">
+                                        Percentage
+                                    </label>
+                                    <span style="color:red">*</span>
+                                </div>
+                                <input type="text" name="CGPA_Extra_1" id="CGPAPG_Extra_1" placeholder="Enter % (or) CGPA" size="15" maxlength="5" oninput="validateCGPA_PG(this)">
+                                <span class="validation-message"></span>
+                            </div>
+                            <div  class="col-md-row-5"> 
+                                <label class="input-label" for="YOP_Extra_1"> Year of Passing 
+                                </label>    
+                                <select name="YOP_Extra_1"  id="YOP_Extra_1" placeholder="Enter YOP" onchange="validateForm_3(event)" >
+                                    <option value="" disabled selected hidden>Select option</option>
+                                    {% for year in years %}
+                                    <option value="{{ year }}">{{ year }}</option>
+                                    {% endfor %}
+                                </select>
+                                <span id="pyear-validation-message"></span>
+                            </div>
+                        </div>
+                        <h1 class="garduation-heading">Extra-2 Graduation
+                        </h1>
+                        <div class="head post-graduation">
+                            <div  class="col-md-row-5">
+                                <label class="input-label" for="Extra_2_Graduation"> Extra-2 Graduation
+                                </label>   
+                                <input  name="Extra_2_Graduation"   id="Extra_2_Graduation" placeholder="Enter Extra-2 Graduation" maxlength="200"/>
+                            </div>
+                            <div class="col-md-row-5">
+                                <label class="input-label" for="Extra_2_Discipline"> Extra-2 Discipline </label>
+                                <input type="text" name="Extra_2_Discipline" id="Extra_2_Discipline" placeholder="Enter Extra-2 Discipline" maxlength="200" />
+                            </div>
+                            
+                            <div  class="col-md-row-5"> 
+                                <label class="input-label" for="Extra_2_College"> College
+                                </label>    
+                                <input type="text" name="Extra_2_College" id="Extra_2_College" placeholder="Enter College" maxlength="200"  >
+                            </div>
+                            <div class="col-md-row-5">
+                                <div class="radio-buttons">
+                                    <label style="font-size: 14px; font-weight: 400; display: flex; align-items: center; margin-right: 10px;">
+                                        <input type="radio" name="option6" value="option1">
+                                        CGPA
+                                    </label>
+                                    <label style="font-size: 14px; font-weight: 400; display: flex; align-items: center; margin-right: 10px;">
+                                        <input type="radio" name="option6" value="option2">
+                                        Percentage
+                                    </label>
+                                    <span style="color:red">*</span>
+                                </div>
+                                <input type="text" name="CGPA_Extra_2" id="CGPA_Extra_2" placeholder="Enter % (or) CGPA" size="15" maxlength="5" oninput="validateCGPA_PG(this)">
+                                <span class="validation-message"></span>
+                            </div>
+                            <div  class="col-md-row-5"> 
+                                <label class="input-label" for="YOP_Extra_2"> Year of Passing 
+                                </label>    
+                                <select name="YOP_Extra_2"  id="YOP_Extra_2" placeholder="Enter YOP" onchange="validateForm_3(event)" >
+                                    <option value="" disabled selected hidden>Select option</option>
+                                    {% for year in years %}
+                                    <option value="{{ year }}">{{ year }}</option>
+                                    {% endfor %}
+                                </select>
+                                <span id="pyear-validation-message"></span>
+                            </div>
+                        </div>
                     </div>
-                    {% comment %} <button onclick="addRow()">Add Row</button> {% endcomment %}
-                    </div>
+                    
+                    
                     <div class="sub-heading">Other Details</div>
                     <div class="container">
                         <div class="head">
@@ -770,7 +860,7 @@
         errorMessage = "Please enter a valid PAN CARD number (e.g. ABCDE1234A)";
         break;
 
-        case "AADHAR":
+        case "AADHAAR":
         maxInputLength = 12;
         errorMessage = "Please enter a valid AADHAR number (e.g. 012345678911)";
         break;
