@@ -601,7 +601,7 @@
                         </h1>
                         <div class="head post-graduation">
                             <div  class="col-md-row-5">
-                                <label class="input-label" for="PGraduation"> Extra-1 Graduation
+                                <label class="input-label" for="Extra_1_Graduation"> Extra-1 Graduation
                                 </label>   
                                 <input  name="Extra_1_Graduation"   id="Extra_1_Graduation" placeholder="Enter Extra-1 Graduation" maxlength="200"/>
                             </div>
@@ -618,16 +618,16 @@
                             <div class="col-md-row-5">
                                 <div class="radio-buttons">
                                     <label style="font-size: 14px; font-weight: 400; display: flex; align-items: center; margin-right: 10px;">
-                                        <input type="radio" name="option5" value="option1">
+                                        <input type="radio" name="option6" value="option1">
                                         CGPA
                                     </label>
                                     <label style="font-size: 14px; font-weight: 400; display: flex; align-items: center; margin-right: 10px;">
-                                        <input type="radio" name="option5" value="option2">
+                                        <input type="radio" name="option6" value="option2">
                                         Percentage
                                     </label>
                                     <span style="color:red">*</span>
                                 </div>
-                                <input type="text" name="CGPA_Extra_1" id="CGPAPG_Extra_1" placeholder="Enter % (or) CGPA" size="15" maxlength="5" oninput="validateCGPA_PG(this)">
+                                <input type="text" name="CGPA_Extra_1" id="CGPAPG_Extra_1" placeholder="Enter % (or) CGPA" size="15" maxlength="5" oninput="validateCGPA_Extra_1(this)">
                                 <span class="validation-message"></span>
                             </div>
                             <div  class="col-md-row-5"> 
@@ -663,16 +663,16 @@
                             <div class="col-md-row-5">
                                 <div class="radio-buttons">
                                     <label style="font-size: 14px; font-weight: 400; display: flex; align-items: center; margin-right: 10px;">
-                                        <input type="radio" name="option6" value="option1">
+                                        <input type="radio" name="option7" value="option1">
                                         CGPA
                                     </label>
                                     <label style="font-size: 14px; font-weight: 400; display: flex; align-items: center; margin-right: 10px;">
-                                        <input type="radio" name="option6" value="option2">
+                                        <input type="radio" name="option7" value="option2">
                                         Percentage
                                     </label>
                                     <span style="color:red">*</span>
                                 </div>
-                                <input type="text" name="CGPA_Extra_2" id="CGPA_Extra_2" placeholder="Enter % (or) CGPA" size="15" maxlength="5" oninput="validateCGPA_PG(this)">
+                                <input type="text" name="CGPA_Extra_2" id="CGPA_Extra_2" placeholder="Enter % (or) CGPA" size="15" maxlength="5" oninput="validateCGPA_Extra_2(this)">
                                 <span class="validation-message"></span>
                             </div>
                             <div  class="col-md-row-5"> 
@@ -1165,6 +1165,59 @@ function validateCGPA_10(input) {
             messageSpan.textContent = "Select any one of the radio buttons given above";
         }
     }
+
+    function validateCGPA_Extra_1(input) {
+        const inputValue = parseFloat(input.value);
+        const radioGroupName = "option6"; // Set the name of the radio button group to "option4"
+        const isCGPASelected = document.querySelector(`input[name="${radioGroupName}"][value="option1"]`).checked;
+        const isPercentageSelected = document.querySelector(`input[name="${radioGroupName}"][value="option2"]`).checked;
+        var messageSpan = input.nextElementSibling;
+    
+        if (isCGPASelected) {
+            if (isNaN(inputValue) || inputValue < 1 || inputValue > 10) {
+                messageSpan.textContent = "CGPA must be a number between 1 and 10";
+            } else {
+                // Clear the validation message if it was previously set
+                messageSpan.textContent = "";
+            }
+        } else if (isPercentageSelected) {
+            // Handle Percentage validation
+            if (isNaN(inputValue) || inputValue < 35 || inputValue > 100) {
+                messageSpan.textContent = "Percentage must be a number between 35 and 100";
+            } else {
+                messageSpan.textContent = "";
+            }
+        } else {
+            messageSpan.textContent = "Select any one of the radio buttons given above";
+        }
+    }
+
+    function validateCGPA_Extra_2(input) {
+        const inputValue = parseFloat(input.value);
+        const radioGroupName = "option7"; // Set the name of the radio button group to "option4"
+        const isCGPASelected = document.querySelector(`input[name="${radioGroupName}"][value="option1"]`).checked;
+        const isPercentageSelected = document.querySelector(`input[name="${radioGroupName}"][value="option2"]`).checked;
+        var messageSpan = input.nextElementSibling;
+    
+        if (isCGPASelected) {
+            if (isNaN(inputValue) || inputValue < 1 || inputValue > 10) {
+                messageSpan.textContent = "CGPA must be a number between 1 and 10";
+            } else {
+                // Clear the validation message if it was previously set
+                messageSpan.textContent = "";
+            }
+        } else if (isPercentageSelected) {
+            // Handle Percentage validation
+            if (isNaN(inputValue) || inputValue < 35 || inputValue > 100) {
+                messageSpan.textContent = "Percentage must be a number between 35 and 100";
+            } else {
+                messageSpan.textContent = "";
+            }
+        } else {
+            messageSpan.textContent = "Select any one of the radio buttons given above";
+        }
+    }
+
 
 
     var loginUrl = "{% url 'login' %}";
