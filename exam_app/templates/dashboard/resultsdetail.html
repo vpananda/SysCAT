@@ -101,7 +101,7 @@
             <tbody>
                 {% for subject_data in final_data_level_1 %}
                 <tr>
-                    <th colspan="4">{{ subject_data.subject }}</th>
+                    <th colspan="4" style="font-weight:bold;">{{ subject_data.subject }}</th>
                 </tr>
                 {% for question_data in subject_data.questions %}
                 <tr>
@@ -130,7 +130,7 @@
             <tbody>
                 {% for subject_data in final_data_level_2 %}
                 <tr>
-                    <th colspan="4">{{ subject_data.subject }}</th>
+                    <th colspan="4" style="font-weight:bold;">{{ subject_data.subject }}</th>
                 </tr>
                 {% for question_data in subject_data.questions %}
                 <tr>
