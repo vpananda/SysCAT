@@ -107,7 +107,7 @@
                 <tr>
                     <td>{{ forloop.counter }} </td>
                     <td>{{ question_data.question }}</td>
-                    <td>{{ question_data.is_attended }}</td>
+                    <td>{% if question_data.is_attended  == 1 %}Yes{% else %}No{% endif %}</td>
                     <td>{{ question_data.score }}</td>
                 </tr>
                 {% endfor %}
@@ -136,7 +136,7 @@
                 <tr>
                     <td>{{ forloop.counter }} </td>
                     <td>{{ question_data.question }}</td>
-                    <td>{{ question_data.is_attended }}</td>
+                    <td>{% if question_data.is_attended  == 1 %}Yes{% else %}No{% endif %}</td>
                     <td>{{ question_data.score }}</td>
                 </tr>
                 {% endfor %}

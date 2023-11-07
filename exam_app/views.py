@@ -1,12 +1,12 @@
 from django.shortcuts import render, redirect
 from django.db import connection
-# from django.shortcuts import render
-# from django.core.mail import EmailMessage
+from .models import TbCandidate, TbQuestion
 from django.views.decorators import gzip
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.cache import never_cache
 from django.http import HttpResponse,StreamingHttpResponse,JsonResponse,HttpResponseServerError,HttpResponseBadRequest
 # import cv2
+from dateutil.relativedelta import relativedelta
 import pycountry
 import pyodbc
 import phonenumbers
@@ -32,7 +32,6 @@ import xlsxwriter
 import base64
 # from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
-from .models import Images
 from django.core.files.base import ContentFile
 import json
 from datetime import datetime as dt,timedelta
@@ -400,10 +399,10 @@ def save_image(request):
     
     return JsonResponse({'status': 'error'})
 
-def image_view(request):
-    image = get_object_or_404(Images, id=1)
-    response = HttpResponse(image.image, content_type='image/jpeg')
-    return response
+# def image_view(request):
+#     image = get_object_or_404(Images, id=1)
+#     response = HttpResponse(image.image, content_type='image/jpeg')
+#     return response
     
 
 # Create your views here.
@@ -1340,7 +1339,7 @@ def introcheckpage(request):
 
 
 def exam_portal(request):
-    global is_recording
+    # global is_recording
     if request.session.get('user_authenticated'):
         try:
             level = request.GET.get('level')
@@ -1350,20 +1349,20 @@ def exam_portal(request):
             print('level:',level)
             print(jobPosition)
             print(user_id)
-
             cursor = connection.cursor()
             cursor.execute('exec get_details_for_exams_questions %s,%s',[jobPosition,level])
             subject_list = cursor.fetchall()
-            print(subject_list)
+            # print(subject_list)
             final_quest_list = []
+            total_questions = 0
             for details in subject_list:
-                # print(details[1],details[0])
+                total_questions += int(details[1])
                 cursor.execute('exec getExamQuestion1 %s,%s,%s,%s',[jobPosition,level,details[1],details[0]])
                 x = cursor.fetchall()
                 # print("inside table list :  " ,x)
                 final_quest_list.extend(x)
-            print('final:  ' ,final_quest_list)
-
+            # print('final:  ' ,final_quest_list)
+            print(total_questions)
             # Start a new thread to run the start_recording function in parallel
             # is_recording = True
             # recording_thread = threading.Thread(target=start_recording, args=(datetime.timedelta(minutes=int(total_duration)),))
@@ -1380,9 +1379,12 @@ def exam_portal(request):
                 appliedfor = my_list[0][9]
                 for tup in my_list:
                     quest_id, subject_id =  tup[6], tup[7]
-                    print(quest_id, subject_id,user_id)
+                    # print(quest_id, subject_id,user_id)
                     cursor.execute('exec insertinto_tb_results %s,%s,%s,%s', [quest_id, subject_id,user_id,level])
+
+
                 my_dict = {}
+
                 for tup in my_list:
                     key1, key2 = tup[0], tup[1]
                     values = list(tup[2:])
@@ -1392,8 +1394,8 @@ def exam_portal(request):
                     else:
                         my_dict[key1] = {key2: values}
 
-                print(my_dict)
-                return render(request,"exam_portal/exam_portal_1.html",{'questions':my_dict,'total_duration':total_duration,'user_id':user_id,'level':level,'appliedfor':appliedfor})
+          
+                return render(request,"exam_portal/exam_portal_1.html",{'questions':my_dict,'total_duration':total_duration,'user_id':user_id,'level':level,'appliedfor':appliedfor,"total_questions":total_questions})
             finally:
                 if cursor:
                     cursor.close()
@@ -1496,7 +1498,7 @@ def import_questions(request):
                     # print(df)
                     for question in df['Question']:
                         cursor = connection.cursor()
-                        cursor.execute("SELECT * FROM tb_question_test WHERE Questions = %s", [question])
+                        cursor.execute("SELECT * FROM tb_question WHERE Questions = %s", [question])
                     x = cursor.fetchall()
                     print("already there Question :",x)
                     if x:
@@ -1527,32 +1529,27 @@ def import_questions(request):
                     column_data_types = df.dtypes
                     print(column_data_types)
                     # Database connection parameters
-                    server_name = '10.100.130.21'
-                    database_name = 'OLT_DEV'
-                    username = 'OltDevUser'
-                    password = 'OltDevProd'
-                    # Create a database connection using SQLAlchemy
-                    db_url = f"mssql+pyodbc://{username}:{password}@{server_name}/{database_name}?driver=ODBC+Driver+17+for+SQL+Server"
-                    engine = create_engine(db_url)
-                    # Define the SQL statement for bulk insert
-                    insert_sql = """
-                        INSERT INTO dbo.tb_Question_test (Subject_ID, level_ID, Questions, option1, option2, option3, option4, Answer, typeflag, FLAG)
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                    """
-                    # Prepare data for bulk insert as a list of tuples
-                    data_to_insert = [tuple(row) for row in df.values]
-                    # Create a connection and cursor
-                    conn = engine.raw_connection()
-                    cursor = conn.cursor()
-                    # Execute the bulk insert
-                    cursor.executemany(insert_sql, data_to_insert)
-                    # Commit the transaction
-                    conn.commit()
-                    # Close the cursor and connection
-                    cursor.close()
-                    conn.close()
-                    # Optionally, close the SQLAlchemy engine
-                    engine.dispose()
+                    # Create a list of TbQuestion objects for bulk insert
+                    questions_to_insert = []
+
+                    for index, row in df.iterrows():
+                        question = TbQuestion(
+                            subject_id=row['Subject'],
+                            level_id=row['level'],
+                            questions=row['Question'],
+                            option1=row['option1'],
+                            option2=row['option2'],
+                            option3=row['option3'],
+                            option4=row['option4'],
+                            answer=row['Answer'],
+                            typeflag='E',
+                            flag=0  # Assuming flag is an integer field
+                        )
+                        questions_to_insert.append(question)
+
+                    # Bulk insert the questions using Django's bulk_create
+                    TbQuestion.objects.bulk_create(questions_to_insert)
+
                     return render(request, 'dashboard/import_quest.html', {'message': 'File uploaded and processed successfully.'})
                 
                 except ValueError as e:
@@ -1579,6 +1576,8 @@ def import_questions(request):
                 return render(request, 'dashboard/import_quest.html', {'error_message': 'Please upload a valid Excel file.'})
         return render(request, 'dashboard/import_quest.html')
     return redirect('login')
+
+
 
 def import_candidates(request):
     if request.session.get('user_authenticated'):
@@ -1651,42 +1650,68 @@ def import_candidates(request):
                 df['Password'] = df['Phone']
                 
                 print(df)
-                                
-                # Database connection parameters
-                server_name = 'sysportaldbs.database.windows.net'
-                database_name = 'OLT_DEV'
-                username = 'SysPortalAdmin'
-                password = 'spa@Systech2o23'
 
-                # Create a database connection using SQLAlchemy
-                db_url = f"mssql+pyodbc://{username}:{password}@{server_name}/{database_name}?driver=ODBC+Driver+17+for+SQL+Server"
-                engine = create_engine(db_url)
-
-                # Define the SQL statement for bulk insert
-                insert_sql = """
-                    INSERT INTO dbo.tb_Candidate_test (First_Name, Email, Phone, Applied_For, KeyID, id_date, Username, Password)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-                """
-
-                # Prepare data for bulk insert as a list of tuples
-                data_to_insert = [tuple(row) for row in df.values]
-
-                # Create a connection and cursor
-                conn = engine.raw_connection()
-                cursor = conn.cursor()
-
-                # Execute the bulk insert
-                cursor.executemany(insert_sql, data_to_insert)
-
-                # Commit the transaction
-                conn.commit()
-
-                # Close the cursor and connection
+                cursor = connection.cursor()
+                cursor.execute('select * from[dbo].[tb_JobPosition] where flag=1')
+                job_positions_data = cursor.fetchall()
                 cursor.close()
-                conn.close()
+                df['Job_position'] = df['Job_position'].str.lower()
+                Job_position_mapping = {row[1].lower(): row[0] for row in job_positions_data}
+                print('Job_position_mapping     :',Job_position_mapping)
+                print('timezone            : ',dt.now())
+                # Replace values in the DataFrame
+                distinct_Job_positions = pd.unique(df['Job_position'].dropna())
+                Job_position_list = distinct_Job_positions.tolist()
+                print(Job_position_list)
+                     # Check if values in subject_list are present in the dictionary
+                for Job_position in Job_position_list:
+                    if Job_position.strip() not in Job_position_mapping:
+                        raise ValueError(f"Subject '{Job_position}' not found in dictionary")
+                
+                df['Job_position'] = df['Job_position'].str.strip().map(Job_position_mapping).astype(str)
 
-                # Optionally, close the SQLAlchemy engine
-                engine.dispose()
+                print(df)
+
+                candidates_to_insert=[]
+                for index, row in df.iterrows():
+                    email = row['Email']
+                    applied_for = row['Job_position']
+                    phone = row['Phone']
+
+                    # Query the database to check if a candidate with the same email, job, and phone exists
+                    cursor = connection.cursor()
+                    cursor.execute("SELECT email, phone, applied_for, cast(id_date as date) id_date FROM [dbo].[tb_Candidate] WHERE email = %s and applied_for = %s and phone = %s", [email, applied_for, phone])
+                    existing_candidate = cursor.fetchone()
+                    cursor.close()
+
+                    if existing_candidate:
+                        applied_date = existing_candidate[3]
+
+                        if applied_date is not None:
+                            x = applied_date
+                            current_date = dt.now().date()
+                            difference = relativedelta(current_date, x)
+                            total_months_difference = difference.years * 12 + difference.months
+
+                            if total_months_difference <= 6:
+                                error = f"{email} has already registered for the same job within the last 6 months."
+                                return render(request, 'dashboard/import_candidates.html', {'error_message': error})
+                    
+                    # If we reach this point, it means the candidate is eligible, so add them to the candidates_to_insert list
+                    candidate = TbCandidate(
+                        first_name=row['Name'],
+                        email=email,
+                        phone=phone,
+                        applied_for=applied_for,
+                        keyid=row['key_ID'],
+                        id_date=current_date_1,
+                        username=row['key_ID'],
+                        password=phone
+                    )
+                    candidates_to_insert.append(candidate)
+
+                # Bulk insert the eligible candidates
+                TbCandidate.objects.bulk_create(candidates_to_insert)
                 return render(request, 'dashboard/import_candidates.html', {'message': 'File uploaded and processed successfully.'})
             else:
                 return render(request, 'dashboard/import_candidates.html', {'error_message': 'Please upload a valid Excel file.'})

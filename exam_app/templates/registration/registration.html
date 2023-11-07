@@ -15,11 +15,7 @@
             background-color: white;
             }
             
-            .input-label:after {
-                content: '*';
-                color: red;
-                display: inline;
-            }
+            
             
             /* Style to make the radio buttons smaller */
             input[type="radio"] {
@@ -36,10 +32,7 @@
                 margin-bottom: 0; /* To remove any extra margin between the labels */
             }
 
-            label.required::after {
-            content: "*";
-            color: red !important;
-            }
+            
             input, select {
             border: 1px solid #ddd !important;
             width: 100% ;
@@ -274,7 +267,7 @@
                                     <input type="hidden" name="face_image_data" id="faceImageDataField" required>
                                   </div>
                             <div class="heading  col-md-4">
-                                <label class="input-label" for="Id_proof">Type of ID Proof</label>
+                                <label class="input-label" for="Id_proof">Type of ID Proof <span style="color:red">*</span></label>
                                 <select name="Id_proof"  id="Id_proof" required>
                                     <option value="" disabled selected hidden>Select option</option>
                                     <option value="PAN CARD">PAN CARD</option> 
@@ -284,7 +277,7 @@
                                 </select>
                             </div>
                             <div class="heading col-md-4">
-                                <label class="input-label" for="ID_NO" id="idNoLabel">ID NO</label>
+                                <label class="input-label" for="ID_NO" id="idNoLabel">ID NO <span style="color:red">*</span></label>
                                 <input type="text" name="ID_NO" id="ID_NO" size="15" placeholder="Enter ID_NO" pattern="" required />
                                 <span class="error-message" id="idNoErrorMessage"></span>
                             </div>
@@ -294,7 +287,7 @@
                     <div class="container">
                         <div class="col-md-4">
                             <label class="input-label" for="Applyingfor">   
-                            Job Positions
+                            Job Positions <span style="color:red">*</span>
                             </label>  
                             <select id="Applyingfor" name="Applyingfor" required >
                                 <option value="" disabled selected hidden>Select option</option>
@@ -310,17 +303,17 @@
                             <div  style="background:LightGray;">
                                 <div class="head">
                                     <div class="col-md-4">
-                                        <label class="input-label"  for="firstname"> First Name
+                                        <label class="input-label"  for="firstname"> First Name <span style="color:red">*</span>
                                         </label>   
                                         <input type="text" name="firstname"  id="firstname" placeholder="First  Name " maxlength="200"  required>
                                     </div>
                                     <div class="col-md-4"> 
-                                        <label class="input-label" for="lastname"> Last Name
+                                        <label class="input-label" for="lastname"> Last Name <span style="color:red">*</span>
                                         </label>    
                                         <input type="text" name="lastname" id="lastname" placeholder=" Last  Name" maxlength="200"  required  >
                                     </div>
                                     <div class="col-md-4 ">
-                                        <label class="input-label" for="email" > Email 
+                                        <label class="input-label" for="email" > Email  <span style="color:red">*</span>
                                         </label>      
                                         <input type="email" id="email" name="email" placeholder="Enter Email" maxlength="200"   pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" required >
                                     </div>
@@ -328,7 +321,7 @@
                                 <div class="head">
                                     <div class="col-md-4">
                                         <label class="input-label" for="gender" >   
-                                        Gender
+                                        Gender <span style="color:red">*</span>
                                         </label>
                                         <select required name="gender"  id="gender"  >
                                             <option value="" disabled selected hidden>Select option</option>
@@ -341,7 +334,7 @@
                                         </select>
                                     </div>
                                     <div class="col-md-4">
-                                        <label class="input-label" for="dob">Date Of Birth</label>
+                                        <label class="input-label" for="dob">Date Of Birth <span style="color:red">*</span></label>
                                         <input type="date" id="dob" name="dob" size="15"  onchange="checkAge(event)" min="1990-01-01" required >
                                         
                                         <span id="age-validation-message" ></span>
@@ -349,7 +342,7 @@
                                     
                                     <div class="col-md-4">
                                         <label class="input-label" for="MaritalStatus">   
-                                        Marital Status
+                                        Marital Status <span style="color:red">*</span>
                                         </label>
                                         <select  name="MaritalStatus" id="MaritalStatus"  required >
                                             <option value="" disabled selected hidden>Select option</option>
@@ -372,18 +365,18 @@
                                             </select>
                                         </div>
                                         <div class="phone-number-ctr " >
-                                            <label class="input-label" for="phone">Phone Number</label>
+                                            <label class="input-label" for="phone">Phone Number <span style="color:red">*</span></label>
                                             <input type="tel" id="phone" name="phone" maxlength="10" placeholder="Enter phone number" pattern = "[0-9]{10}"  title="Please enter a valid phone number (eg.1234567890)" required >
                                             <span class="error-msg"></span>
                                         </div>
                                     </div>
                                     <div class="col-md-4">
-                                        <label class="input-label" for="CAddress"> Current Address 
+                                        <label class="input-label" for="CAddress"> Current Address <span style="color:red">*</span>
                                         </label>   
                                         <input type="text" name="CAddress" id="CAddress" placeholder="Address" maxlength="200" required >
                                     </div>
                                     <div class="col-md-4">
-                                        <label class="input-label" for="PAddress"> Permanent Address
+                                        <label class="input-label" for="PAddress"> Permanent Address <span style="color:red">*</span>
                                         </label>   
                                         <input type="text" name="PAddress" id="PAddress" placeholder="Address" maxlength="200" required  > 
                                     </div>
@@ -397,7 +390,7 @@
                         </h1>
                         <div class="head">
                             <div class="col-md-4">
-                                <label class="input-label" for="Institution10"> Institution
+                                <label class="input-label" for="Institution10"> Institution <span style="color:red">*</span>
                                 </label>   
                                 <input type="text" name="Institution10" id="Institution10" placeholder="Institution" maxlength="200" required >
                             </div>
@@ -417,7 +410,7 @@
                                 <span class="validation-message"></span>
                             </div>
                             <div class="col-md-4" >
-                                <label class="input-label" for="YOP10"> Year of Passing
+                                <label class="input-label" for="YOP10"> Year of Passing <span style="color:red">*</span>
                                 </label>    
                                 <select name="YOP10"  id="YOP10" placeholder="Enter YOP"  required>
                                     <option value="" disabled selected hidden>Select option</option>
@@ -446,7 +439,7 @@
                                         <input type="radio" name="option2" value="option2">
                                         Percentage
                                     </label>
-                                    <span style="color:red">*</span>
+                                    
                                 </div>  
                                 <input type="text" name="CGPA12" id="CGPA12" placeholder="Enter % (or) CGPA" size="15" maxlength="5" oninput="validateCGPA_12(this)"   > 
                                 <span class="validation-message"></span>
@@ -483,7 +476,7 @@
                                     <label style="font-size: 14px; font-weight: 400; display: flex; align-items: center; margin-right: 10px;">
                                         <input type="radio" name="optionDiploma" value="option2">Percentage
                                     </label>
-                                    <span style="color:red">*</span>
+                                    
                                 </div>
                                 <input type="text" name="CGPADiploma" id="CGPADiploma" placeholder="Enter % (or) CGPA" size="15" maxlength="5" oninput="validateCGPA_Diploma(this)" >
                                 <span class="validation-message"></span>
@@ -508,18 +501,18 @@
                         </h1>
                         <div class="head">
                             <div class="col-md-row-5">
-                                <label class="input-label" for="Graduation"> UG Graduation
+                                <label class="input-label" for="Graduation"> UG Graduation <span style="color:red">*</span>
                                 </label>   
                                 <input  name="Graduation" id="Graduation" placeholder="Enter Graduation" maxlength="200" required/>
                                     
                             </div>
                             <div  class="col-md-row-5">
-                                <label class="input-label" for="UGDiscipline"> UG Discipline
+                                <label class="input-label" for="UGDiscipline"> UG Discipline <span style="color:red">*</span>
                                 </label>   
                                 <input  name="UGDiscipline"  id="UGDiscipline"  placeholder="Enter Discipline" maxlength="200" required/>
                             </div>
                             <div  class="col-md-row-5"> 
-                                <label class="input-label" for="UGCollege"> College
+                                <label class="input-label" for="UGCollege"> College <span style="color:red">*</span>
                                 </label>    
                                 <input type="text" name="UGCollege" id="UGCollege" placeholder="Enter College" maxlength="200" required >
                             </div>
@@ -539,7 +532,7 @@
                                 <span class="validation-message"></span>
                             </div>
                             <div  class="col-md-row-5"> 
-                                <label class="input-label" for="YOPUG"> Year of Passing
+                                <label class="input-label" for="YOPUG"> Year of Passing <span style="color:red">*</span>
                                 </label>    
                                 <select name="YOPUG"  id="YOPUG" placeholder="Enter YOP" onchange="validateForm_2(event)" required>
                                     <option value="" disabled selected hidden>Select option</option>
@@ -580,7 +573,7 @@
                                         <input type="radio" name="option4" value="option2">
                                         Percentage
                                     </label>
-                                    <span style="color:red">*</span>
+                                    
                                 </div>
                                 <input type="text" name="CGPAPG" id="CGPAPG" placeholder="Enter % (or) CGPA" size="15" maxlength="5" oninput="validateCGPA_PG(this)">
                                 <span class="validation-message"></span>
@@ -625,7 +618,7 @@
                                         <input type="radio" name="option6" value="option2">
                                         Percentage
                                     </label>
-                                    <span style="color:red">*</span>
+                                    
                                 </div>
                                 <input type="text" name="CGPA_Extra_1" id="CGPAPG_Extra_1" placeholder="Enter % (or) CGPA" size="15" maxlength="5" oninput="validateCGPA_Extra_1(this)">
                                 <span class="validation-message"></span>
@@ -670,7 +663,7 @@
                                         <input type="radio" name="option7" value="option2">
                                         Percentage
                                     </label>
-                                    <span style="color:red">*</span>
+                                    
                                 </div>
                                 <input type="text" name="CGPA_Extra_2" id="CGPA_Extra_2" placeholder="Enter % (or) CGPA" size="15" maxlength="5" oninput="validateCGPA_Extra_2(this)">
                                 <span class="validation-message"></span>
@@ -695,7 +688,7 @@
                         <div class="head">
                             <div class="col-md-3">
                                 <label class="input-label mt-0" id="sourceLabel">   
-                                    Source
+                                    Source <span style="color:red">*</span>
                                 </label>
                                 <div>
                                     <select name="Source" id="Source" required onchange="updateReferredLabel()">
@@ -707,12 +700,12 @@
                                 </div>
                             </div>
                             <div class="col-md-3">
-                                <label class="input-label mt-0" id="referredThroughLabel"> Referred Through
+                                <label class="input-label mt-0" id="referredThroughLabel"> Referred Through <span style="color:red">*</span>
                                 </label>   
                                 <input type="text" name="Referredthrough" id="Referredthrough" placeholder="Name (or) Emp-Id" maxlength="200" required> 
                             </div>
                             <div class="col-md-3">
-                                <label class="input-label mt-0" name="Applied"> Previously Applied? 
+                                <label class="input-label mt-0" name="Applied"> Previously Applied? <span style="color:red">*</span>
                                 </label>    
                                 <div>
                                     <select  name="Applied" id="Applied" required >
@@ -1052,7 +1045,7 @@ submitButton.addEventListener('click', function(event) {
         referredThroughInput.required = true;
     } else if (selectedOption === "Reference") {
         referredThroughLabel.textContent = "Referred through ";
-        ReferredthroughInput.placeholder = "Referrence ID";
+        ReferredthroughInput.placeholder = "Reference ID";
         referredThroughInput.required = true;
     } else if (selectedOption === "Advertisements") {
         referredThroughLabel.textContent = "Advertisements ";
@@ -1228,76 +1221,7 @@ function validateCGPA_10(input) {
 
         }
 
-        var rowCounter = 0; // Initialize the counter
-
-        function addRow() {
-            var container = document.getElementById('edu');
-            
-            console.log(container.childElementCount)
-            // Check if the current number of rows is less than 2
-            if (container.childElementCount < 12) {
-                var newRow = document.createElement('div');
-                newRow.id = 'head' + (container.childElementCount + 1);
         
-                // Increment the counter and update the label
-                rowCounter++;
-                var rowLabel = 'Extra-' + rowCounter + ' Academic (PhD, M.phil)';
-                var rowName = 'Extra-' + rowCounter
-        
-                newRow.innerHTML = `
-                    <h1 class="garduation-heading">${rowLabel}</h1>
-                    
-                    <div class="head" >
-                        <div  class="col-md-row-5">
-                            <label class="input-label" for="${rowName}Graduation"> ${rowName} Graduation
-                            </label>   
-                            <input  name="${rowName}Graduation"   id="${rowName}Graduation" placeholder="${rowName} Graduation" maxlength="200"/>
-                        </div>
-                        <div class="col-md-row-5">
-                            <label class="input-label" for="${rowName}Discipline"> PG Discipline </label>
-                            <input type="text" name="${rowName}Discipline" id="${rowName}Discipline" placeholder="${rowName} Discipline" maxlength="200" />
-                        </div>
-                        
-                        <div  class="col-md-row-5"> 
-                            <label class="input-label" for="${rowName}College"> College
-                            </label>    
-                            <input type="text" name="${rowName}College" id="${rowName}College" placeholder="Enter ${rowName} College" maxlength="200"  >
-                        </div>
-                        <div class="col-md-row-5">
-                            <div class="radio-buttons">
-                                <label style="font-size: 14px; font-weight: 400; display: flex; align-items: center; margin-right: 10px;">
-                                    <input type="radio" name="option4" value="option1">
-                                    CGPA
-                                </label>
-                                <label style="font-size: 14px; font-weight: 400; display: flex; align-items: center; margin-right: 10px;">
-                                    <input type="radio" name="option4" value="option2">
-                                    Percentage
-                                </label>
-                                <span style="color:red">*</span>
-                            </div>
-                            <input type="text" name="CGPA${rowName}" id="CGPA${rowName}" placeholder="Enter % (or) CGPA" size="15" maxlength="5" oninput="validateCGPA_${rowName}(this)">
-                            <span class="validation-message"></span>
-                        </div>
-                        <div  class="col-md-row-5"> 
-                            <label class="input-label" for="YOP${rowName}"> Year of Passing 
-                            </label>    
-                            <select name="YOP${rowName}"  id="YOP${rowName}" placeholder="Enter YOP" onchange="validateForm_3(event)" >
-                                <option value="" disabled selected hidden>Select option</option>
-                                {% for year in years %}
-                                <option value="{{ year }}">{{ year }}</option>
-                                {% endfor %}
-                            </select>
-                            <span id="pyear-validation-message"></span>
-                        </div>
-                    </div>
-                `;
-        
-                container.insertBefore(newRow, document.getElementById('addButton'));
-            } else {
-                alert("You can add a maximum of 2 rows.");
-            }
-        } 
-
 </script>
 
 </html>
