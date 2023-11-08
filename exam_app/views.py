@@ -1557,7 +1557,7 @@ def import_questions(request):
                             option4=row['option4'],
                             answer=row['Answer'],
                             typeflag='E',
-                            flag=0  # Assuming flag is an integer field
+                            flag=1  # Assuming flag is an integer field
                         )
                         questions_to_insert.append(question)
 
