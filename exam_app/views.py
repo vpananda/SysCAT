@@ -595,7 +595,9 @@ def show_candidate_data(request, id):
         cursor = connection.cursor()
         cursor.execute('EXEC get_candidate_data_by_id %s', [id])
         candidate_data = cursor.fetchone()
+        print(candidate_data)
         jobPosition = candidate_data[31]
+        print(jobPosition)
         user_id = candidate_data[0]
         cursor.execute('exec [get_pass_or_fail_candidate] %s, %s, %s', [jobPosition, user_id, 1])
         result_1 = cursor.fetchall()
@@ -1230,9 +1232,20 @@ def resultsdetail(request,id):
         final_data_level_1 = list(transformed_data_level_1.values())
         final_data_level_2 = list(transformed_data_level_2.values())
 
+        connection_string = "DefaultEndpointsProtocol=https;AccountName=syscatblob;AccountKey=sNAAF/WQMFwPkSqV4MBGPPGU/n3yu66s2rzelg1UEq9SLW7vXRiOTpbnMN5sO00gzobhyAUPgtoy+AStxg6x2Q==;EndpointSuffix=core.windows.net"
+        blob_service_client = BlobServiceClient.from_connection_string(connection_string)
+        container_name = str(id)
+        container_client = blob_service_client.get_container_client(container_name)
+
+        blob_urls = []
+        for blob in container_client.list_blobs():
+            blob_url = container_client.url + '/' + blob.name
+            blob_urls.append(blob_url)
+
         context = {
             'final_data_level_1':final_data_level_1,
-            'final_data_level_2' : final_data_level_2
+            'final_data_level_2' : final_data_level_2,
+            'blob_urls': blob_urls
         }
         
         return render(request,'dashboard/resultsdetail.html', context)

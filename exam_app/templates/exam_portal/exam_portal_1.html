@@ -407,7 +407,7 @@ sendData(imageData);
 }, 1000);  // Adjust the interval as per your requirements
 
 // Send image data to the server
-{% comment %} function sendData(imageData) {
+function sendData(imageData) {
 var dataURL = imageData;
 $.ajax({
 url: '{% url "detect_face" %}',
@@ -425,7 +425,7 @@ error: function(xhr, status, error) {
     console.error('Error saving image: ' + error);
 }
 });
-} {% endcomment %}
+} 
 
 </script>
 
