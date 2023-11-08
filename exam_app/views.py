@@ -297,11 +297,11 @@ def registration(request):
                 cursor = connection.cursor()
                 cursor.execute('exec insertregistrationdata %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s' ,[Applyingfor,firstname,lastname,gender,dob,MaritalStatus,phone,email,CAddress,PAddress,Institution10,CGPA10,YOP10,Institution12,CGPA12,YOP12,Branch12,Graduation,UGCollege,UGDiscipline,CGPAUG,YOPUG,PGraduation,PGDiscipline,PGCollege,CGPAPG,YOPPG,Source,Referredthrough,Applied,Adate,countrycode,Id_proof,ID_NO,iddata,facedata,new_id,current_date,InstitutionDiploma,CGPADiploma,YOPDiploma,BranchDiploma,Extra_1_College,CGPA_Extra_1,YOP_Extra_1,Extra_1_Graduation,Extra_2_College,CGPA_Extra_2,YOP_Extra_2,Extra_2_Graduation])
                 # return render(request, 'registration/login.html')
-                subject = 'Mail for User-credentials'
-                message = 'Hi '+firstname+', Your Username is '+new_id+' and password is '+phone+', our HR Team will let you know when will exam starts. All the best for your exam!'
-                from_email = 'kalaiselvanj@systechusa.com'  # Replace with your Gmail address
-                recipient_list = [email]  # Replace with recipient email addresses
-                send_mail(subject, message, from_email, recipient_list)
+                # subject = 'Mail for User-credentials'
+                # message = 'Hi '+firstname+', Your Username is '+new_id+' and password is '+phone+', our HR Team will let you know when will exam starts. All the best for your exam!'
+                # from_email = 'kalaiselvanj@systechusa.com'  # Replace with your Gmail address
+                # recipient_list = [email]  # Replace with recipient email addresses
+                # send_mail(subject, message, from_email, recipient_list)
                 return redirect('registersuccess')
             finally:
                 cursor.close()
