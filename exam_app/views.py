@@ -1508,7 +1508,8 @@ def import_questions(request):
                     # Now, you can work with the DataFrame 'df' as needed
                     # For example, you can print it to the console:
                     
-                    # print(df)
+                    print(df)
+                    df['Question'] = df['Question'].astype(str)
                     for question in df['Question']:
                         cursor = connection.cursor()
                         cursor.execute("SELECT * FROM tb_question WHERE Questions = %s", [question])
@@ -1712,14 +1713,21 @@ def import_candidates(request):
                     
                     # If we reach this point, it means the candidate is eligible, so add them to the candidates_to_insert list
                     candidate = TbCandidate(
-                        first_name=row['Name'],
+                        first_name=row['First_Name'],
+                        last_name=row['Last_Name'],
                         email=email,
                         phone=phone,
                         applied_for=applied_for,
                         keyid=row['key_ID'],
                         id_date=current_date_1,
                         username=row['key_ID'],
-                        password=phone
+                        password=phone,
+                        flag=1,
+                        isadmin=0,
+                        createddate=current_date_1,
+                        islocked=0,
+                        islevel1_skiiped=0
+
                     )
                     candidates_to_insert.append(candidate)
 
