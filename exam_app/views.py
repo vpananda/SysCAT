@@ -1264,6 +1264,7 @@ def exam_main_dashboard(request):
         cursor.execute('EXEC get_candidate_data_by_id %s', [user[0]])
         candidate_data = cursor.fetchone()
 
+        print(candidate_data)
         print(candidate_data[38])
         print(candidate_data[31])
         if candidate_data[26] == 1:
@@ -1726,7 +1727,8 @@ def import_candidates(request):
                         isadmin=0,
                         createddate=current_date_1,
                         islocked=0,
-                        islevel1_skiiped=0
+                        islevel1_skiiped=0,
+                        level=0
 
                     )
                     candidates_to_insert.append(candidate)
