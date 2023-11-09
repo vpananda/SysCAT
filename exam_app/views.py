@@ -23,6 +23,7 @@ from sqlalchemy import create_engine
 import math
 import wave
 import datetime
+from datetime import datetime
 from django.core.paginator import Paginator
 # import dlib
 import re
@@ -113,6 +114,9 @@ def login(request):
             cursor.close()
 
             if user:
+                current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                start_time = user[6]
+                end_time = user[7]
                 if user[3] == password and user[4] == True:
                     user_name = user[5]
                     email = user[2]
@@ -120,13 +124,16 @@ def login(request):
                     request.session['email'] = email                  
                     request.session['user_authenticated'] = True                    
                     return redirect('dashboard')
-                elif user[3] == password and user[4] == False:
-                    user_name = user[0]
-                    email = user[2]
-                    request.session['username'] = user_name  
-                    request.session['email'] = email                    
-                    request.session['user_authenticated'] = True                    
-                    return redirect('/introcheckpage')
+                elif user[3] == password and user[4] == False :
+                    if start_time <= current_time <= end_time:
+                        user_name = user[0]
+                        email = user[2]
+                        request.session['username'] = user_name  
+                        request.session['email'] = email                    
+                        request.session['user_authenticated'] = True                    
+                        return redirect('/introcheckpage')
+                    else:
+                        return render(request, 'registration/login.html', {'errors': 'Please Login in your scheduled time'}) 
                 elif user[3] != password:
                     return render(request, 'registration/login.html', {'perror': 'Invalid Password'})
             elif user == None:
