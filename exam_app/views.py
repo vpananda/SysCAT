@@ -110,30 +110,33 @@ def login(request):
         try:
             cursor.execute('EXEC check_valid_id %s', [login])
             user = cursor.fetchone()
-            print(user)
             cursor.close()
+            print(user)
 
             if user:
-                current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                start_time = user[6]
-                end_time = user[7]
                 if user[3] == password and user[4] == True:
-                    user_name = user[5]
+                    user_name = user[0]
                     email = user[2]
                     request.session['username'] = user_name
                     request.session['email'] = email                  
-                    request.session['user_authenticated'] = True                    
+                    request.session['user_authenticated'] = True
                     return redirect('dashboard')
-                elif user[3] == password and user[4] == False :
-                    if start_time <= current_time <= end_time:
-                        user_name = user[0]
-                        email = user[2]
-                        request.session['username'] = user_name  
-                        request.session['email'] = email                    
-                        request.session['user_authenticated'] = True                    
+                
+                elif user[3] == password and user[4] == False:
+                    user_name = user[0]
+                    email = user[2]
+                    request.session['username'] = user_name  
+                    request.session['email'] = email                    
+                    request.session['user_authenticated'] = True
+                    datetime_now = dt.now()
+                    date_format = '%Y-%m-%d %H:%M:%S'
+                    start_date = dt.strptime(user[6], date_format)
+                    end_date = dt.strptime(user[7], date_format)
+                    print(end_date)
+                    if start_date <= datetime_now <= end_date:
                         return redirect('/introcheckpage')
                     else:
-                        return render(request, 'registration/login.html', {'errors': 'Please Login in your scheduled time'}) 
+                        return redirect('/alertpage')
                 elif user[3] != password:
                     return render(request, 'registration/login.html', {'perror': 'Invalid Password'})
             elif user == None:
@@ -1543,7 +1546,8 @@ def import_questions(request):
                         if subject.strip() not in subject_mapping:
                             raise ValueError(f"Subject '{subject}' not found in dictionary")
                     
-                    df['Subject'] = df['Subject'].str.strip().map(subject_mapping).astype(str)
+                    df['Subject'] = df['Subject'].str.strip().map(subject_mapping)
+                    df['Subject'] = df['Subject'].astype(int)
                     df['level'] = df['level'].astype(str)
                     df['typeflag'] = 'E'
                     df['FLAG'] = '0'
