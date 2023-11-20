@@ -14,6 +14,7 @@ import asyncio
 import threading
 import argparse
 import datetime
+import pytz
 import imutils
 import wave
 import time
@@ -128,12 +129,28 @@ def login(request):
                     request.session['username'] = user_name  
                     request.session['email'] = email                    
                     request.session['user_authenticated'] = True
-                    datetime_now = dt.now()
+                    # datetime_now = dt.now()
                     date_format = '%Y-%m-%d %H:%M:%S'
-                    start_date = dt.strptime(user[6], date_format)
-                    end_date = dt.strptime(user[7], date_format)
-                    print(end_date)
-                    if start_date <= datetime_now <= end_date:
+                    start_date_naive = dt.strptime(user[6], date_format)
+                    end_date_naive = dt.strptime(user[7], date_format)
+                    print(end_date_naive)
+
+                    # Get current UTC time
+                    datetime_now_utc = dt.utcnow()
+                    utc_timezone = pytz.timezone('UTC')
+
+                    # Make datetime_now_utc timezone-aware
+                    datetime_now_utc_aware = utc_timezone.localize(datetime_now_utc)
+
+                    # Convert UTC time to IST
+                    ist_timezone = pytz.timezone('Asia/Kolkata')
+                    start_date = ist_timezone.localize(start_date_naive)
+                    end_date = ist_timezone.localize(end_date_naive)
+                    datetime_now_ist = datetime_now_utc_aware.astimezone(ist_timezone)
+
+                    print("Local datetime now in India (IST):", datetime_now_ist)
+
+                    if start_date <= datetime_now_ist <= end_date:
                         return redirect('/introcheckpage')
                     else:
                         return redirect('/alertpage')
