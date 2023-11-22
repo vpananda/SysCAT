@@ -1565,7 +1565,7 @@ def import_questions(request):
                     
                     df['Subject'] = df['Subject'].str.strip().map(subject_mapping)
                     df['Subject'] = df['Subject'].astype(int)
-                    df['level'] = df['level'].astype(str)
+                    df['level'] = df['level'].astype(int)
                     df['typeflag'] = 'E'
                     df['FLAG'] = '0'
                     print(df)
