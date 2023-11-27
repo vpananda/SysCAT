@@ -94,7 +94,7 @@
                 <tr>
                     <th>S.No</th>
                     <th>Question</th>
-                    <th>Answered</th>
+                    <th>Attempted</th>
                     <th>Score</th>
                 </tr>
             </thead>
@@ -106,7 +106,7 @@
                 {% for question_data in subject_data.questions %}
                 <tr>
                     <td>{{ forloop.counter }} </td>
-                    <td>{{ question_data.question }}</td>
+                    <td style="text-align: left;">{{ question_data.question }}</td>
                     <td>{% if question_data.is_attended  == 1 %}Yes{% else %}No{% endif %}</td>
                     <td>{{ question_data.score }}</td>
                 </tr>

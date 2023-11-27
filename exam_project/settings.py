@@ -90,14 +90,13 @@ DATABASES = {
         'NAME': 'OLT_DEV',
 
         # String. Database user name in "user" format. If not given then MS Integrated Security will be used.
-        'USER': 'SysPortalAdmin',
+        'USER': 'OltDevUser',
 
         # String. Database user password.
-        'PASSWORD': 'spa@Systech2o23',
+        'PASSWORD': 'OltDevProd',
         
-
          # String. SQL Server instance in "server\instance" format.
-        'HOST': 'sysportaldbs.database.windows.net',
+        'HOST': '10.100.130.21',
 
         # String. Server instance port. An empty string means the default port.
         'PORT': '1433',

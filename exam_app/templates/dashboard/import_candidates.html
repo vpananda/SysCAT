@@ -46,19 +46,63 @@
         .error-message {
             color: #e74c3c;
         }
+        /* Your existing CSS styles */
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
     </style>
 </head>
 <body>
     <h2>Upload a File</h2>
     <p class="message">{{ message }}</p>
     <p class="error-message">{{ error_message }}</p>
-    <button type="button" class="btn btn-secondary" onclick="goBack()" style="margin-right: 10px;">Back</button>
+
+    <!-- Displaying the format for user convenience as a table -->
+    <div>
+        <h3>Expected Format:</h3>
+        <p>Upload a CSV file with the following columns:</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>First_Name</th>
+                    <th>Last_Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Job_position</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>John</td>
+                    <td>Doe</td>
+                    <td>johndoe@example.com</td>
+                    <td>1234567890</td>
+                    <td>Manager</td>
+                </tr>
+                <!-- Add more rows if needed -->
+            </tbody>
+        </table>
+    </div>
+
+        
 
     <form method="post" enctype="multipart/form-data" action="">
         {% csrf_token %}
         <input type="file" name="file" required>
         <button type="submit">Upload</button>
     </form>
+
+    <button type="button" class="btn btn-secondary" onclick="goBack()" style="margin-right: 10px;">Back</button>
 
     <script>
         // JavaScript function to go back to the previous page

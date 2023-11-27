@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.urls import reverse
 from django.db import connection
 from .models import TbCandidate, TbQuestion
 from django.views.decorators import gzip
@@ -387,6 +388,7 @@ def registration(request):
     context = {'countries': countries,'ug':ug,'pg':pg,'branch':branch,'jobs':jobs,'years':years}
     return render(request, 'registration/registration.html',context)
 
+	
 
 def registersuccess(request):
     return render(request,'registration/registersuccess.html')
@@ -405,6 +407,20 @@ def capture(request):
         image = request.POST.get('image')
         # do something with the image
     return render(request, 'registration/camera.html')
+
+@csrf_exempt
+def blk_face(request):
+    if request.method == 'POST':
+        image = request.POST.get('image')
+        # do something with the image
+    return render(request, 'registration/blk_face.html')
+
+@csrf_exempt
+def blk_id(request):
+    if request.method == 'POST':
+        image = request.POST.get('image')
+        # do something with the image
+    return render(request, 'registration/blk_id.html')
 
 def save_image(request):
     if request.method == 'POST':
@@ -566,17 +582,31 @@ def candidate_dashboard(request):
             schedule_start_date = datetime.datetime.strptime(schedule_start_date_format, "%Y-%m-%dT%H:%M")
             schedule_end_date_format = request.POST.get('schedule_end_date')
             schedule_end_date = datetime.datetime.strptime(schedule_end_date_format, "%Y-%m-%dT%H:%M")
+            reason = request.POST.get('reason')
             print("schedule_start_date   :",schedule_start_date, schedule_end_date)
             cursor = connection.cursor()
             if unlock_ids:
                 for lockid in unlock_ids:
                     cursor.execute('exec unlockCandiadtes %s',[lockid])
-                    cursor.execute('exec ScheduleCandiadtes %s,%s,%s', [lockid,schedule_start_date,schedule_end_date])
+                    cursor.execute('exec ScheduleCandiadtes %s,%s,%s,%s', [lockid,schedule_start_date,schedule_end_date,reason])
                     cursor.execute('exec get_details_for_email %s',[lockid])
                     details_for_email = cursor.fetchone()
                     print(details_for_email)
                     subject = 'Mail for User-credentials'
-                    message = 'Hi '+details_for_email[0]+', Your Username is '+lockid+' and password is '+details_for_email[1]+', your Scheduled Exam Timing is '+str(schedule_start_date)+' to '+str(schedule_end_date)+'. All the best for your exam!'
+                    # message = 'Hi '+details_for_email[0]+', Your Username is '+lockid+' and password is '+details_for_email[1]+', your Scheduled Exam Timing is '+str(schedule_start_date)+' to '+str(schedule_end_date)+'. All the best for your exam!'
+                    message = (
+                        "Hi "+details_for_email[0]+",\n\n"
+                        "Greetings from Systech!\n\n"
+                        "We would like to inform you that we have shortlisted your profile for the "+details_for_email[3]+" position.\n\n"
+                        "Instructions for Online test:\n"
+                        "1. Online Test (2 Hours) - Aptitude, Communication, RDBMS, Dotnet/Java/Python\n"
+                        "2. Link will be activated as per your schedule\n"
+                        "3. Have paper and pen handy to solve the questions whenever required\n\n"
+                        "Your Username is "+lockid+" and password is "+details_for_email[1]+", your Scheduled Exam Timing is "+str(schedule_start_date)+" to "+str(schedule_end_date)+".\n"
+                        "If you have any issues during the test, please contact us at anisha@systechusa.com\n\n"
+                        "Thanks & regards,\n"
+                        "Systech India HR Team"
+                    )
                     from_email = 'kalaiselvanj@systechusa.com'  # Replace with your Gmail address
                     recipient_list = [details_for_email[2]]  # Replace with recipient email addresses
                     send_mail(subject, message, from_email, recipient_list)
@@ -1294,7 +1324,7 @@ def exam_main_dashboard(request):
         print(candidate_data)
         print(candidate_data[38])
         print(candidate_data[31])
-        if candidate_data[26] == 1:
+        if candidate_data[26] == 1 and candidate_data[3]:
             if candidate_data[57] == 0 and candidate_data[38] == 0:
                 level = 1
             elif (candidate_data[57] == 1 and (candidate_data[38] == 0 or candidate_data[38] == 1) and candidate_data[58] == 'PASS'):
@@ -1315,6 +1345,115 @@ def exam_main_dashboard(request):
             cursor.close()
 
             return render(request, "exam_portal/exam_portal_dashboard.html", {'user': user, 'candidate_data': candidate_data, 'subjects': subjects, 'level': level, 'jobposition': jobposition, 'total_duration': total_duration})
+        elif candidate_data[3] == None:
+            if request.method == "POST":  
+                gender=request.POST.get('gender')
+                dob=request.POST.get('dob')
+                MaritalStatus=request.POST.get('MaritalStatus') 
+                CAddress=request.POST.get('CAddress')
+                PAddress=request.POST.get('PAddress')
+                Institution10=request.POST.get('Institution10')
+                CGPA10=request.POST.get('CGPA10')
+                YOP10=request.POST.get('YOP10')
+                Institution12=request.POST.get('Institution12')
+                CGPA12=request.POST.get('CGPA12')
+                YOP12=request.POST.get('YOP12')
+                Branch12=request.POST.get('Branch12')
+                Graduation=request.POST.get('Graduation')
+                UGCollege=request.POST.get('UGCollege')
+                UGDiscipline=request.POST.get('UGDiscipline')
+                CGPAUG=request.POST.get('CGPAUG')
+                YOPUG=request.POST.get('YOPUG')
+                PGraduation=request.POST.get('PGraduation')
+                PGDiscipline=request.POST.get('PGDiscipline')
+                PGCollege=request.POST.get('PGCollege')
+                CGPAPG=request.POST.get('CGPAPG')
+                YOPPG=request.POST.get('YOPPG')
+                ID_NO=request.POST.get('ID_NO')
+                iddata=request.POST.get('card_image_data')
+                facedata=request.POST.get('face_image_data')
+                InstitutionDiploma = request.POST.get('InstitutionDiploma')
+                CGPADiploma = request.POST.get('CGPADiploma')
+                YOPDiploma = request.POST.get('YOPDiploma')
+                BranchDiploma = request.POST.get('BranchDiploma')
+                Extra_1_College = request.POST.get('Extra_1_College')
+                CGPA_Extra_1 = request.POST.get('CGPA_Extra_1')
+                YOP_Extra_1 = request.POST.get('YOP_Extra_1')
+                Extra_1_Graduation = request.POST.get('Extra_1_Graduation')
+                Extra_2_College = request.POST.get('Extra_2_College')
+                CGPA_Extra_2 = request.POST.get('CGPA_Extra_2')
+                YOP_Extra_2 = request.POST.get('YOP_Extra_2')
+                Extra_2_Graduation = request.POST.get('Extra_2_Graduation')
+
+                if PGraduation == None or PGraduation == "":
+                    PGraduation='null'        
+                if PGDiscipline == None or PGDiscipline == "":
+                    PGDiscipline = 'null'        
+                if PGCollege == None or PGCollege == "":
+                    PGCollege = 'null'        
+                if CGPAPG == None or CGPAPG == "":
+                    CGPAPG = 0        
+                if YOPPG == None or YOPPG == "":
+                    YOPPG = 0  
+                if InstitutionDiploma == None or InstitutionDiploma == "":
+                    InstitutionDiploma ='null'
+                if CGPADiploma == None or CGPADiploma == "":
+                    CGPADiploma = 0
+                if YOPDiploma == None or YOPDiploma == "":
+                    YOPDiploma = 0
+                if BranchDiploma == None or BranchDiploma == "":
+                    BranchDiploma = 'null'
+                if Extra_1_College == None or Extra_1_College == "":
+                    Extra_1_College = 'null'
+                if CGPA_Extra_1 == None or CGPA_Extra_1 == "":
+                    CGPA_Extra_1 = 0
+                if YOP_Extra_1 == None or YOP_Extra_1 == "":
+                    YOP_Extra_1 = 0
+                if Extra_1_Graduation == None or Extra_1_Graduation == "":
+                    Extra_1_Graduation = 'null'
+                if Extra_2_College == None or Extra_2_College == "":
+                    Extra_2_College = 'null'
+                if CGPA_Extra_2 == None or CGPA_Extra_2 == "":
+                    CGPA_Extra_2 = 0
+                if YOP_Extra_2 == None or YOP_Extra_2 == "":
+                    YOP_Extra_2 = 0
+                if Extra_2_Graduation == None or Extra_2_Graduation == "":
+                    Extra_2_Graduation = 'null'
+
+                cursor = connection.cursor()
+                cursor.execute('exec updateregistrationdata %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s' ,[id,gender,dob,MaritalStatus,CAddress,PAddress,Institution10,CGPA10,YOP10,Institution12,CGPA12,YOP12,Branch12,Graduation,UGCollege,UGDiscipline,CGPAUG,YOPUG,PGraduation,PGDiscipline,PGCollege,CGPAPG,YOPPG,ID_NO,iddata,facedata,InstitutionDiploma,CGPADiploma,YOPDiploma,BranchDiploma,Extra_1_College,CGPA_Extra_1,YOP_Extra_1,Extra_1_Graduation,Extra_2_College,CGPA_Extra_2,YOP_Extra_2,Extra_2_Graduation])
+
+                if candidate_data[57] == 0 and candidate_data[38] == 0:
+                    level = 1
+                elif (candidate_data[57] == 1 and (candidate_data[38] == 0 or candidate_data[38] == 1) and candidate_data[58] == 'PASS'):
+                    level = 2
+                else:
+                    return redirect('alert_page_exam')
+                cursor = connection.cursor()
+                cursor.execute('exec [get_candidate_applied_job_details] %s,%s', [level, candidate_data[31]])
+                subjects = cursor.fetchall()
+                if subjects == []:
+                    return redirect('logout')
+                print(subjects)
+                jobposition = subjects[0][1]
+                total_duration = subjects[0][10]
+                # print(level,jobposition)
+
+                # Close the cursor after fetching the data
+                cursor.close()
+
+                # Constructing the URL using reverse() and passing parameters
+                url = reverse('index') + f'?level={level}&jobposition={jobposition}&total_duration={total_duration}&user={id}'
+                print(url)
+
+                # Redirecting to the constructed URL
+                return redirect(url)
+
+
+
+            current_year = dt.now().year
+            years = [year for year in range(1990, current_year+1)]
+            return render(request, "exam_portal/regis_for_blkinst.html",{'candidate_data': candidate_data,'years':years})
         return redirect('alertpage')
     return redirect('logout')
 
@@ -1343,6 +1482,13 @@ def submission(request):
 
         # Close the cursor after executing the queries
         cursor.close()
+        subject = 'Mail for User-credentials'
+        message = ('Hi HR,\n\n' 
+                   'User '+user_id+' is completed the exam.\n\n'
+                   )
+        from_email = 'kalaiselvanj@systechusa.com'  # Replace with your Gmail address
+        recipient_list = ['kalaiselvanj@systechusa.com']  # Replace with recipient email addresses
+        send_mail(subject, message, from_email, recipient_list)
 
         return render(request, 'dashboard/exam_submission.html', {'result': result, 'level': level, 'passorfail': passorfail})
     return redirect('logout')
@@ -1518,11 +1664,11 @@ def detect_face(request):
     return JsonResponse({'status': 'error'})
 
 
-a = {'RDBMS': {'What is a relation in RDBMS?': ['Key', 'Table', 'Row', 'Data Types', 8, 2, 'Table', '2'], 'Which of the following is the full form of RDBMS?': ['Relational Data Management System', 'Relational Database Management System', ' Relative Database Management System', ' Regional Data Management System', 6, 2, 'Relational Database Management System', '2'], 'What is an RDBMS?': ['Database that stores data elements that are not linked.', 'Database that accesses data elements that are not linked.', 'Database that stores and allows access to data elements that are linked.', 'None of the mentioned', 7, 2, 'Database that stores and allows access to data elements that are linked.', '2'], 'Which of the following systems use RDMS?': ['Oracle.', ' Microsoft SQLServer.', 'IBM.', 'All of the mentioned.', 9, 2, 'All of the mentioned.', '2'], 'Which of the following constraints RDBS doesn’t check before creating the tables?': ['Not null.', 'Primary Keys.', 'data Structure', 'Data Integrity', 10, 2, 'data Structure', '2']}, 'python': {' Which of the following is the correct extension of the Python file?': ['python', '.pl', '.py', '.p', 19, 3, '.py', '2'], 'Who developed Python Programming Language?': ['Wick van Rossum', 'Vankata Rama Rao', 'Santosh Yenugula', 'Guido van Rossum', 16, 3, 'Guido van Rossum', '2'], 'All keywords in Python are in _________': ['Capitalized', 'Lower Case', 'UPPER CASE', 'None of the Mentioned', 20, 3, 'None of the Mentioned', '2']}}
+a = ('20231123001', 'Kalaiselvan', 'Jayavel', None, None, '9003051297', 'kalaiselvanj@systechusa.com', None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, datetime.datetime(2023, 11, 23, 0, 0), None, '20231123001', '9003051297', 1, None, None, None, None, '3', 1, None, None, None, None, None, 0, None, None, None, None, None, None, None, None, None, False, None, None, None, None, None, datetime.datetime(2023, 11, 23, 9, 43), datetime.datetime(2023, 11, 24, 9, 43), None, 0, None, '2023-11-23', None, None, None, None, None, None, None, None, None, None, None, None, 3, 'Tester', False, False, True)
 
 
 def camera_part(request):
-    return render(request, 'exam_portal/camera_part.html', {'questions':a})
+    return render(request, 'exam_portal/camera_part_2.html', {'candidate_data':a})
 
 
 def import_questions(request):
