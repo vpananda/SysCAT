@@ -254,7 +254,7 @@
                                     <label for="cardImageDataField">
                                         <span style="color:red">*</span>
                                     </label>
-                                    <a href="{% url 'blk_id' %}" class="button">ID Proof</a>
+                                    <a href="{% url 'capture_card' %}" class="button">ID Proof</a>
                                     <img id="cardImage" src="#" name="iddata" value={{CardimageData}} alt="" style="width:100px; height:100px; margin-top:15px;">
                                     <input type="hidden" name="card_image_data" id="cardImageDataField" required>
                                   </div>
@@ -262,11 +262,11 @@
                                     <label for="faceImageDataField">
                                         <span style="color:red">*</span>
                                     </label>
-                                    <a href="{% url 'blk_face' %}" class="button">Face</a>
+                                    <a href="{% url 'capture' %}" class="button">Face</a>
                                     <img id="faceImage" src="#" name="facedata" value={{FaceimageData}} alt="" style="width:100px; height:100px; margin-top:15px;">
                                     <input type="hidden" name="face_image_data" id="faceImageDataField" required>
                                   </div>
-                            {% comment %} <div class="heading  col-md-4">
+                            <div class="heading  col-md-4">
                                 <label class="input-label" for="Id_proof">Type of ID Proof <span style="color:red">*</span></label>
                                 <select name="Id_proof"  id="Id_proof" required>
                                     <option value="" disabled selected hidden>Select option</option>
@@ -275,10 +275,10 @@
                                     <option value="DRIVING LICENSE">DRIVING LICENSE</option>
                                     <option value="PASSPORT">PASSPORT</option>
                                 </select>
-                            </div> {% endcomment %}
+                            </div>
                             <div class="heading col-md-4">
-                                <label class="input-label" for="ID_NO" id="idNoLabel">ID NO </label>
-                                <input type="text" name="ID_NO" id="ID_NO" size="15" placeholder="Enter ID_NO" />
+                                <label class="input-label" for="ID_NO" id="idNoLabel">ID NO <span style="color:red">*</span></label>
+                                <input type="text" name="ID_NO" id="ID_NO" size="15" placeholder="Enter ID_NO" pattern="" required />
                                 <span class="error-message" id="idNoErrorMessage"></span>
                             </div>
                         </div>
@@ -287,10 +287,14 @@
                     <div class="container">
                         <div class="col-md-4">
                             <label class="input-label" for="Applyingfor">   
-                            Job Position <span style="color:red">*</span>
+                            Job Positions <span style="color:red">*</span>
                             </label>  
-                            <p><span style="border: 1px solid black; padding: 4px;">{{ candidate_data.77 }}</span></p>
-
+                            <select id="Applyingfor" name="Applyingfor" required >
+                                <option value="" disabled selected hidden>Select option</option>
+                                {% for job in jobs %}             
+                                <option value="{{job.1}}">{{ job.0}}</option>
+                                {% endfor %}
+                            </select>
                         </div>
                     </div>
                     <div class="sub-heading">Personal Details</div>
@@ -301,17 +305,17 @@
                                     <div class="col-md-4">
                                         <label class="input-label"  for="firstname"> First Name <span style="color:red">*</span>
                                         </label>   
-                                        <p><span style="border: 1px solid black; padding: 4px;">{{ candidate_data.1 }}</span></p>
+                                        <input type="text" name="firstname"  id="firstname" placeholder="First  Name " maxlength="200"  required>
                                     </div>
                                     <div class="col-md-4"> 
                                         <label class="input-label" for="lastname"> Last Name <span style="color:red">*</span>
                                         </label>    
-                                        <p><span style="border: 1px solid black; padding: 4px;">{{ candidate_data.2 }}</span></p>
+                                        <input type="text" name="lastname" id="lastname" placeholder=" Last  Name" maxlength="200"  required  >
                                     </div>
                                     <div class="col-md-4 ">
                                         <label class="input-label" for="email" > Email  <span style="color:red">*</span>
                                         </label>      
-                                        <p><span style="border: 1px solid black; padding: 4px;">{{ candidate_data.6 }}</span></p>
+                                        <input type="email" id="email" name="email" placeholder="Enter Email" maxlength="200"   pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" required >
                                     </div>
                                 </div>
                                 <div class="head">
@@ -351,7 +355,7 @@
                                 </div>
                                 <div class="head " >
                                     <div class="head2 col-md-4"   >
-                                        {% comment %} <div class="country-code-ctr" >
+                                        <div class="country-code-ctr" >
                                             <label class="input-label" for="country_code">Country Code</label>
                                             <select name="country_code" id="country_code" required >
                                                 <option value="" disabled selected hidden>Select option</option>
@@ -359,10 +363,10 @@
                                                 <option value="+{{phone_code}}">{{name}}</option>
                                                 {% endfor %}
                                             </select>
-                                        </div> {% endcomment %}
+                                        </div>
                                         <div class="phone-number-ctr " >
                                             <label class="input-label" for="phone">Phone Number <span style="color:red">*</span></label>
-                                            <p><span style="border: 1px solid black; padding: 4px;">{{ candidate_data.5 }}</span></p>
+                                            <input type="tel" id="phone" name="phone" maxlength="10" placeholder="Enter phone number" pattern = "[0-9]{10}"  title="Please enter a valid phone number (eg.1234567890)" required >
                                             <span class="error-msg"></span>
                                         </div>
                                     </div>
@@ -380,32 +384,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="sub-heading">Experience</div>
-                    <div class="container">
-                        <div class="row">
-                            <div style="background: LightGray;">
-                                <div class="head">
-                                    <div class="col-md-4">
-                                        <label class="input-label" for="work_auth">Work Authorization with Validity <span style="color:red">*</span></label>
-                                        <input type="text" id="work_auth" name="work_auth" placeholder="Work Authorization with Validity" maxlength="200" required>
-                                    </div>
-                                      
-                                    <div class="col-md-4">
-                                        <label class="input-label" for="total_exp">Total Experience <span style="color:red">*</span></label>
-                                        <input type="text" id="total_exp" name="total_exp" placeholder="Total Experience" maxlength="2" required>
-                                    </div>
-                                      
-                                    <div class="col-md-4">
-                                        <label class="input-label" for="relevant_exp">Relevant Experience <span style="color:red">*</span></label>
-                                        <input type="text" id="relevant_exp" name="relevant_exp" placeholder="Relevant Experience" maxlength="200" required>
-                                    </div>
-                                </div>
-                                <!-- Add more fields related to experience if needed -->
-                            </div>
-                        </div>
-                    </div>
-
-                    {% comment %} <div class="sub-heading">Education Details</div>
+                    <div class="sub-heading">Education Details</div>
                     <div class="container">
                         <h1 class="garduation-heading">10th
                         </h1>
@@ -703,8 +682,8 @@
                         </div>
                     </div>
                     
-                     {% endcomment %}
-                    {% comment %} <div class="sub-heading">Other Details</div>
+                    
+                    <div class="sub-heading">Other Details</div>
                     <div class="container">
                         <div class="head">
                             <div class="col-md-3">
@@ -744,10 +723,10 @@
                                 <span id="date-validation-message" style="color:red;"></span>
                               </div>
                         </div>
-                    </div> {% endcomment %}
+                    </div>
                     
                     <div class="container2">
-                        {% comment %} <button id="back_button" class="btn btn-secondary" onclick="navigateToAnotherPage()">Back</button> {% endcomment %}
+                        <button id="back_button" class="btn btn-secondary" onclick="navigateToAnotherPage()">Back</button>
                         <button type="submit" id="reg_sub">Submit</button>
                     </div>
                 </div>
@@ -799,8 +778,8 @@
         errorMsg.textContent = '';
     }
     });
-    
-    {% comment %} var appliedDropdown = document.getElementById("Applied");
+    var submitButton = document.getElementById('reg_sub'); 
+    var appliedDropdown = document.getElementById("Applied");
     var dateContainer = document.getElementById("date-container");
     
     appliedDropdown.addEventListener("change", function() {
@@ -809,29 +788,8 @@
       } else {
         dateContainer.style.display = "none";
       }
-    }); {% endcomment %}
-
-    // Function to validate input fields for numeric values only
-    function validateNumericInput(inputField) {
-        inputField.addEventListener('input', function(event) {
-        const inputValue = event.target.value;
-        if (!/^\d*$/.test(inputValue)) {
-            event.target.value = inputValue.replace(/\D/g, '');
-        }
-        });
-    }
-
-    // Get input fields
-    const workAuthInput = document.getElementById('work_auth');
-    const totalExpInput = document.getElementById('total_exp');
-    const relevantExpInput = document.getElementById('relevant_exp');
-
-    // Validate numeric input for each field
-    validateNumericInput(workAuthInput);
-    validateNumericInput(totalExpInput);
-    validateNumericInput(relevantExpInput);
-
-    {% comment %} const idProofDropdown = document.getElementById("Id_proof");
+    });
+    const idProofDropdown = document.getElementById("Id_proof");
     const idNoInputContainer = document.getElementById("idNoInputContainer");
     const idNoInput = document.getElementById("ID_NO");
     const idNoLabel = document.getElementById("idNoLabel");
@@ -939,9 +897,11 @@
   // Attach the reset function to the window.onbeforeunload event
   window.onbeforeunload = function () {
     resetFields();
-  }; {% endcomment %}
-var submitButton = document.getElementById('reg_sub'); 
-    
+  };
+    submitButton.addEventListener('click', function() {
+    sessionStorage.clear();
+    console.log("successful")
+    }); 
 // Get the data from sessionStorage
 var CardimageData = sessionStorage.getItem('CardimageData');
 var FaceimageData = sessionStorage.getItem('FaceimageData');
@@ -956,18 +916,15 @@ if (FaceimageData) {
 
 // Add event listener to form submit button
 submitButton.addEventListener('click', function(event) {
-    // Prevent form submission if image data is missing
-    if (!CardimageData || !FaceimageData) {
-      event.preventDefault();
-      alert('Please fill all required fields and select both ID proof and face images.');
-    } else {
-      var url = "{% url 'index' %}?level={{level}}&jobposition={{jobposition}}&total_duration={{total_duration}}&user={{user.0}}";
-      window.location.href = url;
-      // Clear sessionStorage
-      sessionStorage.clear();
-    }
-});
+  // Prevent form submission if image data is missing
+  if (!CardimageData || !FaceimageData) {
+    event.preventDefault();
+    alert('Please fill all required fields and select both ID proof and face images.');
+  }
   
+  // Clear sessionStorage
+  sessionStorage.clear();
+});
 
     const dobField = document.getElementById('dob');
     const dobError = document.getElementById('dob-error');
@@ -1006,7 +963,7 @@ submitButton.addEventListener('click', function(event) {
         }
     }
     
-    {% comment %} function validateForm(event) {
+    function validateForm(event) {
             var yop10Input = document.getElementById("YOP10");
             var yop12Input = event.target;
             var yop10Value = yop10Input.value;
@@ -1253,16 +1210,16 @@ function validateCGPA_10(input) {
             messageSpan.textContent = "Select any one of the radio buttons given above";
         }
     }
- {% endcomment %}
 
 
-    {% comment %} var loginUrl = "{% url 'login' %}";
+
+    var loginUrl = "{% url 'login' %}";
 
         function navigateToAnotherPage() {
 
             window.location.href = loginUrl;
 
-        } {% endcomment %}
+        }
 
         
 </script>

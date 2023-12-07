@@ -254,7 +254,7 @@
                                     <label for="cardImageDataField">
                                         <span style="color:red">*</span>
                                     </label>
-                                    <a href="{% url 'capture_card' %}" class="button">ID Proof</a>
+                                    <a href="{% url 'blk_id' %}" class="button">ID Proof</a>
                                     <img id="cardImage" src="#" name="iddata" value={{CardimageData}} alt="" style="width:100px; height:100px; margin-top:15px;">
                                     <input type="hidden" name="card_image_data" id="cardImageDataField" required>
                                   </div>
@@ -262,7 +262,7 @@
                                     <label for="faceImageDataField">
                                         <span style="color:red">*</span>
                                     </label>
-                                    <a href="{% url 'capture' %}" class="button">Face</a>
+                                    <a href="{% url 'blk_face' %}" class="button">Face</a>
                                     <img id="faceImage" src="#" name="facedata" value={{FaceimageData}} alt="" style="width:100px; height:100px; margin-top:15px;">
                                     <input type="hidden" name="face_image_data" id="faceImageDataField" required>
                                   </div>
@@ -278,7 +278,7 @@
                             </div> {% endcomment %}
                             <div class="heading col-md-4">
                                 <label class="input-label" for="ID_NO" id="idNoLabel">ID NO <span style="color:red">*</span></label>
-                                <input type="text" name="ID_NO" id="ID_NO" size="15" placeholder="Enter ID_NO" pattern="" />
+                                <input type="text" name="ID_NO" id="ID_NO" size="15" placeholder="Enter ID_NO" />
                                 <span class="error-message" id="idNoErrorMessage"></span>
                             </div>
                         </div>
@@ -289,7 +289,7 @@
                             <label class="input-label" for="Applyingfor">   
                             Job Position <span style="color:red">*</span>
                             </label>  
-                            <p><span style="border: 1px solid black; padding: 4px;">{{ candidate_data.73 }}</span></p>
+                            <p><span style="border: 1px solid black; padding: 4px;">{{ candidate_data.74 }}</span></p>
 
                         </div>
                     </div>
@@ -380,7 +380,30 @@
                             </div>
                         </div>
                     </div>
-                    <div class="sub-heading">Education Details</div>
+                    <div class="sub-heading">Experience</div>
+                    <div class="container">
+                        <div class="row">
+                            <div style="background: LightGray;">
+                                <div class="head">
+                                    <div class="col-md-4">
+                                        <label class="input-label" for="work_auth">Work Authorization with Validity <span style="color:red">*</span></label>
+                                        <input type="text" id="work_auth" name="work_auth" placeholder="Work Authorization with Validity" maxlength="200" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="input-label" for="total_exp">Total Experience <span style="color:red">*</span></label>
+                                        <input type="text" id="total_exp" name="total_exp" placeholder="Total Experience" maxlength="2" required pattern="[0-9]+" title="Please enter only numeric values(Years)">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="input-label" for="relevant_exp">Relevant Experience <span style="color:red">*</span></label>
+                                        <input type="text" id="relevant_exp" name="relevant_exp" placeholder="Relevant Experience" maxlength="200" required>
+                                    </div>
+                                </div>
+                                <!-- Add more fields related to experience if needed -->
+                            </div>
+                        </div>
+                    </div>
+
+                    {% comment %} <div class="sub-heading">Education Details</div>
                     <div class="container">
                         <h1 class="garduation-heading">10th
                         </h1>
@@ -678,7 +701,7 @@
                         </div>
                     </div>
                     
-                    
+                     {% endcomment %}
                     {% comment %} <div class="sub-heading">Other Details</div>
                     <div class="container">
                         <div class="head">
@@ -785,7 +808,7 @@
         dateContainer.style.display = "none";
       }
     });
-    const idProofDropdown = document.getElementById("Id_proof");
+    {% comment %} const idProofDropdown = document.getElementById("Id_proof");
     const idNoInputContainer = document.getElementById("idNoInputContainer");
     const idNoInput = document.getElementById("ID_NO");
     const idNoLabel = document.getElementById("idNoLabel");
@@ -893,10 +916,12 @@
   // Attach the reset function to the window.onbeforeunload event
   window.onbeforeunload = function () {
     resetFields();
-  };
+  }; {% endcomment %}
     submitButton.addEventListener('click', function() {
     sessionStorage.clear();
     console.log("successful")
+    var url = "{% url 'index' %}?level={{level}}&jobposition={{jobposition}}&total_duration={{total_duration}}&user={{user.0}}";
+    window.location.href = url;
     }); 
 // Get the data from sessionStorage
 var CardimageData = sessionStorage.getItem('CardimageData');
@@ -917,7 +942,8 @@ submitButton.addEventListener('click', function(event) {
     event.preventDefault();
     alert('Please fill all required fields and select both ID proof and face images.');
   }
-  
+  var url = "{% url 'index' %}?level={{level}}&jobposition={{jobposition}}&total_duration={{total_duration}}&user={{user.0}}";
+    window.location.href = url;
   // Clear sessionStorage
   sessionStorage.clear();
 });
@@ -959,7 +985,7 @@ submitButton.addEventListener('click', function(event) {
         }
     }
     
-    function validateForm(event) {
+    {% comment %} function validateForm(event) {
             var yop10Input = document.getElementById("YOP10");
             var yop12Input = event.target;
             var yop10Value = yop10Input.value;
@@ -1206,7 +1232,7 @@ function validateCGPA_10(input) {
             messageSpan.textContent = "Select any one of the radio buttons given above";
         }
     }
-
+ {% endcomment %}
 
 
     {% comment %} var loginUrl = "{% url 'login' %}";

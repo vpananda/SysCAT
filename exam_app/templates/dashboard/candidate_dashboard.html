@@ -594,19 +594,21 @@ input[type="date"]:focus {
         </div>
         <!-- On/Off switch -->
         <div class="form-check form-switch">
-          <input class="form-check-input" type="checkbox" id="additional-info-switch" style="margin-right: 550px;display: inline;">
-          <label class="form-check-label mb-0 ms-2" for="additional-info-switch" style="margin-left: 5px;display: inline;">Reschedule</label>
+          <input class="form-check-input" type="checkbox" id="additional-info-switch">
+          <label class="form-check-label mb-0 ms-2" for="additional-info-switch">Reschedule</label>
         </div>
         <!-- Additional text box -->
         <div class="row mt-3" id="additional-info-box" style="display: none;">
-          <div class="col-md-12">
-            <label for="additional-text">Reason for reschedule:</label>
-            <input type="text" class="form-control" id="reschedule-reason-text" name="additionaltext">
-          </div>
+            <div class="col-md-12">
+                <label for="additional-text">Reason for reschedule:</label>
+                <input type="text" class="form-control" id="reschedule-reason-text" name="additionaltext">
+            </div>
         </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" id="unlocked-users-btn" onclick="this.form.submit()">Schedule</button>
+        {% comment %} <button type="button" class="btn btn-primary" id="schedule-btn">Schedule</button> {% endcomment %}
+
         <button type="button" class="close btn btn-secondary" data-dismiss="modal">Close</button>
       </div>
     </div>
@@ -931,14 +933,41 @@ input[type="date"]:focus {
     window.location.href = url;
 });
 
-  document.getElementById('additional-info-switch').addEventListener('change', function () {
-    const additionalInfoBox = document.getElementById('additional-info-box');
-    if (this.checked) {
-      additionalInfoBox.style.display = 'block';
-    } else {
-      additionalInfoBox.style.display = 'none';
-    }
-  });
+
+
+// Function to toggle input box and its required attribute
+function toggleInput() {
+  var checkBox = document.getElementById("additional-info-switch");
+  var inputBox = document.getElementById("reschedule-reason-text");
+  var additionalInfoBox = document.getElementById("additional-info-box");
+
+  if (checkBox.checked) {
+    inputBox.setAttribute("required", "required");
+    additionalInfoBox.style.display = "block";
+  } else {
+    inputBox.removeAttribute("required");
+    additionalInfoBox.style.display = "none";
+  }
+}
+
+function validateForm() {
+  var inputBox = document.getElementById("reschedule-reason-text");
+
+  // Check if the reason box is empty when the checkbox is checked
+  if (inputBox.getAttribute("required") && inputBox.value.trim() === "") {
+    alert("Please provide a reason for rescheduling.");
+    return false; // Prevent form submission
+  }
+
+  // Form is valid, allow submission
+  return true;
+}
+
+// Event listener for the checkbox change
+document.getElementById("additional-info-switch").addEventListener("change", toggleInput);
+
+
+
 
   </script>
 

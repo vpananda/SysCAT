@@ -226,6 +226,9 @@ def registration(request):
         CGPA_Extra_2 = request.POST.get('CGPA_Extra_2')
         YOP_Extra_2 = request.POST.get('YOP_Extra_2')
         Extra_2_Graduation = request.POST.get('Extra_2_Graduation')
+        work_auth = request.POST.get('work_auth')
+        total_exp = request.POST.get('total_exp')
+        relevant_exp = request.POST.get('relevant_exp')
 
         id_image_file = ContentFile(iddata)
         face_image_file = ContentFile(facedata)
@@ -323,13 +326,14 @@ def registration(request):
     
             try:
                 cursor = connection.cursor()
-                cursor.execute('exec insertregistrationdata %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s' ,[Applyingfor,firstname,lastname,gender,dob,MaritalStatus,phone,email,CAddress,PAddress,Institution10,CGPA10,YOP10,Institution12,CGPA12,YOP12,Branch12,Graduation,UGCollege,UGDiscipline,CGPAUG,YOPUG,PGraduation,PGDiscipline,PGCollege,CGPAPG,YOPPG,Source,Referredthrough,Applied,Adate,countrycode,Id_proof,ID_NO,iddata,facedata,new_id,current_date,InstitutionDiploma,CGPADiploma,YOPDiploma,BranchDiploma,Extra_1_College,CGPA_Extra_1,YOP_Extra_1,Extra_1_Graduation,Extra_2_College,CGPA_Extra_2,YOP_Extra_2,Extra_2_Graduation])
+                cursor.execute('exec insertusregistrationdata %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s',[Applyingfor,firstname,lastname,gender,dob,MaritalStatus,phone,email,CAddress,PAddress,countrycode,ID_NO,iddata,facedata,new_id,current_date,work_auth,total_exp,relevant_exp])
+                # cursor.execute('exec insertregistrationdata %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s' ,[Applyingfor,firstname,lastname,gender,dob,MaritalStatus,phone,email,CAddress,PAddress,Institution10,CGPA10,YOP10,Institution12,CGPA12,YOP12,Branch12,Graduation,UGCollege,UGDiscipline,CGPAUG,YOPUG,PGraduation,PGDiscipline,PGCollege,CGPAPG,YOPPG,Source,Referredthrough,Applied,Adate,countrycode,Id_proof,ID_NO,iddata,facedata,new_id,current_date,InstitutionDiploma,CGPADiploma,YOPDiploma,BranchDiploma,Extra_1_College,CGPA_Extra_1,YOP_Extra_1,Extra_1_Graduation,Extra_2_College,CGPA_Extra_2,YOP_Extra_2,Extra_2_Graduation])
                 # return render(request, 'registration/login.html')
-                # subject = 'Mail for User-credentials'
-                # message = 'Hi '+firstname+', Your Username is '+new_id+' and password is '+phone+', our HR Team will let you know when will exam starts. All the best for your exam!'
-                # from_email = 'kalaiselvanj@systechusa.com'  # Replace with your Gmail address
-                # recipient_list = [email]  # Replace with recipient email addresses
-                # send_mail(subject, message, from_email, recipient_list)
+                subject = 'Mail for User-credentials'
+                message = ('Hi HR,\n\n'+firstname+', is registered for '+Applyingfor+' and the username is '+new_id+' and mailID is'+email)
+                from_email = 'kalaiselvanj@systechusa.com'  # Replace with your Gmail address
+                recipient_list = ['kalaiselvanj@systechusa.com']  # Replace with recipient email addresses
+                send_mail(subject, message, from_email, recipient_list)
                 return redirect('registersuccess')
             finally:
                 cursor.close()
@@ -361,12 +365,13 @@ def registration(request):
     
             try:
                 cursor = connection.cursor()
-                cursor.execute('exec insertregistrationdata %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s' ,[Applyingfor,firstname,lastname,gender,dob,MaritalStatus,phone,email,CAddress,PAddress,Institution10,CGPA10,YOP10,Institution12,CGPA12,YOP12,Branch12,Graduation,UGCollege,UGDiscipline,CGPAUG,YOPUG,PGraduation,PGDiscipline,PGCollege,CGPAPG,YOPPG,Source,Referredthrough,Applied,Adate,countrycode,Id_proof,ID_NO,iddata,facedata,new_id,current_date,InstitutionDiploma,CGPADiploma,YOPDiploma,BranchDiploma,Extra_1_College,CGPA_Extra_1,YOP_Extra_1,Extra_1_Graduation,Extra_2_College,CGPA_Extra_2,YOP_Extra_2,Extra_2_Graduation])
+                cursor.execute('exec insertusregistrationdata %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s' ,[Applyingfor,firstname,lastname,gender,dob,MaritalStatus,phone,email,CAddress,PAddress,countrycode,ID_NO,iddata,facedata,new_id,current_date,work_auth,total_exp,relevant_exp])
+                # cursor.execute('exec insertregistrationdata %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s' ,[Applyingfor,firstname,lastname,gender,dob,MaritalStatus,phone,email,CAddress,PAddress,Institution10,CGPA10,YOP10,Institution12,CGPA12,YOP12,Branch12,Graduation,UGCollege,UGDiscipline,CGPAUG,YOPUG,PGraduation,PGDiscipline,PGCollege,CGPAPG,YOPPG,Source,Referredthrough,Applied,Adate,countrycode,Id_proof,ID_NO,iddata,facedata,new_id,current_date,InstitutionDiploma,CGPADiploma,YOPDiploma,BranchDiploma,Extra_1_College,CGPA_Extra_1,YOP_Extra_1,Extra_1_Graduation,Extra_2_College,CGPA_Extra_2,YOP_Extra_2,Extra_2_Graduation])
                 # return render(request, 'registration/login.html')
                 subject = 'Mail for User-credentials'
-                message = 'Hi '+firstname+', Your Username is '+new_id+' and password is '+phone+', our HR Team will let you know when will exam starts. All the best for your exam!'
+                message = ('Hi HR,\n\n'+firstname+', is registered for '+Applyingfor+' and the username is '+new_id+' and mailID is'+email)
                 from_email = 'kalaiselvanj@systechusa.com'  # Replace with your Gmail address
-                recipient_list = [email]  # Replace with recipient email addresses
+                recipient_list = ['kalaiselvanj@systechusa.com']  # Replace with recipient email addresses
                 send_mail(subject, message, from_email, recipient_list)
                 return redirect('registersuccess')
     
@@ -1384,6 +1389,9 @@ def exam_main_dashboard(request):
                 CGPA_Extra_2 = request.POST.get('CGPA_Extra_2')
                 YOP_Extra_2 = request.POST.get('YOP_Extra_2')
                 Extra_2_Graduation = request.POST.get('Extra_2_Graduation')
+                work_auth = request.POST.get('work_auth')
+                total_exp = request.POST.get('total_exp')
+                relevant_exp = request.POST.get('relevant_exp')
 
                 if PGraduation == None or PGraduation == "":
                     PGraduation='null'        
@@ -1421,7 +1429,8 @@ def exam_main_dashboard(request):
                     Extra_2_Graduation = 'null'
 
                 cursor = connection.cursor()
-                cursor.execute('exec updateregistrationdata %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s' ,[id,gender,dob,MaritalStatus,CAddress,PAddress,Institution10,CGPA10,YOP10,Institution12,CGPA12,YOP12,Branch12,Graduation,UGCollege,UGDiscipline,CGPAUG,YOPUG,PGraduation,PGDiscipline,PGCollege,CGPAPG,YOPPG,ID_NO,iddata,facedata,InstitutionDiploma,CGPADiploma,YOPDiploma,BranchDiploma,Extra_1_College,CGPA_Extra_1,YOP_Extra_1,Extra_1_Graduation,Extra_2_College,CGPA_Extra_2,YOP_Extra_2,Extra_2_Graduation])
+                cursor.execute('exec updateusregistrationdata %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s' ,[id,gender,dob,MaritalStatus,CAddress,PAddress,ID_NO,iddata,facedata,work_auth,total_exp,relevant_exp])
+                # cursor.execute('exec updateregistrationdata %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s' ,[id,gender,dob,MaritalStatus,CAddress,PAddress,Institution10,CGPA10,YOP10,Institution12,CGPA12,YOP12,Branch12,Graduation,UGCollege,UGDiscipline,CGPAUG,YOPUG,PGraduation,PGDiscipline,PGCollege,CGPAPG,YOPPG,ID_NO,iddata,facedata,InstitutionDiploma,CGPADiploma,YOPDiploma,BranchDiploma,Extra_1_College,CGPA_Extra_1,YOP_Extra_1,Extra_1_Graduation,Extra_2_College,CGPA_Extra_2,YOP_Extra_2,Extra_2_Graduation])
 
                 if candidate_data[57] == 0 and candidate_data[38] == 0:
                     level = 1
@@ -1664,7 +1673,7 @@ def detect_face(request):
     return JsonResponse({'status': 'error'})
 
 
-a = ('20231123001', 'Kalaiselvan', 'Jayavel', None, None, '9003051297', 'kalaiselvanj@systechusa.com', None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, datetime.datetime(2023, 11, 23, 0, 0), None, '20231123001', '9003051297', 1, None, None, None, None, '3', 1, None, None, None, None, None, 0, None, None, None, None, None, None, None, None, None, False, None, None, None, None, None, datetime.datetime(2023, 11, 23, 9, 43), datetime.datetime(2023, 11, 24, 9, 43), None, 0, None, '2023-11-23', None, None, None, None, None, None, None, None, None, None, None, None, 3, 'Tester', False, False, True)
+a = ('20231123001', 'Kalaiselvan', 'Jayavel', None, None, '9003051297', 'kalaiselvanj@systechusa.com', None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, datetime.datetime(2023, 11, 23, 0, 0), None, '20231123001', '9003051297', 1, None, None, None, None, '3', 1, None, None, None, None, None, 0, None, None, None, None, None, None, None, None, None, False, None, None, None, None, None, datetime.datetime(2023, 11, 23, 9, 43), datetime.datetime(2023, 11, 24, 9, 43), None, 0, None, '2023-11-23', None, None, None, None, None, None, None, None, None, None, None, None, 3, None,'Tester', False, False, True)
 
 
 def camera_part(request):

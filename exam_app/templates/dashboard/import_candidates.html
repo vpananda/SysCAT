@@ -71,7 +71,7 @@
     <div>
         <h3>Expected Format:</h3>
         <p>Upload a CSV file with the following columns:</p>
-        <table>
+        <table id="data-table">
             <thead>
                 <tr>
                     <th>First_Name</th>
@@ -92,6 +92,7 @@
                 <!-- Add more rows if needed -->
             </tbody>
         </table>
+        <button onclick="exportToExcel()">Download Format</button>
     </div>
 
         
@@ -104,6 +105,46 @@
 
     <button type="button" class="btn btn-secondary" onclick="goBack()" style="margin-right: 10px;">Back</button>
 
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.3/xlsx.full.min.js"></script>
+    <script>
+        function exportToExcel() {
+            const table = document.getElementById('data-table');
+
+            if (table) {
+                const wb = XLSX.utils.table_to_book(table, { sheet: 'SheetJS' });
+                const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
+
+                function s2ab(s) {
+                    const buf = new ArrayBuffer(s.length);
+                    const view = new Uint8Array(buf);
+                    for (let i = 0; i < s.length; i++) view[i] = s.charCodeAt(i) & 0xFF;
+                    return buf;
+                }
+
+                const blob = new Blob([s2ab(wbout)], { type: 'application/octet-stream' });
+                const fileName = 'Candidate_data.xlsx';
+
+                if (navigator.msSaveBlob) {
+                    // For IE
+                    navigator.msSaveBlob(blob, fileName);
+                } else {
+                    const link = document.createElement('a');
+                    if (link.download !== undefined) {
+                        const url = URL.createObjectURL(blob);
+                        link.setAttribute('href', url);
+                        link.setAttribute('download', fileName);
+                        link.style.visibility = 'hidden';
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    }
+                }
+            } else {
+                console.error('Table with ID "data-table" not found.');
+            }
+        }
+    </script>  
     <script>
         // JavaScript function to go back to the previous page
         function goBack() {
