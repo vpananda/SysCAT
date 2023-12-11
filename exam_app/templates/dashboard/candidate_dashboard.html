@@ -606,7 +606,7 @@ input[type="date"]:focus {
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary" id="unlocked-users-btn" onclick="this.form.submit()">Schedule</button>
+        <button type="button" class="btn btn-primary" id="unlocked-users-btn" onclick="validateAndSubmit()">Schedule</button>
         {% comment %} <button type="button" class="btn btn-primary" id="schedule-btn">Schedule</button> {% endcomment %}
 
         <button type="button" class="close btn btn-secondary" data-dismiss="modal">Close</button>
@@ -942,10 +942,18 @@ function toggleInput() {
   var additionalInfoBox = document.getElementById("additional-info-box");
 
   if (checkBox.checked) {
+    if (!inputBox) {
+      throw new Error("Input box not found!");
+    }
     inputBox.setAttribute("required", "required");
+    console.log(inputBox);
     additionalInfoBox.style.display = "block";
   } else {
+    if (!inputBox) {
+      throw new Error("Input box not found!");
+    }
     inputBox.removeAttribute("required");
+    console.log(inputBox);
     additionalInfoBox.style.display = "none";
   }
 }
@@ -963,8 +971,17 @@ function validateForm() {
   return true;
 }
 
+function validateAndSubmit() {
+  // Run the validation before submission
+  if (validateForm()) {
+    document.getElementById("unlocked-users-btn").form.submit();
+  }
+}
+
 // Event listener for the checkbox change
 document.getElementById("additional-info-switch").addEventListener("change", toggleInput);
+
+
 
 
 
