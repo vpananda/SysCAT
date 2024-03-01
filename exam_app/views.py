@@ -331,8 +331,8 @@ def registration(request):
                 # return render(request, 'registration/login.html')
                 subject = 'Mail for User-credentials'
                 message = ('Hi HR,\n\n'+firstname+', is registered for '+Applyingfor+' and the username is '+new_id+' and mailID is'+email)
-                from_email = 'kalaiselvanj@systechusa.com'  # Replace with your Gmail address
-                recipient_list = ['kalaiselvanj@systechusa.com']  # Replace with recipient email addresses
+                from_email = 'sysconnect@systechusa.com'  # Replace with your Gmail address
+                recipient_list = ['sysconnect@systechusa.com']  # Replace with recipient email addresses
                 send_mail(subject, message, from_email, recipient_list)
                 return redirect('registersuccess')
             finally:
@@ -370,8 +370,8 @@ def registration(request):
                 # return render(request, 'registration/login.html')
                 subject = 'Mail for User-credentials'
                 message = ('Hi HR,\n\n'+firstname+', is registered for '+Applyingfor+' and the username is '+new_id+' and mailID is'+email)
-                from_email = 'kalaiselvanj@systechusa.com'  # Replace with your Gmail address
-                recipient_list = ['kalaiselvanj@systechusa.com']  # Replace with recipient email addresses
+                from_email = 'sysconnect@systechusa.com'  # Replace with your Gmail address
+                recipient_list = ['sysconnect@systechusa.com']  # Replace with recipient email addresses
                 send_mail(subject, message, from_email, recipient_list)
                 return redirect('registersuccess')
     
@@ -612,7 +612,7 @@ def candidate_dashboard(request):
                         "Thanks & regards,\n"
                         "Systech India HR Team"
                     )
-                    from_email = 'kalaiselvanj@systechusa.com'  # Replace with your Gmail address
+                    from_email = 'sysconnect@systechusa.com'  # Replace with your Gmail address
                     recipient_list = [details_for_email[2]]  # Replace with recipient email addresses
                     send_mail(subject, message, from_email, recipient_list)
             if skip_level_1:
@@ -1294,15 +1294,15 @@ def resultsdetail(request,id):
         final_data_level_1 = list(transformed_data_level_1.values())
         final_data_level_2 = list(transformed_data_level_2.values())
 
-        connection_string = "DefaultEndpointsProtocol=https;AccountName=syscatblob;AccountKey=sNAAF/WQMFwPkSqV4MBGPPGU/n3yu66s2rzelg1UEq9SLW7vXRiOTpbnMN5sO00gzobhyAUPgtoy+AStxg6x2Q==;EndpointSuffix=core.windows.net"
-        blob_service_client = BlobServiceClient.from_connection_string(connection_string)
-        container_name = str(id)
-        container_client = blob_service_client.get_container_client(container_name)
+        # connection_string = "DefaultEndpointsProtocol=https;AccountName=syscatblob;AccountKey=sNAAF/WQMFwPkSqV4MBGPPGU/n3yu66s2rzelg1UEq9SLW7vXRiOTpbnMN5sO00gzobhyAUPgtoy+AStxg6x2Q==;EndpointSuffix=core.windows.net"
+        # blob_service_client = BlobServiceClient.from_connection_string(connection_string)
+        # container_name = str(id)
+        # container_client = blob_service_client.get_container_client(container_name)
 
         blob_urls = []
-        for blob in container_client.list_blobs():
-            blob_url = container_client.url + '/' + blob.name
-            blob_urls.append(blob_url)
+        # for blob in container_client.list_blobs():
+        #     blob_url = container_client.url + '/' + blob.name
+        #     blob_urls.append(blob_url)
 
         context = {
             'final_data_level_1':final_data_level_1,
@@ -1495,8 +1495,8 @@ def submission(request):
         message = ('Hi HR,\n\n' 
                    'User '+user_id+' is completed the exam.\n\n'
                    )
-        from_email = 'kalaiselvanj@systechusa.com'  # Replace with your Gmail address
-        recipient_list = ['kalaiselvanj@systechusa.com']  # Replace with recipient email addresses
+        from_email = 'sysconnect@systechusa.com'  # Replace with your Gmail address
+        recipient_list = ['sysconnect@systechusa.com']  # Replace with recipient email addresses
         send_mail(subject, message, from_email, recipient_list)
 
         return render(request, 'dashboard/exam_submission.html', {'result': result, 'level': level, 'passorfail': passorfail})

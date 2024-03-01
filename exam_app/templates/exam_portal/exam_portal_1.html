@@ -367,7 +367,7 @@ for (var i = 0; i < radios.length; i++) {
   }
 </script> {% endcomment %}
 
-<script>
+{% comment %} <script>
   // Get the CSRF token from the cookie
 function getCookie(name) {
 var cookieValue = null;
@@ -427,7 +427,7 @@ error: function(xhr, status, error) {
 });
 } 
 
-</script>
+</script> {% endcomment %}
 
 <script>
   let intervalId; // Declare intervalId outside the countdown function

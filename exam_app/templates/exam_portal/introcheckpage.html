@@ -136,7 +136,7 @@
       checkNextButtonStatus(); // Check if Next button should be enabled
     }
 
-    function checkNextButtonStatus() {
+    {% comment %} function checkNextButtonStatus() {
       // Enable the Next button only if both checks pass
       if (
         cameraStatusContainer.classList.contains('pass') &&
@@ -146,6 +146,13 @@
       } else {
         nextButton.setAttribute('disabled', 'disabled');
       }
+    } {% endcomment %}
+
+    function checkNextButtonStatus() {
+      // Enable the Next button only if both checks pass
+      
+        nextButton.removeAttribute('disabled');
+      
     }
 
     // Rest of the code remains unchanged
