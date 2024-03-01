@@ -331,8 +331,8 @@ def registration(request):
                 # return render(request, 'registration/login.html')
                 subject = 'Mail for User-credentials'
                 message = ('Hi HR,\n\n'+firstname+', is registered for '+Applyingfor+' and the username is '+new_id+' and mailID is'+email)
-                from_email = 'sysconnect@systechusa.com'  # Replace with your Gmail address
-                recipient_list = ['sysconnect@systechusa.com']  # Replace with recipient email addresses
+                from_email = 'anisha@systechusa.com'  # Replace with your Gmail address
+                recipient_list = ['anisha@systechusa.com']  # Replace with recipient email addresses
                 send_mail(subject, message, from_email, recipient_list)
                 return redirect('registersuccess')
             finally:
@@ -370,8 +370,8 @@ def registration(request):
                 # return render(request, 'registration/login.html')
                 subject = 'Mail for User-credentials'
                 message = ('Hi HR,\n\n'+firstname+', is registered for '+Applyingfor+' and the username is '+new_id+' and mailID is'+email)
-                from_email = 'sysconnect@systechusa.com'  # Replace with your Gmail address
-                recipient_list = ['sysconnect@systechusa.com']  # Replace with recipient email addresses
+                from_email = 'anisha@systechusa.com'  # Replace with your Gmail address
+                recipient_list = ['anisha@systechusa.com']  # Replace with recipient email addresses
                 send_mail(subject, message, from_email, recipient_list)
                 return redirect('registersuccess')
     
@@ -612,7 +612,7 @@ def candidate_dashboard(request):
                         "Thanks & regards,\n"
                         "Systech India HR Team"
                     )
-                    from_email = 'sysconnect@systechusa.com'  # Replace with your Gmail address
+                    from_email = 'anisha@systechusa.com'  # Replace with your Gmail address
                     recipient_list = [details_for_email[2]]  # Replace with recipient email addresses
                     send_mail(subject, message, from_email, recipient_list)
             if skip_level_1:
@@ -1491,13 +1491,13 @@ def submission(request):
 
         # Close the cursor after executing the queries
         cursor.close()
-        # subject = 'Mail for User-credentials'
-        # message = ('Hi HR,\n\n' 
-        #            'User '+user_id+' is completed the exam.\n\n'
-        #            )
-        # from_email = 'sysconnect@systechusa.com'  # Replace with your Gmail address
-        # recipient_list = ['sysconnect@systechusa.com']  # Replace with recipient email addresses
-        # send_mail(subject, message, from_email, recipient_list)
+        subject = 'Mail for User-credentials'
+        message = ('Hi HR,\n\n' 
+                   'User '+user_id+' is completed the exam.\n\n'
+                   )
+        from_email = 'anisha@systechusa.com'  # Replace with your Gmail address
+        recipient_list = ['anisha@systechusa.com']  # Replace with recipient email addresses
+        send_mail(subject, message, from_email, recipient_list)
 
         return render(request, 'dashboard/exam_submission.html', {'result': result, 'level': level, 'passorfail': passorfail})
     return redirect('logout')
