@@ -1491,13 +1491,13 @@ def submission(request):
 
         # Close the cursor after executing the queries
         cursor.close()
-        subject = 'Mail for User-credentials'
-        message = ('Hi HR,\n\n' 
-                   'User '+user_id+' is completed the exam.\n\n'
-                   )
-        from_email = 'sysconnect@systechusa.com'  # Replace with your Gmail address
-        recipient_list = ['sysconnect@systechusa.com']  # Replace with recipient email addresses
-        send_mail(subject, message, from_email, recipient_list)
+        # subject = 'Mail for User-credentials'
+        # message = ('Hi HR,\n\n' 
+        #            'User '+user_id+' is completed the exam.\n\n'
+        #            )
+        # from_email = 'sysconnect@systechusa.com'  # Replace with your Gmail address
+        # recipient_list = ['sysconnect@systechusa.com']  # Replace with recipient email addresses
+        # send_mail(subject, message, from_email, recipient_list)
 
         return render(request, 'dashboard/exam_submission.html', {'result': result, 'level': level, 'passorfail': passorfail})
     return redirect('logout')
