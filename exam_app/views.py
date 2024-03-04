@@ -1329,141 +1329,141 @@ def exam_main_dashboard(request):
         print(candidate_data)
         print(candidate_data[38])
         print(candidate_data[31])
-        if candidate_data[26] == 1 and candidate_data[3]:
-            if candidate_data[57] == 0 and candidate_data[38] == 0:
-                level = 1
-            elif (candidate_data[57] == 1 and (candidate_data[38] == 0 or candidate_data[38] == 1) and candidate_data[58] == 'PASS'):
-                level = 2
-            else:
-                return redirect('alert_page_exam')
-            cursor = connection.cursor()
-            cursor.execute('exec [get_candidate_applied_job_details] %s,%s', [level, candidate_data[31]])
-            subjects = cursor.fetchall()
-            if subjects == []:
-                return redirect('logout')
-            print(subjects)
-            jobposition = subjects[0][1]
-            total_duration = subjects[0][10]
-            # print(level,jobposition)
+        # if candidate_data[26] == 1 and candidate_data[3]:
+        if candidate_data[57] == 0 and candidate_data[38] == 0:
+            level = 1
+        elif (candidate_data[57] == 1 and (candidate_data[38] == 0 or candidate_data[38] == 1) and candidate_data[58] == 'PASS'):
+            level = 2
+        else:
+            return redirect('alert_page_exam')
+        cursor = connection.cursor()
+        cursor.execute('exec [get_candidate_applied_job_details] %s,%s', [level, candidate_data[31]])
+        subjects = cursor.fetchall()
+        if subjects == []:
+            return redirect('logout')
+        print(subjects)
+        jobposition = subjects[0][1]
+        total_duration = subjects[0][10]
+        # print(level,jobposition)
 
-            # Close the cursor after fetching the data
-            cursor.close()
+        # Close the cursor after fetching the data
+        cursor.close()
 
-            return render(request, "exam_portal/exam_portal_dashboard.html", {'user': user, 'candidate_data': candidate_data, 'subjects': subjects, 'level': level, 'jobposition': jobposition, 'total_duration': total_duration})
-        elif candidate_data[3] == None:
-            if request.method == "POST":  
-                gender=request.POST.get('gender')
-                dob=request.POST.get('dob')
-                MaritalStatus=request.POST.get('MaritalStatus') 
-                CAddress=request.POST.get('CAddress')
-                PAddress=request.POST.get('PAddress')
-                Institution10=request.POST.get('Institution10')
-                CGPA10=request.POST.get('CGPA10')
-                YOP10=request.POST.get('YOP10')
-                Institution12=request.POST.get('Institution12')
-                CGPA12=request.POST.get('CGPA12')
-                YOP12=request.POST.get('YOP12')
-                Branch12=request.POST.get('Branch12')
-                Graduation=request.POST.get('Graduation')
-                UGCollege=request.POST.get('UGCollege')
-                UGDiscipline=request.POST.get('UGDiscipline')
-                CGPAUG=request.POST.get('CGPAUG')
-                YOPUG=request.POST.get('YOPUG')
-                PGraduation=request.POST.get('PGraduation')
-                PGDiscipline=request.POST.get('PGDiscipline')
-                PGCollege=request.POST.get('PGCollege')
-                CGPAPG=request.POST.get('CGPAPG')
-                YOPPG=request.POST.get('YOPPG')
-                ID_NO=request.POST.get('ID_NO')
-                iddata=request.POST.get('card_image_data')
-                facedata=request.POST.get('face_image_data')
-                InstitutionDiploma = request.POST.get('InstitutionDiploma')
-                CGPADiploma = request.POST.get('CGPADiploma')
-                YOPDiploma = request.POST.get('YOPDiploma')
-                BranchDiploma = request.POST.get('BranchDiploma')
-                Extra_1_College = request.POST.get('Extra_1_College')
-                CGPA_Extra_1 = request.POST.get('CGPA_Extra_1')
-                YOP_Extra_1 = request.POST.get('YOP_Extra_1')
-                Extra_1_Graduation = request.POST.get('Extra_1_Graduation')
-                Extra_2_College = request.POST.get('Extra_2_College')
-                CGPA_Extra_2 = request.POST.get('CGPA_Extra_2')
-                YOP_Extra_2 = request.POST.get('YOP_Extra_2')
-                Extra_2_Graduation = request.POST.get('Extra_2_Graduation')
-                work_auth = request.POST.get('work_auth')
-                total_exp = request.POST.get('total_exp')
-                relevant_exp = request.POST.get('relevant_exp')
+        return render(request, "exam_portal/exam_portal_dashboard.html", {'user': user, 'candidate_data': candidate_data, 'subjects': subjects, 'level': level, 'jobposition': jobposition, 'total_duration': total_duration})
+        # elif candidate_data[3] == None:
+        #     if request.method == "POST":  
+        #         gender=request.POST.get('gender')
+        #         dob=request.POST.get('dob')
+        #         MaritalStatus=request.POST.get('MaritalStatus') 
+        #         CAddress=request.POST.get('CAddress')
+        #         PAddress=request.POST.get('PAddress')
+        #         Institution10=request.POST.get('Institution10')
+        #         CGPA10=request.POST.get('CGPA10')
+        #         YOP10=request.POST.get('YOP10')
+        #         Institution12=request.POST.get('Institution12')
+        #         CGPA12=request.POST.get('CGPA12')
+        #         YOP12=request.POST.get('YOP12')
+        #         Branch12=request.POST.get('Branch12')
+        #         Graduation=request.POST.get('Graduation')
+        #         UGCollege=request.POST.get('UGCollege')
+        #         UGDiscipline=request.POST.get('UGDiscipline')
+        #         CGPAUG=request.POST.get('CGPAUG')
+        #         YOPUG=request.POST.get('YOPUG')
+        #         PGraduation=request.POST.get('PGraduation')
+        #         PGDiscipline=request.POST.get('PGDiscipline')
+        #         PGCollege=request.POST.get('PGCollege')
+        #         CGPAPG=request.POST.get('CGPAPG')
+        #         YOPPG=request.POST.get('YOPPG')
+        #         ID_NO=request.POST.get('ID_NO')
+        #         iddata=request.POST.get('card_image_data')
+        #         facedata=request.POST.get('face_image_data')
+        #         InstitutionDiploma = request.POST.get('InstitutionDiploma')
+        #         CGPADiploma = request.POST.get('CGPADiploma')
+        #         YOPDiploma = request.POST.get('YOPDiploma')
+        #         BranchDiploma = request.POST.get('BranchDiploma')
+        #         Extra_1_College = request.POST.get('Extra_1_College')
+        #         CGPA_Extra_1 = request.POST.get('CGPA_Extra_1')
+        #         YOP_Extra_1 = request.POST.get('YOP_Extra_1')
+        #         Extra_1_Graduation = request.POST.get('Extra_1_Graduation')
+        #         Extra_2_College = request.POST.get('Extra_2_College')
+        #         CGPA_Extra_2 = request.POST.get('CGPA_Extra_2')
+        #         YOP_Extra_2 = request.POST.get('YOP_Extra_2')
+        #         Extra_2_Graduation = request.POST.get('Extra_2_Graduation')
+        #         work_auth = request.POST.get('work_auth')
+        #         total_exp = request.POST.get('total_exp')
+        #         relevant_exp = request.POST.get('relevant_exp')
 
-                if PGraduation == None or PGraduation == "":
-                    PGraduation='null'        
-                if PGDiscipline == None or PGDiscipline == "":
-                    PGDiscipline = 'null'        
-                if PGCollege == None or PGCollege == "":
-                    PGCollege = 'null'        
-                if CGPAPG == None or CGPAPG == "":
-                    CGPAPG = 0        
-                if YOPPG == None or YOPPG == "":
-                    YOPPG = 0  
-                if InstitutionDiploma == None or InstitutionDiploma == "":
-                    InstitutionDiploma ='null'
-                if CGPADiploma == None or CGPADiploma == "":
-                    CGPADiploma = 0
-                if YOPDiploma == None or YOPDiploma == "":
-                    YOPDiploma = 0
-                if BranchDiploma == None or BranchDiploma == "":
-                    BranchDiploma = 'null'
-                if Extra_1_College == None or Extra_1_College == "":
-                    Extra_1_College = 'null'
-                if CGPA_Extra_1 == None or CGPA_Extra_1 == "":
-                    CGPA_Extra_1 = 0
-                if YOP_Extra_1 == None or YOP_Extra_1 == "":
-                    YOP_Extra_1 = 0
-                if Extra_1_Graduation == None or Extra_1_Graduation == "":
-                    Extra_1_Graduation = 'null'
-                if Extra_2_College == None or Extra_2_College == "":
-                    Extra_2_College = 'null'
-                if CGPA_Extra_2 == None or CGPA_Extra_2 == "":
-                    CGPA_Extra_2 = 0
-                if YOP_Extra_2 == None or YOP_Extra_2 == "":
-                    YOP_Extra_2 = 0
-                if Extra_2_Graduation == None or Extra_2_Graduation == "":
-                    Extra_2_Graduation = 'null'
+        #         if PGraduation == None or PGraduation == "":
+        #             PGraduation='null'        
+        #         if PGDiscipline == None or PGDiscipline == "":
+        #             PGDiscipline = 'null'        
+        #         if PGCollege == None or PGCollege == "":
+        #             PGCollege = 'null'        
+        #         if CGPAPG == None or CGPAPG == "":
+        #             CGPAPG = 0        
+        #         if YOPPG == None or YOPPG == "":
+        #             YOPPG = 0  
+        #         if InstitutionDiploma == None or InstitutionDiploma == "":
+        #             InstitutionDiploma ='null'
+        #         if CGPADiploma == None or CGPADiploma == "":
+        #             CGPADiploma = 0
+        #         if YOPDiploma == None or YOPDiploma == "":
+        #             YOPDiploma = 0
+        #         if BranchDiploma == None or BranchDiploma == "":
+        #             BranchDiploma = 'null'
+        #         if Extra_1_College == None or Extra_1_College == "":
+        #             Extra_1_College = 'null'
+        #         if CGPA_Extra_1 == None or CGPA_Extra_1 == "":
+        #             CGPA_Extra_1 = 0
+        #         if YOP_Extra_1 == None or YOP_Extra_1 == "":
+        #             YOP_Extra_1 = 0
+        #         if Extra_1_Graduation == None or Extra_1_Graduation == "":
+        #             Extra_1_Graduation = 'null'
+        #         if Extra_2_College == None or Extra_2_College == "":
+        #             Extra_2_College = 'null'
+        #         if CGPA_Extra_2 == None or CGPA_Extra_2 == "":
+        #             CGPA_Extra_2 = 0
+        #         if YOP_Extra_2 == None or YOP_Extra_2 == "":
+        #             YOP_Extra_2 = 0
+        #         if Extra_2_Graduation == None or Extra_2_Graduation == "":
+        #             Extra_2_Graduation = 'null'
 
-                cursor = connection.cursor()
-                cursor.execute('exec updateusregistrationdata %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s' ,[id,gender,dob,MaritalStatus,CAddress,PAddress,ID_NO,iddata,facedata,work_auth,total_exp,relevant_exp])
-                # cursor.execute('exec updateregistrationdata %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s' ,[id,gender,dob,MaritalStatus,CAddress,PAddress,Institution10,CGPA10,YOP10,Institution12,CGPA12,YOP12,Branch12,Graduation,UGCollege,UGDiscipline,CGPAUG,YOPUG,PGraduation,PGDiscipline,PGCollege,CGPAPG,YOPPG,ID_NO,iddata,facedata,InstitutionDiploma,CGPADiploma,YOPDiploma,BranchDiploma,Extra_1_College,CGPA_Extra_1,YOP_Extra_1,Extra_1_Graduation,Extra_2_College,CGPA_Extra_2,YOP_Extra_2,Extra_2_Graduation])
+        #         cursor = connection.cursor()
+        #         cursor.execute('exec updateusregistrationdata %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s' ,[id,gender,dob,MaritalStatus,CAddress,PAddress,ID_NO,iddata,facedata,work_auth,total_exp,relevant_exp])
+        #         # cursor.execute('exec updateregistrationdata %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s' ,[id,gender,dob,MaritalStatus,CAddress,PAddress,Institution10,CGPA10,YOP10,Institution12,CGPA12,YOP12,Branch12,Graduation,UGCollege,UGDiscipline,CGPAUG,YOPUG,PGraduation,PGDiscipline,PGCollege,CGPAPG,YOPPG,ID_NO,iddata,facedata,InstitutionDiploma,CGPADiploma,YOPDiploma,BranchDiploma,Extra_1_College,CGPA_Extra_1,YOP_Extra_1,Extra_1_Graduation,Extra_2_College,CGPA_Extra_2,YOP_Extra_2,Extra_2_Graduation])
 
-                if candidate_data[57] == 0 and candidate_data[38] == 0:
-                    level = 1
-                elif (candidate_data[57] == 1 and (candidate_data[38] == 0 or candidate_data[38] == 1) and candidate_data[58] == 'PASS'):
-                    level = 2
-                else:
-                    return redirect('alert_page_exam')
-                cursor = connection.cursor()
-                cursor.execute('exec [get_candidate_applied_job_details] %s,%s', [level, candidate_data[31]])
-                subjects = cursor.fetchall()
-                if subjects == []:
-                    return redirect('logout')
-                print(subjects)
-                jobposition = subjects[0][1]
-                total_duration = subjects[0][10]
-                # print(level,jobposition)
+        #         if candidate_data[57] == 0 and candidate_data[38] == 0:
+        #             level = 1
+        #         elif (candidate_data[57] == 1 and (candidate_data[38] == 0 or candidate_data[38] == 1) and candidate_data[58] == 'PASS'):
+        #             level = 2
+        #         else:
+        #             return redirect('alert_page_exam')
+        #         cursor = connection.cursor()
+        #         cursor.execute('exec [get_candidate_applied_job_details] %s,%s', [level, candidate_data[31]])
+        #         subjects = cursor.fetchall()
+        #         if subjects == []:
+        #             return redirect('logout')
+        #         print(subjects)
+        #         jobposition = subjects[0][1]
+        #         total_duration = subjects[0][10]
+        #         # print(level,jobposition)
 
-                # Close the cursor after fetching the data
-                cursor.close()
+        #         # Close the cursor after fetching the data
+        #         cursor.close()
 
-                # Constructing the URL using reverse() and passing parameters
-                url = reverse('index') + f'?level={level}&jobposition={jobposition}&total_duration={total_duration}&user={id}'
-                print(url)
+        #         # Constructing the URL using reverse() and passing parameters
+        #         url = reverse('index') + f'?level={level}&jobposition={jobposition}&total_duration={total_duration}&user={id}'
+        #         print(url)
 
-                # Redirecting to the constructed URL
-                return redirect(url)
+        #         # Redirecting to the constructed URL
+        #         return redirect(url)
 
 
 
-            current_year = dt.now().year
-            years = [year for year in range(1990, current_year+1)]
-            return render(request, "exam_portal/regis_for_blkinst.html",{'candidate_data': candidate_data,'years':years})
-        return redirect('alertpage')
+        #     current_year = dt.now().year
+        #     years = [year for year in range(1990, current_year+1)]
+        #     return render(request, "exam_portal/regis_for_blkinst.html",{'candidate_data': candidate_data,'years':years})
+        # return redirect('alertpage')
     return redirect('logout')
 
 def submission(request):
