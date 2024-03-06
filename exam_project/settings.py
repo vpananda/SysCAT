@@ -169,6 +169,6 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp-mail.outlook.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'anisha@systechusa.com'  # Replace with your Gmail address
-EMAIL_HOST_PASSWORD = 'Spartan2012'  # Replace with your Gmail password or an app-specific password
+EMAIL_HOST_USER = 'sysconnect@systechusa.com'  # Replace with your Gmail address
+EMAIL_HOST_PASSWORD = '$ys7ech1@3'  # Replace with your Gmail password or an app-specific password
 
