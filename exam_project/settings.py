@@ -111,6 +111,38 @@ DATABASES = {
     },
 }
 
+# DATABASES = {
+#     'default': {
+#         # String. It must be "mssql".
+#         'ENGINE': 'mssql',
+
+#         # String. Database name. Required.
+#         'NAME': 'OLT_DEV',
+
+#         # String. Database user name in "user" format. If not given then MS Integrated Security will be used.
+#         'USER': 'OltDevUser',
+
+#         # String. Database user password.
+#         'PASSWORD': 'OltDevProd',
+        
+#          # String. SQL Server instance in "server\instance" format.
+#         'HOST': '10.100.130.21',
+
+#         # String. Server instance port. An empty string means the default port.
+#         'PORT': '1433',
+
+#         # Dictionary. Additional database settings.
+#         'OPTIONS': {
+#             # String. ODBC Driver to use ("ODBC Driver 17 for SQL Server", 
+#             # "SQL Server Native Client 11.0", "FreeTDS" etc). 
+#             # Default is "ODBC Driver 17 for SQL Server".
+#             'driver': 'ODBC Driver 17 for SQL Server',
+#         },
+#     },
+# }
+
+
+
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators

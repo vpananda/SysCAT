@@ -1218,7 +1218,13 @@ def logout(request):
     request.session['user_authenticated'] = False    
     return render(request, 'registration/logout.html')
 
+start_result_date = ''
+end_result_date = ''
+result_jobid = ''
+
 def result(request):
+    global result_jobid, start_result_date, end_result_date
+
     if not request.session.get('user_authenticated'):
         return redirect('logout')
 
@@ -1237,6 +1243,10 @@ def result(request):
     end_date = get_param(request, 'end_date')
     candidate_id = get_param(request, 'candidate_id')
 
+    result_jobid = applied_for
+    start_result_date = start_date
+    end_result_date = end_date
+
     job_name, job_id = applied_for.split('|') if applied_for else (None, 0)
     job_name = None if job_name == 'ALL' else job_name
 
@@ -1244,9 +1254,139 @@ def result(request):
 
     cursor.execute('exec [GetCandidateResults] %s,%s,%s,%s', [job_name, filter, start_date, end_date])
     user = cursor.fetchall()
+    user_ids = [t[2] for t in user]
+    print(user)
     cursor.close()
 
-    return render(request, 'dashboard/Result.html', {'user': user, 'search_filter': search_filter, 'job_name': job_name, 'start_date': start_date, 'end_date': end_date})
+    return render(request, 'dashboard/Result.html', {'user': user, 'search_filter': search_filter, 'job_name': job_name, 'start_date': start_date, 'end_date': end_date, 'user_ids': user_ids})
+
+
+
+
+
+
+import csv
+def generate_results_excel(request):
+
+    global result_jobid, start_result_date, end_result_date
+    
+    today = date.today()
+    first_day = date(today.year, today.month, 1)
+    if not result_jobid:
+        result_jobid = '0'
+    else:
+        result_jobid = result_jobid.split('|')[1]
+
+    print(result_jobid)
+
+    if not start_result_date:
+        start_result_date = first_day.strftime("%d/%m/%Y")
+    else:
+        start_result_date = datetime.datetime.strptime(start_result_date, '%Y-%m-%d')
+        start_result_date = start_result_date.strftime('%d/%m/%Y')
+
+    print(start_result_date)
+    
+
+    if not end_result_date:
+        end_result_date = today.strftime("%d/%m/%Y")
+    else:
+        end_result_date = datetime.datetime.strptime(end_result_date, '%Y-%m-%d')
+        end_result_date = end_result_date.strftime('%d/%m/%Y')
+
+    print(end_result_date)
+  
+
+    # Parameters for the stored procedure
+    job_position = result_jobid # Example value, replace with the actual job position ID
+    candidate_id = '0'  # Example value, replace with the actual candidate ID
+    start_date = start_result_date  # Example value, replace with the actual start date
+    end_date = end_result_date  # Example value, replace with the actual end date
+
+    try:
+        # Execute the stored procedure
+        cursor = connection.cursor()
+        cursor.execute(
+            "EXEC GetCandidateResult @JobPosition=%s, @CandidateID=%s, @StartDate=%s, @EndDate=%s",
+            [job_position, candidate_id, start_date, end_date]
+        )
+        result_data = cursor.fetchall()
+        
+        # Get the column names (headers)
+        headers = [col[0] for col in cursor.description]
+
+        # Prepare response as CSV with headers
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="candidate_results.csv"'
+
+        # Write CSV content
+        writer = csv.writer(response)
+        writer.writerow(headers)  # Write headers
+        writer.writerows(result_data)  # Write data rows
+
+        # Close the cursor
+        cursor.close()
+
+        return response
+
+    except Exception as e:
+        # Handle any exceptions
+        print("Error:", e)
+        return HttpResponse("Error occurred: " + str(e), status=500)  # Return an error response
+
+    
+
+    
+   
+
+    # cursor = connection.cursor()
+    # cursor.execute('exec GetCandidateResult 0, \'0\', \'08/03/2024\', \'08/03/2024\'')
+    # result_data = cursor.fetchall()
+
+    # print(result_data)  # Debugging print
+
+    # return HttpResponse('Hi')
+    # # Create the table data in the required format
+    # rows = [{
+    #     'Candidate Name': row[1] + ' ' + row[2],
+    #     'User id': row[3],
+    #     'Password': row[4],
+    #     'Applied for': row[5],
+    #     'Start time': row[6],
+    #     'End time': row[7],
+    #     'Remaning time': row[8]
+    # } for row in candidate_data]
+
+    # # Close the cursor after fetching the data
+    # cursor.close()
+
+    # # Create an in-memory output stream for the Excel file
+    # output = io.BytesIO()
+
+    # # Create a new workbook and add a worksheet
+    # workbook = xlsxwriter.Workbook(output)
+    # worksheet = workbook.add_worksheet()
+
+    # # Write the table headers
+    # headers = ['S.No', 'Candidate Name', 'User id', 'Password', 'Applied for', 'Start time', 'End time', 'Remaning time']
+    # for col_num, header in enumerate(headers):
+    #     worksheet.write(0, col_num, header)
+
+    # # Write the table data
+    # for row_num, row in enumerate(rows):
+    #     worksheet.write(row_num + 1, 0, row_num + 1)  # write the S.No
+    #     for col_num, cell_value in enumerate(row.values()):
+    #         worksheet.write(row_num + 1, col_num + 1, cell_value)
+
+    # # Close the workbook
+    # workbook.close()
+
+    # # Create the HttpResponse object with the Excel file
+    # response = HttpResponse(content_type='application/vnd.ms-excel')
+    # response['Content-Disposition'] = 'attachment; filename="candidate_data.xlsx"'
+    # response.write(output.getvalue())
+
+    # return response
 
 def resultsdetail(request,id):
     if request.session.get('user_authenticated'):

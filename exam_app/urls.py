@@ -46,6 +46,7 @@ urlpatterns = [
     path('blk_id/', views.blk_id, name='blk_id'),
     # path('image_view/', views.image_view, name='image_view'),
     path('generate-excel/', views.generate_excel, name='generate_excel'),
+    path('generate-results-excel/', views.generate_results_excel, name='generate_results_excel'),
     path('show_candidate_data/<int:id>', views.show_candidate_data, name='show_candidate_data'),
     path('registercandidate/',views.registercandidate,name='registercandidate'),
     path('detect_face/', views.detect_face, name='detect_face'),
