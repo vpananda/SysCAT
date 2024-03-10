@@ -717,7 +717,7 @@ def candidate_dashboard(request):
 
                     # Send email
                     cc_recipients = ['anisha@systechusa.com', 'samc@systechusa.com']
-                    recipients = details_for_email[2] + cc_recipients
+                    recipients = [details_for_email[2]] + cc_recipients
                     server.sendmail(outlook_email, recipients, message.as_string()) 
                     
 
