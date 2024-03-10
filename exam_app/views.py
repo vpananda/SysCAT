@@ -40,6 +40,24 @@ import json
 from datetime import datetime as dt,timedelta
 from datetime import date
 from django.core.mail import send_mail
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+
+# Outlook SMTP server settings
+outlook_smtp_server = 'smtp.office365.com'
+outlook_smtp_port = 587
+
+# Your Outlook email credentials
+# outlook_email = 'sysconnect@systechusa.com'
+# outlook_password = '$ys7ech1@3'
+
+outlook_email = 'anandp@systechusa.com'
+outlook_password = 'Systech@1234'
+
+
+# outlook_email = 'kalaiselvanj@systechusa.com'
+# outlook_password = 'M1cr0A((0fK@l@1'
 
 # Create your views here.
 
@@ -329,11 +347,37 @@ def registration(request):
                 cursor.execute('exec insertusregistrationdata %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s',[Applyingfor,firstname,lastname,gender,dob,MaritalStatus,phone,email,CAddress,PAddress,countrycode,ID_NO,iddata,facedata,new_id,current_date,work_auth,total_exp,relevant_exp])
                 # cursor.execute('exec insertregistrationdata %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s' ,[Applyingfor,firstname,lastname,gender,dob,MaritalStatus,phone,email,CAddress,PAddress,Institution10,CGPA10,YOP10,Institution12,CGPA12,YOP12,Branch12,Graduation,UGCollege,UGDiscipline,CGPAUG,YOPUG,PGraduation,PGDiscipline,PGCollege,CGPAPG,YOPPG,Source,Referredthrough,Applied,Adate,countrycode,Id_proof,ID_NO,iddata,facedata,new_id,current_date,InstitutionDiploma,CGPADiploma,YOPDiploma,BranchDiploma,Extra_1_College,CGPA_Extra_1,YOP_Extra_1,Extra_1_Graduation,Extra_2_College,CGPA_Extra_2,YOP_Extra_2,Extra_2_Graduation])
                 # return render(request, 'registration/login.html')
-                subject = 'Mail for User-credentials'
-                message = ('Hi HR,\n\n'+firstname+', is registered for '+Applyingfor+' and the username is '+new_id+' and mailID is'+email)
-                from_email = 'sysconnect@systechusa.com'  # Replace with your Gmail address
-                recipient_list = ['sysconnect@systechusa.com']  # Replace with recipient email addresses
-                send_mail(subject, message, from_email, recipient_list)
+                message = MIMEMultipart()
+                message['From'] = outlook_email
+                message['To'] = 'systechinhr@systechusa.com'
+                message['Cc'] = 'anisha@systechusa.com, samc@systechusa.com' 
+                message['Subject'] = 'Mail for Candidate registration'
+                # Add body to the email
+                body = (
+                    'Hi Team,\n\n'+firstname+', is registered for '+Applyingfor+' and the username is '+new_id+' and mailID is'+email
+                )
+                message.attach(MIMEText(body, 'plain'))
+
+                # Connect to Outlook SMTP server
+                server = smtplib.SMTP(outlook_smtp_server, outlook_smtp_port)
+                server.starttls()  # Enable TLS encryption
+
+                # Login to your Outlook account
+                server.login(outlook_email, outlook_password)
+
+                # Send email
+                cc_recipients = ['anisha@systechusa.com', 'samc@systechusa.com']
+                recipients = ['systechinhr@systechusa.com'] + cc_recipients
+                server.sendmail(outlook_email, recipients, message.as_string()) 
+                
+
+                # Close the connection
+                server.quit()
+            
+                # message = ('Hi HR,\n\n'+firstname+', is registered for '+Applyingfor+' and the username is '+new_id+' and mailID is'+email)
+                # from_email = 'sysconnect@systechusa.com'  # Replace with your Gmail address
+                # recipient_list = ['sysconnect@systechusa.com']  # Replace with recipient email addresses
+                # send_mail(subject, message, from_email, recipient_list)
                 return redirect('registersuccess')
             finally:
                 cursor.close()
@@ -368,11 +412,37 @@ def registration(request):
                 cursor.execute('exec insertusregistrationdata %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s' ,[Applyingfor,firstname,lastname,gender,dob,MaritalStatus,phone,email,CAddress,PAddress,countrycode,ID_NO,iddata,facedata,new_id,current_date,work_auth,total_exp,relevant_exp])
                 # cursor.execute('exec insertregistrationdata %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s' ,[Applyingfor,firstname,lastname,gender,dob,MaritalStatus,phone,email,CAddress,PAddress,Institution10,CGPA10,YOP10,Institution12,CGPA12,YOP12,Branch12,Graduation,UGCollege,UGDiscipline,CGPAUG,YOPUG,PGraduation,PGDiscipline,PGCollege,CGPAPG,YOPPG,Source,Referredthrough,Applied,Adate,countrycode,Id_proof,ID_NO,iddata,facedata,new_id,current_date,InstitutionDiploma,CGPADiploma,YOPDiploma,BranchDiploma,Extra_1_College,CGPA_Extra_1,YOP_Extra_1,Extra_1_Graduation,Extra_2_College,CGPA_Extra_2,YOP_Extra_2,Extra_2_Graduation])
                 # return render(request, 'registration/login.html')
-                subject = 'Mail for User-credentials'
-                message = ('Hi HR,\n\n'+firstname+', is registered for '+Applyingfor+' and the username is '+new_id+' and mailID is'+email)
-                from_email = 'sysconnect@systechusa.com'  # Replace with your Gmail address
-                recipient_list = ['sysconnect@systechusa.com']  # Replace with recipient email addresses
-                send_mail(subject, message, from_email, recipient_list)
+                # subject = 'Mail for Registration'
+                # message = ('Hi HR,\n\n'+firstname+', is registered for '+Applyingfor+' and the username is '+new_id+' and mailID is'+email)
+                # from_email = 'sysconnect@systechusa.com'  # Replace with your Gmail address
+                # recipient_list = ['sysconnect@systechusa.com']  # Replace with recipient email addresses
+                # send_mail(subject, message, from_email, recipient_list)
+                message = MIMEMultipart()
+                message['From'] = outlook_email
+                message['To'] = 'systechinhr@systechusa.com'
+                message['Cc'] = 'anisha@systechusa.com, samc@systechusa.com' 
+                message['Subject'] = 'Mail for Candidate registration'
+                # Add body to the email
+                body = (
+                    'Hi Team,\n\n'+firstname+', is registered for '+Applyingfor+' and the username is '+new_id+' and mailID is'+email
+                )
+                message.attach(MIMEText(body, 'plain'))
+
+                # Connect to Outlook SMTP server
+                server = smtplib.SMTP(outlook_smtp_server, outlook_smtp_port)
+                server.starttls()  # Enable TLS encryption
+
+                # Login to your Outlook account
+                server.login(outlook_email, outlook_password)
+
+                # Send email
+                cc_recipients = ['anisha@systechusa.com', 'samc@systechusa.com']
+                recipients = ['systechinhr@systechusa.com'] + cc_recipients
+                server.sendmail(outlook_email, recipients, message.as_string()) 
+                
+
+                # Close the connection
+                server.quit()
                 return redirect('registersuccess')
     
  
@@ -596,25 +666,63 @@ def candidate_dashboard(request):
                     cursor.execute('exec ScheduleCandiadtes %s,%s,%s,%s', [lockid,schedule_start_date,schedule_end_date,reason])
                     cursor.execute('exec get_details_for_email %s',[lockid])
                     details_for_email = cursor.fetchone()
-                    print(details_for_email)
-                    subject = 'Mail for User-credentials'
-                    # message = 'Hi '+details_for_email[0]+', Your Username is '+lockid+' and password is '+details_for_email[1]+', your Scheduled Exam Timing is '+str(schedule_start_date)+' to '+str(schedule_end_date)+'. All the best for your exam!'
-                    message = (
+                    print('details_for_email :',details_for_email)
+                    # subject = 'Mail for User-credentials'
+                    # # message = 'Hi '+details_for_email[0]+', Your Username is '+lockid+' and password is '+details_for_email[1]+', your Scheduled Exam Timing is '+str(schedule_start_date)+' to '+str(schedule_end_date)+'. All the best for your exam!'
+                    # message = (
+                    #     "Hi "+details_for_email[0]+",\n\n"
+                    #     "Greetings from Systech!\n\n"
+                    #     "We would like to inform you that we have shortlisted your profile for the "+details_for_email[3]+" position.\n\n"
+                    #     "Instructions for Online test:\n"
+                    #     "1. Online Test (2 Hours) - Aptitude, Communication, RDBMS, Dotnet/Java/Python\n"
+                    #     "2. Link will be activated as per your schedule\n"
+                    #     "3. Have paper and pen handy to solve the questions whenever required\n\n"
+                    #     "Your Username is "+lockid+" and password is "+details_for_email[1]+", your Scheduled Exam Timing is "+str(schedule_start_date)+" to "+str(schedule_end_date)+".\n"
+                    #     "If you have any issues during the test, please contact us at anisha@systechusa.com\n\n"
+                    #     "Thanks & regards,\n"
+                    #     "Systech India HR Team"
+                    # )
+                    # from_email = 'sysconnect@systechusa.com'  # Replace with your Gmail address
+                    # recipient_list = [details_for_email[2]]  # Replace with recipient email addresses
+                    # send_mail(subject, message, from_email, recipient_list)
+                    message = MIMEMultipart()
+                    message['From'] = outlook_email
+                    message['To'] = details_for_email[2]
+                    message['Cc'] = 'anisha@systechusa.com, samc@systechusa.com' 
+                    message['Subject'] = 'Welcome to SysCAT'
+
+                    # Add body to the email
+                    body = (
                         "Hi "+details_for_email[0]+",\n\n"
                         "Greetings from Systech!\n\n"
                         "We would like to inform you that we have shortlisted your profile for the "+details_for_email[3]+" position.\n\n"
                         "Instructions for Online test:\n"
-                        "1. Online Test (2 Hours) - Aptitude, Communication, RDBMS, Dotnet/Java/Python\n"
-                        "2. Link will be activated as per your schedule\n"
-                        "3. Have paper and pen handy to solve the questions whenever required\n\n"
+                        "1. Online Test (1.5 Hours) - Aptitude, Communication, SQL, Dotnet, Python, Java\n\n"
+                        "2. Link will be activated as per your schedule\n\n"
+                        "3. Have paper and pen handy to solve the questions whenever required.\n\n"
+                        "4. During the test time do not navigate to other tabs and applications as well as do not press any keys.\n\n"
                         "Your Username is "+lockid+" and password is "+details_for_email[1]+", your Scheduled Exam Timing is "+str(schedule_start_date)+" to "+str(schedule_end_date)+".\n"
                         "If you have any issues during the test, please contact us at anisha@systechusa.com\n\n"
                         "Thanks & regards,\n"
                         "Systech India HR Team"
                     )
-                    from_email = 'sysconnect@systechusa.com'  # Replace with your Gmail address
-                    recipient_list = [details_for_email[2]]  # Replace with recipient email addresses
-                    send_mail(subject, message, from_email, recipient_list)
+                    message.attach(MIMEText(body, 'plain'))
+
+                    # Connect to Outlook SMTP server
+                    server = smtplib.SMTP(outlook_smtp_server, outlook_smtp_port)
+                    server.starttls()  # Enable TLS encryption
+
+                    # Login to your Outlook account
+                    server.login(outlook_email, outlook_password)
+
+                    # Send email
+                    cc_recipients = ['anisha@systechusa.com', 'samc@systechusa.com']
+                    recipients = details_for_email[2] + cc_recipients
+                    server.sendmail(outlook_email, recipients, message.as_string()) 
+                    
+
+                    # Close the connection
+                    server.quit()
             if skip_level_1:
                 for skip_level in skip_level_1:
                     cursor.execute('exec skip_level_1_Candiadtes %s', [skip_level])
@@ -1258,7 +1366,7 @@ def result(request):
     print(user)
     cursor.close()
 
-    return render(request, 'dashboard/Result.html', {'user': user, 'search_filter': search_filter, 'job_name': job_name, 'start_date': start_date, 'end_date': end_date, 'user_ids': user_ids})
+    return render(request, 'dashboard/Result.html', {'user': user, 'search_filter': search_filter, 'job_name': job_name, 'start_date': start_date, 'end_date': end_date})
 
 
 
@@ -1631,6 +1739,33 @@ def submission(request):
 
         # Close the cursor after executing the queries
         cursor.close()
+        message = MIMEMultipart()
+        message['From'] = outlook_email
+        message['To'] = 'systechinhr@systechusa.com'
+        message['Cc'] = 'anisha@systechusa.com, samc@systechusa.com' 
+        message['Subject'] = 'Candidate submitted the test'
+        # Add body to the email
+        body = (
+            'Hi Team,\n\n' 
+                   'User '+user_id+' is submitted the exam.\n\n'
+        )
+        message.attach(MIMEText(body, 'plain'))
+
+        # Connect to Outlook SMTP server
+        server = smtplib.SMTP(outlook_smtp_server, outlook_smtp_port)
+        server.starttls()  # Enable TLS encryption
+
+        # Login to your Outlook account
+        server.login(outlook_email, outlook_password)
+
+        # Send email
+        cc_recipients = ['anisha@systechusa.com', 'samc@systechusa.com']
+        recipients = ['systechinhr@systechusa.com'] + cc_recipients
+        server.sendmail(outlook_email, recipients, message.as_string()) 
+        
+
+        # Close the connection
+        server.quit()
         # subject = 'Mail for User-credentials'
         # message = ('Hi HR,\n\n' 
         #            'User '+user_id+' is completed the exam.\n\n'
