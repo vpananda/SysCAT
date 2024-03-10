@@ -105,7 +105,7 @@
             {% endfor %}
         </div>
         <div class="question-buttons" style="display: block;justify-content: center;align-items: center;margin-top: 20px;">
-          <div class="button-container" style="display: block;justify-content: center;align-items: center;gap: 10px;">
+          <div class="button-container" style="display: flex;flex-wrap: wrap;justify-content: center;align-items: center;gap: 10px;margin-bottom:10px">
             {% for i in value %}
             <button class="tablinks" style="padding: 10px 15px;font-size: 16px;font-weight: bold;border: none;border-radius: 5px;background-color: #007bff;color: #fff;cursor: pointer;" onclick="openTab(event, '{{key}}', {{forloop.counter}})" {% if forloop.first %}id="defaultOpen"{% endif %}>Q{{forloop.counter}}</button>
             {% endfor %}
@@ -125,7 +125,7 @@
     </div>
     
     <div class="row" id="r3">
-      <h6>Welcome {{ request.session.username }}</h6>
+      <h6>Welcome {{ request.session.candidatename }}</h6>
       <h3>Instructions</h3>
       <ul>
         <li>Keep other electronic devices away from your computer.</li>

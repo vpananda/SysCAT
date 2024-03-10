@@ -148,6 +148,7 @@ def login(request):
                     request.session['username'] = user_name  
                     request.session['email'] = email                    
                     request.session['user_authenticated'] = True
+                    request.session['candidatename'] = user[5]
                     # datetime_now = dt.now()
                     date_format = '%Y-%m-%d %H:%M:%S'
                     start_date_naive = dt.strptime(user[6], date_format)
@@ -701,6 +702,7 @@ def candidate_dashboard(request):
                         "2. Link will be activated as per your schedule\n\n"
                         "3. Have paper and pen handy to solve the questions whenever required.\n\n"
                         "4. During the test time do not navigate to other tabs and applications as well as do not press any keys.\n\n"
+                        "Kindly Login to https://syscat.azurewebsites.net for your exam."
                         "Your Username is "+lockid+" and password is "+details_for_email[1]+", your Scheduled Exam Timing is "+str(schedule_start_date)+" to "+str(schedule_end_date)+".\n"
                         "If you have any issues during the test, please contact us at anisha@systechusa.com\n\n"
                         "Thanks & regards,\n"
@@ -1736,6 +1738,11 @@ def submission(request):
                 passorfail = 'PASS'
         print(passorfail)
         cursor.execute('exec update_tb_candidate_status %s,%s', [user_id, passorfail])
+        cursor.execute('select (First_Name+Last_Name) from [dbo].[tb_Candidate] where KeyID = %s', [user_id])
+        username = cursor.fetchall()
+        username = username[0][0]
+        print(username)
+        print(type(username))
 
         # Close the cursor after executing the queries
         cursor.close()
@@ -1743,11 +1750,13 @@ def submission(request):
         message['From'] = outlook_email
         message['To'] = 'systechinhr@systechusa.com'
         message['Cc'] = 'anisha@systechusa.com, samc@systechusa.com' 
-        message['Subject'] = 'Candidate submitted the test'
+        message['Subject'] = 'SysCAT : Candidate - '+username+' has Submitted, '
         # Add body to the email
         body = (
             'Hi Team,\n\n' 
-                   'User '+user_id+' is submitted the exam.\n\n'
+                   'The Candidate '+username+'('+user_id+') has completed the test.\n\n'
+            'Thanks\n'
+            'SysCAT\n' 
         )
         message.attach(MIMEText(body, 'plain'))
 

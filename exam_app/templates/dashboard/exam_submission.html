@@ -200,8 +200,8 @@
   <body>
     <div class="wrapper">
       {% if passorfail == 'FAIL'%}
-      <h1>Better Luck Next time!</h1>
-      <p>You have not cleared this Level!</p>
+      <h1>Thanks for the submission!</h1>
+      <p>We will let you know the results!</p>
       <a href="{%url 'logout'%}"  style="background-color: #007bff; color: #fff; border: none; padding: 10px 20px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer;" >logout</a>
       {% elif passorfail == 'PASS' and level == '1' %}
       <h1>Congratulations!</h1>
